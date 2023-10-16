@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Peanut for Wordpress</title>
+        {{{css}}}
+    </head>
+    <body>
+        <div class="app_wrapper">
+            <div class="app_left">
+                <div class="app_title">
+                    <div class="app_logo"></div>
+                    <div>Peanut Prototypes</div>
+                </div>
+
+                <hr />
+
+                <div id="app_navi"></div>
+            </div>
+            <div class="app_right">
+                <div class="app_components">
+                    <iframe src="about:blank" frameborder="0" name="app_iframe" id="iframe_components"></iframe>
+                </div>
+                <div class="app_control">
+                    <iframe src="about:blank" frameborder="0" name="app_iframe" id="iframe_control"></iframe>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            window.peanutApp = {
+                variations: {{{stringify variations}}}
+            };
+        </script>
+        {{{js}}}
+
+    </body>
+</html>

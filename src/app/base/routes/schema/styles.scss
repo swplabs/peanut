@@ -1,0 +1,75 @@
+@import "../../../shared/styles/vars.scss";
+@import "../../../shared/styles/page.scss";
+
+$tab-height: 44px;
+$title-height: 44px;
+
+body {
+    background-color: #ddd;
+    height: 100vh;
+    padding: 0 15px;
+}
+
+#component-control {
+    height: 100%;
+}
+
+.schema-title {
+    line-height: $title-height;
+    height: $title-height;
+    color: #b1b1b1;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.schema-control {
+    height: calc(100% - (#{$title-height} + 44px));
+    display: none;
+
+    &.show {
+        display: block;
+    }
+}
+
+.schema-tabs {
+    height: $tab-height;
+    overflow: hidden;
+    border-top: 1px solid #bbb;
+    display: flex;
+    
+    > div {
+        cursor: pointer;
+        height: $tab-height;
+        line-height: $tab-height;
+        margin-right: 24px;
+        border-bottom: 4px solid #ddd;
+        text-transform: uppercase;
+        font-size: 12px;
+        font-weight: 700;
+        color: #6e6e6e;
+
+        &:hover,
+        &.active {
+            border-color: #bbb;
+            color: #000;
+        }
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}
+
+.schema-content {
+    border-top: 1px solid #bbb;
+    overflow: auto;
+    height: calc(100% - #{$tab-height});
+
+    > div {
+        display: none;
+
+        &.active {
+            display: block;
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+  "PEANUT_DIR_ENT_ALLOW_LIST": [],
+  "PEANUT_WP_ROOT": "/var/www/html",
+  "PEANUT_THEME_PATH": "/wp-content/themes/twentytwentythree",
+  "PEANUT_WP_PUBLIC_PATH": "http://localhost/",
+  "PFWP_CORE_BLOCK_FILTERS": {
+    "on_pre_render": {},
+    "on_render": {}
+  }
+}
