@@ -1,11 +1,12 @@
 const path = require('path');
 const fs = require('fs');
 const { toCamelCase, debug: log } = require('../../src/app/shared/utils');
-const { srcDirEntMap } = require('../../config/src.dir.map.js');
-const { baseRoutes, baseEntries } = require('../../config/paths.js');
-const envVars = require('../../config/envvars.js');
-const appSrcPath = envVars.get('PEANUT_APP_SRC_PATH');
-const dirEntSrcPath = envVars.get('PEANUT_DIR_ENT_SRC_PATH');
+const { srcDirEntMap } = require('../../shared/src.dir.map.js');
+const { baseRoutes, baseEntries } = require('../../shared/paths.js');
+const envVars = require('../../shared/envvars.js');
+const appSrcPath = envVars.get('PFWP_APP_SRC_PATH');
+const dirEntSrcPath = envVars.get('PFWP_DIR_ENT_SRC_PATH');
+const nodeEnv = envVars.get('NODE_ENV') || 'production';
 
 let entries = {};
 let routes;
@@ -35,6 +36,7 @@ const getCacheGroups = ({ buildType }) => {
     };
   }
 
+  // TODO: Needs to be smarter to support hot module files not getting rolled in?
   return Object.keys(cacheGroupsCfg).reduce(
     (groups, key) => {
       groups[key] = {
@@ -113,13 +115,14 @@ const findRoutes = ({ srcTypeDirEnts, forceBase, srcType }) => {
     !forceBase && Array.isArray(srcTypeDirEnts)
       ? []
       : baseRoutes?.[srcType]
-      ? [...baseRoutes[srcType]]
-      : []
+        ? [...baseRoutes[srcType]]
+        : []
   );
 };
 
 const getRoutes = ({ buildType, srcType, forceBase = false }) => {
   if (srcType === 'app') {
+    // TODO: document why we are doing this for app server
     if (buildType === 'server') {
       routes = [
         ...findRoutes({ srcType: 'app', forceBase }),
@@ -138,10 +141,31 @@ const getRoutes = ({ buildType, srcType, forceBase = false }) => {
   return routes;
 };
 
-const addSrcDirEntEntry = (newEntries, srcPath, { id, entryKey, file, path, library }) => {
+const addSrcDirEntEntry = (
+  newEntries,
+  srcPath,
+  buildType,
+  srcType,
+  { id, entryKey, file, library }
+) => {
   const key = entryKey ? `${entryKey}_${id}` : id;
+
+  const entries = [`${srcPath}${dirEntSrcPath}/${file}`];
+
+  if (
+    nodeEnv === 'development' &&
+    ['blocks', 'plugins'].includes(srcType) &&
+    ['editor'].includes(entryKey)
+  ) {
+    entries.push(
+      `webpack-hot-middleware/client?name=${srcType}_${buildType}&timeout=10000&path=${encodeURIComponent(
+        envVars.get('PFWP_SSE_HOST') + '/__webpack_hmr'
+      )}`
+    );
+  }
+
   newEntries[key] = {
-    import: `${srcPath}${dirEntSrcPath}/${file}`
+    import: entries
   };
 
   if (library?.type) {
@@ -175,7 +199,13 @@ const getEntries = ({ buildType, srcType, exportType }) => {
       ) {
         const library = exportType ? exportCfgEntry?.library : buildCfgEntry?.library;
 
-        addSrcDirEntEntry(newEntries, srcPath, { id, path, entryKey, file: key, library });
+        addSrcDirEntEntry(newEntries, srcPath, buildType, srcType, {
+          id,
+          path,
+          entryKey,
+          file: key,
+          library
+        });
       }
     });
 

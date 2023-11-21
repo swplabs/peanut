@@ -1,6 +1,6 @@
 const fs = require('fs');
 const zlib = require('zlib');
-const { srcDirEntMap, baseIdPrefix } = require('../../config/src.dir.map.js');
+const { srcDirEntMap, baseIdPrefix } = require('../../shared/src.dir.map.js');
 
 const buildIndex = (component) => {
   return `<!doctype html>

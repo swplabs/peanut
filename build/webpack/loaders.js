@@ -1,6 +1,8 @@
 const path = require('path');
 const basePostCssConfig = require('./config.postcss.js');
 const babelConfig = require('./config.babel.js');
+const envVars = require('../../shared/envvars.js');
+const nodeEnv = envVars.get('NODE_ENV') || 'production';
 
 const handlebars = ({ isWeb }) => {
   const hbHelperPath = path.resolve(__dirname, '../handlebars');
@@ -64,7 +66,7 @@ const js = ({ buildType, srcType, exportType }) => {
     use: [
       {
         loader: 'babel-loader',
-        options: babelConfig({ buildType, srcType, exportType })
+        options: babelConfig({ buildType, srcType, exportType, nodeEnv })
       }
     ]
   };

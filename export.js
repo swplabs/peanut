@@ -1,26 +1,26 @@
 const path = require('path');
 // const { execSync } = require('node:child_process');
 const { bundle } = require('./build/export/index.js');
-const envVars = require('./config/envvars.js');
+const envVars = require('./shared/envvars.js');
 const srcPath = path.resolve(__dirname, './src');
-const distPath = path.resolve(__dirname, `./dist/${envVars.get('PEANUT_DIST')}`);
+const distPath = path.resolve(__dirname, `./dist/${envVars.get('PFWP_DIST')}`);
 
 let components;
 
-const compEnvVar = envVars.get('PEANUT_COMPS');
+const compEnvVar = envVars.get('PFWP_COMPS');
 if (compEnvVar) {
   components = compEnvVar.split(',');
 }
 
 if (Array.isArray(components)) {
-  const exportType = envVars.get('PEANUT_E_TYPE');
+  const exportType = envVars.get('PFWP_E_TYPE');
 
   const args = {
     exportType,
     components,
     srcPath,
     distPath,
-    disableExtract: envVars.getBoolean('PEANUT_NOCSS')
+    disableExtract: envVars.getBoolean('PFWP_NOCSS')
   };
 
   switch (exportType) {

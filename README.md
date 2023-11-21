@@ -9,23 +9,27 @@ Alpha release and proper documentation are all coming soon.
 ## Quickstart
 
 ### Update the configuration
+
 Update ./extend/config.json with your Wordpress settings (example shown below)
 
 ```
 {
-  "PEANUT_DIR_ENT_ALLOW_LIST": [],
-  "PEANUT_WP_ROOT": "/var/www/html",
-  "PEANUT_THEME_PATH": "/wp-content/themes/twentytwentythree",
-  "PEANUT_WP_PUBLIC_PATH": "http://localhost/",
+  "PFWP_DIR_ENT_ALLOW_LIST": [],
+  "PFWP_WP_ROOT": "/var/www/html",
+  "PFWP_THEME_PATH": "/wp-content/themes/twentytwentythree",
+  "PFWP_WP_PUBLIC_PATH": "http://localhost/",
+  "PFWP_SSE_HOST": "http://localhost:9090",
   "PFWP_CORE_BLOCK_FILTERS": {
     "on_pre_render": {},
     "on_render": {}
   }
 }
 ```
+
 **Note:** Ensure that the directories you specify have the proper write permissions.
 
 ### Start the App
+
 ```
 nvm install
 make install

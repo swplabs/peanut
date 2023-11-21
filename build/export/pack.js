@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { extname } = require('path');
-const { srcDirEntMap, baseIdPrefix } = require('../../config/src.dir.map.js');
+const { srcDirEntMap, baseIdPrefix } = require('../../shared/src.dir.map.js');
 
 module.exports = ({ exportType, components, srcPath, distPath, disableExtract }) => {
   console.log('[build:export:pack] Creating NPM package component folders for:', exportType);

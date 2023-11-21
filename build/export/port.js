@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { srcDirEntMap } = require('../../config/src.dir.map.js');
+const { srcDirEntMap } = require('../../shared/src.dir.map.js');
 
 // TODO: Pull in Wordpress path
 module.exports = ({ exportType, components, srcPath, wpPath }) => {

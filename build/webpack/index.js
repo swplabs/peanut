@@ -4,20 +4,20 @@ const paths = require('./paths.js');
 const { webpackPreProcess, webpackPostProcess: webpackPostProcessHook } = require('./hooks.js');
 const loaders = require('./loaders.js');
 const plugins = require('./plugins.js');
-const envVars = require('../../config/envvars.js');
-const { srcDirEntMap } = require('../../config/src.dir.map.js');
+const envVars = require('../../shared/envvars.js');
+const { srcDirEntMap } = require('../../shared/src.dir.map.js');
 const environment = envVars.get('ENVIRONMENT') || 'prod';
 const nodeEnv = envVars.get('NODE_ENV') || 'production';
-const distDir = path.join(__dirname, `../../dist/${envVars.get('PEANUT_DIST')}`);
+const distDir = path.join(__dirname, `../../dist/${envVars.get('PFWP_DIST')}`);
 const staticDir = distDir + '/static';
-const appPublicPath = envVars.get('PEANUT_APP_PUBLIC_PATH') || '/';
+const appPublicPath = envVars.get('PFWP_APP_PUBLIC_PATH') || '/';
 const rootDir = path.resolve(__dirname, '../../');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const appSrcPath = envVars.get('PEANUT_APP_SRC_PATH');
-const dirEntAllowList = envVars.get('PEANUT_DIR_ENT_ALLOW_LIST');
-const wordpressRoot = envVars.get('PEANUT_WP_ROOT');
-const wordpressPublicPath = envVars.get('PEANUT_WP_PUBLIC_PATH');
-const peanutThemePath = envVars.get('PEANUT_THEME_PATH');
+const appSrcPath = envVars.get('PFWP_APP_SRC_PATH');
+const dirEntAllowList = envVars.get('PFWP_DIR_ENT_ALLOW_LIST');
+const wordpressRoot = envVars.get('PFWP_WP_ROOT');
+const wordpressPublicPath = envVars.get('PFWP_WP_PUBLIC_PATH');
+const peanutThemePath = envVars.get('PFWP_THEME_PATH');
 
 const { getRoutes, getEntries, getCacheGroups } = paths;
 
@@ -25,13 +25,14 @@ const { handlebars: hbsLoader, style: styleLoader, js: jsLoader, php: phpLoader 
 
 const {
   eslint: eslintPlugin,
-  nameChunkGroups: nameChunkGroupsPlugin,
   webpackDefine: webpackDefinePlugin,
-  webpackCopy: webpackCopyPlugin,
   extractCss: extractCssPlugin,
   blocks: blocksPlugin,
+  components: componentsPlugin,
   copy: copyPlugin,
-  wpDepExtract: wpDepExtractPlugin
+  wpDepExtract: wpDepExtractPlugin,
+  hotModuleReplacement: hotModuleReplacementPlugin,
+  reactRefresh: reactRefreshPlugin
 } = plugins;
 
 const handler =
@@ -82,23 +83,37 @@ const handler =
   };
 
 const getEntryInfo = (srcType, entryId) => {
-  const entryFile = Object.keys(srcDirEntMap).find((key) => entryId.startsWith(`${srcDirEntMap[key].entryKey}_${srcType}`));
+  const entryFile = Object.keys(srcDirEntMap).find((key) =>
+    entryId.startsWith(`${srcDirEntMap[key].entryKey}_${srcType}`)
+  );
 
   return {
-    pathName: (entryFile ? entryId.replace(`${srcDirEntMap[entryFile].entryKey}_`, '') : entryId).replace(`${srcType}_`, ''),
-    entryKey: entryFile ? srcDirEntMap[entryFile].entryKey : 'client',
-    entryFile: entryFile.replace(path.extname(entryFile), '')
+    pathName: entryFile
+      ? entryId.replace(`${srcDirEntMap[entryFile].entryKey}_`, '').replace(`${srcType}_`, '')
+      : 'pfwp-shared-assets',
+    entryFile: entryFile
+      ? entryFile.replace(path.extname(entryFile), '')
+      : entryId.replace(path.extname(entryId), '')
   };
 };
 
-const setFileName = (fileName, srcType) => (pathData) => {
-  if (['plugins', 'themes'].includes(srcType)) {
-    const { pathName, entryFile } = getEntryInfo(srcType, pathData.chunk.id);
-    fileName = `wp-content/${srcType}/${pathName}/assets/${entryFile}.js`;
-  }
+const setFileName =
+  (fileName, srcType, buildType) =>
+  (pathData = {}) => {
+    const entryId = pathData.chunk?.name || pathData.chunk?.id;
 
-  return fileName;
-};
+    let name = `${fileName}`;
+
+    if (entryId === `${srcType}_${buildType}_webpack_runtime`) {
+      name = `wp-content/plugins/peanut/assets/[name].[chunkhash:20].js`;
+    } else if (['plugins', 'themes'].includes(srcType)) {
+      const { pathName, entryFile } = getEntryInfo(srcType, entryId);
+
+      name = `wp-content/${srcType}/${pathName}/assets/${entryFile}.js`;
+    }
+
+    return name;
+  };
 
 const getOutput = ({ buildType, srcType, exportType }) => {
   let outputs = {};
@@ -114,11 +129,14 @@ const getOutput = ({ buildType, srcType, exportType }) => {
   switch (buildType) {
     case 'elements': {
       outputs = {
-        filename: setFileName(filename, srcType),
+        filename: setFileName(filename, srcType, buildType),
         path: outputPath,
         publicPath: srcType === 'app' ? appPublicPath : wordpressPublicPath,
-        chunkFilename: setFileName(filename, srcType),
-        assetModuleFilename: `${filePath}/[hash][ext][query]`
+        chunkFilename: setFileName(filename, srcType, buildType),
+        assetModuleFilename: `${filePath}/[hash][ext][query]`,
+        hotUpdateChunkFilename: `${filePath}/[id].[fullhash].hot-update.js`,
+        hotUpdateMainFilename: `${filePath}/[runtime].[fullhash].hot-update.json`,
+        uniqueName: `${srcType}_${buildType}`
       };
       break;
     }
@@ -169,23 +187,19 @@ const getPlugins = ({ buildType, srcType, routes, exportType, disableExtract = f
   const outputPath = srcType === 'app' ? staticDir : wordpressRoot;
   const filePath = srcType === 'app' ? `assets/${srcType}` : `.assets/${srcType}`;
 
-  if (buildType === 'elements') {
-    // TODO: use webpackPostProcess to build this as one file
-    plugins.push(
-      nameChunkGroupsPlugin({
-        chunkGroupsFile: `${outputPath}/${filePath}/chunkgroups.json`,
-        srcType
-      })
-    );
-
-    if (!exportType && srcType === 'app') plugins.push(webpackCopyPlugin({ srcType }));
-  }
-
   if (!disableExtract && exportType !== 'web' && buildType !== 'server')
     plugins.push(extractCssPlugin({ MiniCssExtractPlugin, exportType, filePath }));
 
   if (srcType === 'blocks') {
-    plugins.push(blocksPlugin({ directory: `${wordpressRoot}${peanutThemePath}`, routes }));
+    plugins.push(
+      blocksPlugin({ directory: `${wordpressRoot}${peanutThemePath}`, routes, outputPath })
+    );
+  }
+
+  if (srcType === 'components') {
+    plugins.push(
+      componentsPlugin({ directory: `${wordpressRoot}${peanutThemePath}`, routes, outputPath })
+    );
   }
 
   if (['blocks', 'plugins', 'themes'].includes(srcType)) {
@@ -201,6 +215,10 @@ const getPlugins = ({ buildType, srcType, routes, exportType, disableExtract = f
         appSrcPath
       })
     );
+  }
+
+  if (nodeEnv === 'development' && ['blocks', 'plugins'].includes(srcType)) {
+    plugins.push(hotModuleReplacementPlugin(), reactRefreshPlugin());
   }
 
   return plugins;
@@ -219,7 +237,9 @@ const getBaseConfig = ({ isWeb, buildType, srcType, exportType, disableExtract }
 
     output: getOutput({ buildType, srcType, exportType }),
 
-    target: isWeb ? 'web' : 'node18.18',
+    target: isWeb ? 'web' : 'node20.9',
+
+    // cache: false,
 
     node: !isWeb
       ? {
@@ -242,6 +262,13 @@ const getBaseConfig = ({ isWeb, buildType, srcType, exportType, disableExtract }
 
     optimization: {
       usedExports: true,
+      // TODO: create shared function isHotModuleEnabled
+      runtimeChunk:
+        nodeEnv === 'development' && ['blocks', 'plugins'].includes(srcType)
+          ? {
+              name: `${srcType}_${buildType}_webpack_runtime`
+            }
+          : false,
       splitChunks: {
         chunks: 'all',
         cacheGroups: getCacheGroups({ isWeb, buildType })
@@ -260,8 +287,8 @@ const getConfig = ({
   exportType: eType,
   disableExtract: dExtract
 }) => {
-  const exportType = eType || envVars.get('PEANUT_E_TYPE');
-  const disableExtract = dExtract || envVars.getBoolean('PEANUT_NOCSS') === true;
+  const exportType = eType || envVars.get('PFWP_E_TYPE');
+  const disableExtract = dExtract || envVars.getBoolean('PFWP_NOCSS') === true;
 
   const routeArgs = {
     buildType,

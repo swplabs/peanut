@@ -1,12 +1,13 @@
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const WPDepExtractionPlugin = require('@wordpress/dependency-extraction-webpack-plugin');
-const { DefinePlugin } = require('webpack');
+const { DefinePlugin, HotModuleReplacementPlugin } = require('webpack');
 const { BlocksPlugin } = require('./plugins/block.js');
+const { ComponentsPlugin } = require('./plugins/component.js');
 const { NamedChunkGroupsPlugin } = require('./plugins/chunk.groups.js');
 const { CopyPlugin } = require('./plugins/copy.js');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const pkgData = require('../../package.json');
-const envVars = require('../../config/envvars.js');
+const envVars = require('../../shared/envvars.js');
 const environment = envVars.get('ENVIRONMENT') || 'prod';
 const esLintConfig = require('./config.eslint.js');
 
@@ -17,10 +18,19 @@ const nameChunkGroups = ({ chunkGroupsFile, srcType }) => {
   });
 };
 
-const blocks = ({ directory, routes }) => {
+const blocks = ({ directory, routes, outputPath }) => {
   return new BlocksPlugin({
     directory,
-    routes
+    routes,
+    outputPath
+  });
+};
+
+const components = ({ directory, routes, outputPath }) => {
+  return new ComponentsPlugin({
+    directory,
+    routes,
+    outputPath
   });
 };
 
@@ -68,7 +78,18 @@ const webpackDefine = (routes) => {
     __APP_VERSION__: JSON.stringify(pkgData.version),
     __ROUTES__: JSON.stringify(routes),
     'process.env.NODE_ENV': JSON.stringify(envVars.get('NODE_ENV') || 'production'),
-    __DEBUG__: JSON.stringify(envVars.getBoolean('PEANUT_DEBUG') || false)
+    __DEBUG__: JSON.stringify(envVars.getBoolean('PFWP_DEBUG') || false)
+  });
+};
+
+const hotModuleReplacement = () => {
+  return new HotModuleReplacementPlugin();
+};
+
+const reactRefresh = () => {
+  return new ReactRefreshWebpackPlugin({
+    // library: `react_${Math.random().toString().substr(2, 8)}`,
+    // forceEnable: true
   });
 };
 
@@ -81,19 +102,15 @@ const extractCss = ({ MiniCssExtractPlugin, exportType, filePath }) => {
   });
 };
 
-const webpackCopy = ({ srcType }) => {
-  return new CopyWebpackPlugin({
-    patterns: [{ from: `./src/${srcType}/static`, to: './' }]
-  });
-};
-
 module.exports = {
   eslint,
   wpDepExtract,
   nameChunkGroups,
   webpackDefine,
-  webpackCopy,
   extractCss,
+  hotModuleReplacement,
+  reactRefresh,
   blocks,
+  components,
   copy
 };

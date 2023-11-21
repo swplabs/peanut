@@ -10,19 +10,42 @@ const {
   webpackPostProcess
 } = require('./build/webpack/index.js');
 
+const { serverStart } = require('./build/server/index.js');
+
 let webpackCompiler;
 let restartTO;
 let chokidarReady = false;
 let webpackWatch;
 let restartDev = true;
+let sseHttpServer;
+let sseHttpsServer;
 
 let buildStatus = {};
 let buildHashes = {};
 
 let serverProcess;
 
-// start app node process
-const startNodeProcess = () => {
+const closeServer = (server) => {
+  /*
+  return new Promise((resolve) => {
+    if (server) {
+      server.close(() => {
+        resolve();
+      });
+    } else {
+      resolve();
+    }
+  });
+  */
+  console.log('server', server?.close);
+
+  server?.close(() => {
+    console.log('server closed');
+  });
+};
+
+// start app server node process
+const startAppServer = () => {
   console.log('[develop] Starting app server...');
 
   serverProcess = spawn('node', ['./serve.js']);
@@ -56,15 +79,15 @@ const startNodeProcess = () => {
 const restartBuild = () => {
   buildHashes = {};
 
-  webpackWatch?.close(() => {
+  webpackWatch?.close(async () => {
     serverProcess?.kill();
 
     console.log('[chokidar] Development configuration updated. Restarting build process..');
 
-    restartTO = setTimeout(() => {
+    restartTO = setTimeout(async () => {
       resetBuildStatus();
 
-      startWebPack();
+      await startWebPack();
     }, 500);
   });
 };
@@ -89,7 +112,7 @@ const wpHandlerSuccess = ({ skipRestart }) => {
   }
 
   if (!buildStatus['process']) {
-    startNodeProcess();
+    startAppServer();
   }
 
   if (checkBuildStatus()) {
@@ -97,8 +120,6 @@ const wpHandlerSuccess = ({ skipRestart }) => {
     restartDev = false;
   }
 };
-
-// Start SSE webpack watch
 
 // Start webpack watch
 const startWebPack = async () => {
@@ -142,6 +163,16 @@ const startWebPack = async () => {
       }
     })(err, stats);
   });
+
+  await sseHttpServer?.destroy();
+  await sseHttpsServer?.destroy();
+
+  console.log('[develop] Starting development SSE server...');
+
+  const { httpServer, httpsServer } = serverStart(webpackCompiler);
+
+  sseHttpServer = httpServer;
+  sseHttpsServer = httpsServer;
 };
 
 // Monitor development configuration changes
@@ -184,15 +215,18 @@ const devMonitor = chokidar
       restartBuild();
     }
   })
-  .on('ready', () => {
+  .on('ready', async () => {
     console.log('[chokidar] Monitoring development configuration...');
-    startWebPack();
+    await startWebPack();
   });
 
 // Handle termination of process
-process.on('SIGINT', () => {
+process.on('SIGINT', async () => {
   console.log('');
   console.log('[develop] Cleaning up before interrupt signal...');
+
+  await sseHttpServer?.destroy();
+  await sseHttpsServer?.destroy();
 
   if (restartTO) clearTimeout(restartTO);
 
