@@ -3,10 +3,17 @@ const fs = require('fs');
 const editorKeyRegex = /^editor_blocks_(?<srcElement>.+)$/i;
 
 class BlocksPlugin {
-  constructor({ directory, routes }) {
+  constructor({ directory, routes, outputPath }) {
     this.routes = routes;
     this.directory = directory;
+    this.outputPath = outputPath;
     this.blocks = {};
+    this.filesToEmit = {};
+
+    const destDir = `${this.directory}/blocks`;
+    if (fs.existsSync(destDir)) {
+      fs.rmSync(destDir, { recursive: true });
+    }
   }
 
   buildJson(key) {
@@ -21,13 +28,20 @@ class BlocksPlugin {
         ...assets
       };
 
-      fs.writeFileSync(`${dir}/block.json`, JSON.stringify(data));
+      // fs.writeFileSync(`${dir}/block.json`, JSON.stringify(data));
+
+      this.filesToEmit[key] = {
+        filename: `${dir.replace(this.outputPath, '')}/block.json`,
+        source: JSON.stringify(data)
+      };
     } catch (e) {
       console.log('[build:webpack:plugins:blocksplugin] error', e?.message);
     }
   }
 
   apply(compiler) {
+    const { RawSource } = compiler.webpack.sources;
+
     compiler.hooks.entryOption.tap('BlocksPlugin', (_context, entry) => {
       const { routes, directory } = this;
 
@@ -80,14 +94,6 @@ class BlocksPlugin {
       });
     });
 
-    compiler.hooks.thisCompilation.tap('BlocksPlugin', (compilation, compilationParams) => {
-      Object.keys(this.blocks).forEach((key) => {
-        const { jsonFile } = this.blocks[key];
-
-        compilation.fileDependencies.add(jsonFile);
-      });
-    });
-
     compiler.hooks.watchRun.tap('BlocksPlugin', (compiler) => {
       if (compiler.modifiedFiles) {
         Object.keys(this.blocks).forEach((key) => {
@@ -100,7 +106,29 @@ class BlocksPlugin {
       }
     });
 
-    compiler.hooks.afterEmit.tap('BlocksPlugin', () => {});
+    compiler.hooks.thisCompilation.tap('BlocksPlugin', (compilation) => {
+      Object.keys(this.blocks).forEach((key) => {
+        const { jsonFile } = this.blocks[key];
+
+        compilation.fileDependencies.add(jsonFile);
+      });
+    });
+
+    compiler.hooks.compilation.tap('BlocksPlugin', (compilation) => {
+      Object.keys(this.filesToEmit).forEach((key) => {
+        const { filename, source } = this.filesToEmit[key];
+
+        compilation.emitAsset(filename, new RawSource(source), { component: key });
+
+        // TODO: update the compilation hash
+      });
+
+      this.filesToEmit = {};
+    });
+
+    compiler.hooks.done.tap('BlocksPlugin', (stats) => {
+      // console.log(stats.toJson().assets.filter(({name}) => name.includes('json')));
+    });
   }
 }
 

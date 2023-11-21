@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const { srcDirEntMap } = require('../../../config/src.dir.map.js');
+const { srcDirEntMap } = require('../../../shared/src.dir.map.js');
 
 class CopyPlugin {
   constructor({ directory, srcType, routes, filter = /\.(js|jsx|scss)$/ }) {
@@ -107,10 +107,9 @@ class CopyPlugin {
           }
         });
       }
-    });    
+    });
 
     compiler.hooks.thisCompilation.tap('CopyPlugin', (compilation) => {
-
       // TODO: handle elements folder deletion
       Object.keys(this.elements).forEach((key) => {
         const { srcDir } = this.elements[key];

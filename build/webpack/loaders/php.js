@@ -1,4 +1,5 @@
 const { validate } = require('schema-utils');
+const crypto = require('crypto');
 
 const schema = {
   type: 'object',
@@ -55,18 +56,23 @@ module.exports = function (content) {
     childComponents.add(match.groups.component);
     content = content.replace(
       match[0],
-      `PFWP_Component_Engine::get_template_part( 'components/${match.groups.component}/index', null, `
+      `PFWP_Components::get_template_part( 'components/${match.groups.component}/index', null, `
     );
   }
 
   // TODO: Is there a way to store this is the compile/compilation object so that we can process later in the build?
+  // TODO: Perhaps by updating compilation assets
+
+  let contentHash = '';
 
   if (srcType && srcElement && srcFileName) {
-    this.emitFile(
-      `${peanutThemePath}/${srcType}/${srcElement}/${srcFileName}.php`,
-      securityCheck + '\n' + content
-    );
+    const source = securityCheck + '\n' + content;
+
+    this.emitFile(`${peanutThemePath}/${srcType}/${srcElement}/${srcFileName}.php`, source);
+
+    const hash = crypto.createHmac('md5', 'peanut');
+    contentHash = hash.update(source).digest('hex');
   }
 
-  return '';
+  return `console.log('hash', '${contentHash}');`;
 };

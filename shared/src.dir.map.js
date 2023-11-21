@@ -42,6 +42,7 @@ const srcDirEntMap = {
     },
     exportCfg: {}
   },
+  // TODO: for plugin/block client side styles will we need to adjust the library type?
   'styles.scss': {
     flag: 'hasStyles',
     entryKey: 'styles',
@@ -168,6 +169,7 @@ const srcDirEntMap = {
       }
     }
   },
+  // TODO: for plugin/block client side js will we need to adjust the library type if we do hot refresh?
   'client.js': {
     flag: 'hasSrcClient',
     buildCfg: {

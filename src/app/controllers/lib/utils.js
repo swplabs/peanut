@@ -1,8 +1,8 @@
 const { debug: log } = require('../../shared/utils.js');
 const { extname } = require('path');
-const envVars = require('../../../../config/envvars.js');
-const appPublicPath = envVars.get('PEANUT_APP_PUBLIC_PATH') || '/';
-const wordpressPublicPath = envVars.get('PEANUT_WP_PUBLIC_PATH');
+const envVars = require('../../../../shared/envvars.js');
+const appPublicPath = envVars.get('PFWP_APP_PUBLIC_PATH') || '/';
+const wordpressPublicPath = envVars.get('PFWP_WP_PUBLIC_PATH');
 
 const serverImports = {};
 let buildAssets = {};

@@ -1,8 +1,8 @@
 /* global __ROUTES__ */
 
-const envVars = require('../../config/envvars.js');
-const router = require('./lib/router.js');
-const { createServer } = require('./lib/servers.js');
+const envVars = require('../../shared/envvars.js');
+const router = require('../../serve/lib/router.js');
+const { createServer } = require('../../serve/lib/servers.js');
 const environment = envVars.get('ENVIRONMENT');
 const isLocal = environment === 'local';
 const minorSeconds = isLocal ? 0 : 60;
@@ -22,9 +22,9 @@ const {
   default: defaultRequests,
   health: healthCheck,
   serveStatic
-} = require('./middleware/index.js');
+} = require('../../serve/middleware/index.js');
 
-const staticFiles = serveStatic(`./dist/${envVars.get('PEANUT_DIST')}/static`, {
+const staticFiles = serveStatic(`./dist/${envVars.get('PFWP_DIST')}/static`, {
   minorSeconds,
   majorSeconds
 });

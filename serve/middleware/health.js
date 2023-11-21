@@ -1,5 +1,4 @@
-/* global __APP_VERSION__ */
-
+// TODO: inject app version by passing options in and returning the 'async' function
 module.exports = async (req, res, next) => {
   if (req.url === '/_healthcheck') {
     res.writeHead(200, {
@@ -8,7 +7,7 @@ module.exports = async (req, res, next) => {
 
     res.end(
       JSON.stringify({
-        version: __APP_VERSION__
+        version: ''
       })
     );
   } else {

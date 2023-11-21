@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: Peanut For Wordpress
+Plugin Name: Peanut For WordPress
 Plugin URI: https://github.com/swplabs
-Description: Peanut for Wordpress!
+Description: Peanut for WordPress!
 Version: 0.1.0-alpha.1
 Author: SWP Labs
 Author URI: https://www.sassywackypeanut.com/labs/
@@ -29,19 +29,21 @@ if ( ! defined( 'PFWP_TEMPLATE_DIR' ) ) {
 }
 
 global $pfwp_global_config;
-$pfwp_global_config = json_decode( file_get_contents( PFWP_TEMPLATE_DIR . '/pfwp.json' ), false );
+$pfwp_global_config = json_decode( @file_get_contents( PFWP_TEMPLATE_DIR . '/pfwp.json' ), false );
 
+// TODO: define rest route constants (namespace, version, etc)
 
 // Assets Engine
-require PFWP_PLUGIN_DIR . '/classes/class-pfwp-assets-engine.php';
+require PFWP_PLUGIN_DIR . '/classes/class-pfwp-assets.php';
 
 // Component Engine
-require PFWP_PLUGIN_DIR . '/classes/class-pfwp-component-engine.php';
+require PFWP_PLUGIN_DIR . '/classes/class-pfwp-components.php';
 
 // Plugin Engine
 // require PFWP_PLUGIN_DIR . '/classes/class-pfwp-plugin-engine.php';
 
 // Block Engine
-require PFWP_PLUGIN_DIR . '/classes/class-pfwp-block-engine.php';
+require PFWP_PLUGIN_DIR . '/classes/class-pfwp-blocks.php';
 
-?>
+// REST Routes
+require PFWP_PLUGIN_DIR . '/classes/class-pfwp-rest.php';

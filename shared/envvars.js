@@ -6,19 +6,21 @@ nconf.env([
   'ENVIRONMENT',
   'PORT',
   'NODE_ENV',
-  'PEANUT_DEBUG',
-  'PEANUT_COMPS',
-  'PEANUT_BUILD',
-  'PEANUT_E_TYPE',
-  'PEANUT_DIST',
-  'PEANUT_APP_PUBLIC_PATH',
-  'PEANUT_WP_PUBLIC_PATH',
-  'PEANUT_NOCSS',
-  'PEANUT_APP_SRC_PATH',
-  'PEANUT_WP_ROOT',
-  'PEANUT_THEME_PATH',
-  'PEANUT_DIR_ENT_SRC_PATH',
-  'PFWP_CORE_BLOCK_FILTERS'
+  'PFWP_DEBUG',
+  'PFWP_COMPS',
+  'PFWP_BUILD',
+  'PFWP_E_TYPE',
+  'PFWP_DIST',
+  'PFWP_APP_PUBLIC_PATH',
+  'PFWP_WP_PUBLIC_PATH',
+  'PFWP_NOCSS',
+  'PFWP_APP_SRC_PATH',
+  'PFWP_WP_ROOT',
+  'PFWP_THEME_PATH',
+  'PFWP_DIR_ENT_SRC_PATH',
+  'PFWP_CORE_BLOCK_FILTERS',
+  'PFWP_SSE_ENABLE_HTTPS',
+  'PFWP_SSE_HOST'
 ]);
 // Get environment based overrides
 const environment = nconf.get('ENVIRONMENT');
@@ -35,14 +37,17 @@ try {
   console.log('No user config json file available');
 }
 
+// TODO: add wp.hooks import so that we can override envvars programatically
+
 const defaultConfig = {
-  PEANUT_BUILD: 'stack',
-  PEANUT_DIST: 'serve',
-  PEANUT_APP_PUBLIC_PATH: '/',
-  PEANUT_NOCSS: 'false',
-  PEANUT_APP_SRC_PATH: path.resolve(__dirname, '../src/'),
-  PEANUT_DIR_ENT_SRC_PATH: '/src',
-  PEANUT_COMP_ALLOW_LIST: [],
+  PFWP_BUILD: 'stack',
+  PFWP_DIST: 'serve',
+  PFWP_APP_PUBLIC_PATH: '/',
+  PFWP_NOCSS: 'false',
+  PFWP_SSE_ENABLE_HTTPS: false,
+  PFWP_APP_SRC_PATH: path.resolve(__dirname, '../src/'),
+  PFWP_DIR_ENT_SRC_PATH: '/src',
+  PFWP_COMP_ALLOW_LIST: [],
   PFWP_CORE_BLOCK_FILTERS: {},
   ...config
 };

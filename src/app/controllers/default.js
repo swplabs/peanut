@@ -12,52 +12,20 @@ let componentCss = [];
 const getComponentData = async ({
   /*
   compRoute,
-  compId,
-  overrideData = {},
-  locals = {},
+  compId
   */
   initialData
 }) => {
-  // const { hasBS, hasSsrReact, hasModel, path, url } = compRoute;
+  // const { hasSsrReact, path, url } = compRoute;
 
   let data = initialData || {};
 
-  /* 
-    if (hasBS) {
-    const bs = await getServerFile(`bootstrap_${compId}.js`);
-
-    const bstrapData = bs?.default?._components?.[path] || {};
-
-    data = { ...data, ...bstrapData, ...overrideData };
-  }
-
+  /*
   // Add SSR data
   if (hasSsrReact) {
     const ssr = await getServerFile(`ssr_react_${compId}.js`);
     const ssrRender = ssr?.default?.render;
     data['_ssr_render'] = ssrRender;
-  }
-
-  if (hasModel) {
-    const model = await getServerFile(`model_${compId}.js`);
-
-    if (typeof model.render === 'function') {
-      data = model.render(url, data, locals);
-    }
-  }
-
-  if (typeof data.ssrHtml !== 'string' && typeof data['_ssr_render'] === 'function') {
-    const { _ssr_render, componentRef, ...state } = data;
-
-    const { html } = _ssr_render({
-      state
-    });
-
-    data = {
-      ssrHtml: html || '',
-      componentRef,
-      state
-    };
   }
   */
 

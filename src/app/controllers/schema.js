@@ -5,7 +5,7 @@ const {
   resetAssets,
   addParamsToData
 } = require('./lib/utils.js');
-const { baseIdPrefix } = require('../../../config/src.dir.map.js');
+const { baseIdPrefix } = require('../../../shared/src.dir.map.js');
 
 const controller = ({ route, routes }) => {
   return async ({ req }) => {
@@ -32,14 +32,6 @@ const controller = ({ route, routes }) => {
       compRoute = routes.find(({ id: tempRouteId }) => {
         return tempRouteId === compId;
       });
-
-      if (compRoute?.hasBS) {
-        const bootstrap =
-          (await getServerFile(`bootstrap_${compId}.js`))?.default?._components?.[component] || {};
-        bsData = {
-          ...bootstrap
-        };
-      }
 
       if (compRoute?.hasSchema) {
         const schema = await getServerFile(`schema_${compId}.js`);

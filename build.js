@@ -1,5 +1,5 @@
 const webpack = require('webpack');
-const envVars = require('./config/envvars.js');
+const envVars = require('./shared/envvars.js');
 const {
   getConfig,
   handler: webpackHandler,
@@ -7,12 +7,12 @@ const {
   webpackPostProcess
 } = require('./build/webpack/index.js');
 
-const buildType = envVars.get('PEANUT_BUILD') || 'stack';
-const exportType = envVars.get('PEANUT_E_TYPE');
+const buildType = envVars.get('PFWP_BUILD') || 'stack';
+const exportType = envVars.get('PFWP_E_TYPE');
 
 let srcTypeDirEnts;
 
-const dirEntEnvVar = envVars.get('PEANUT_DIR_ENTS');
+const dirEntEnvVar = envVars.get('PFWP_DIR_ENTS');
 if (dirEntEnvVar) {
   srcTypeDirEnts = dirEntEnvVar.split(',');
 }
