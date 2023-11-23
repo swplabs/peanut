@@ -1,5 +1,5 @@
-const webpackHM = require('webpack-hot-middleware');
-
+const whm = require('webpack-hot-middleware');
+const wdm = require('webpack-dev-middleware');
 const envVars = require('../../shared/envvars.js');
 const router = require('../../serve/lib/router.js');
 const { createServer } = require('../../serve/lib/servers.js');
@@ -31,10 +31,20 @@ const useMiddleware = (req, res) => {
   healthCheck(req, res, () => defaultRequests(req, res));
 };
 
-const serverStart = (compiler) => {
+const serverStart = (webpackCompiler) => {
   routes.forEach((route) => router.get(route.url, routeController(route)));
 
-  return createServer({
+  const webpackDevMiddleware = wdm(webpackCompiler, {
+    writeToDisk: true,
+    stats: false
+  });
+
+  const webpackHotMiddleware = whm(webpackCompiler, {
+    path: '/__webpack_hmr',
+    log: false
+  });
+
+  const servers = createServer({
     port: envVars.get('PFWP_SSE_PORT') || 9090,
     env: environment,
     httpsPort: envVars.getBoolean('PFWP_SSE_ENABLE_HTTPS')
@@ -47,14 +57,16 @@ const serverStart = (compiler) => {
         majorSeconds
       };
 
-      const whm = webpackHM(compiler, {
-        path: '/__webpack_hmr',
-        log: false
-      });
-
-      whm(req, res, () => useMiddleware(req, res));
+      webpackDevMiddleware(req, res, () =>
+        webpackHotMiddleware(req, res, () => useMiddleware(req, res))
+      );
     }
   });
+
+  return {
+    ...servers,
+    webpackDevMiddleware
+  };
 };
 
 module.exports = {

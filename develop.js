@@ -15,7 +15,8 @@ const { serverStart } = require('./build/server/index.js');
 let webpackCompiler;
 let restartTO;
 let chokidarReady = false;
-let webpackWatch;
+// let webpackWatch;
+let webpackDMInstance;
 let restartDev = true;
 let sseHttpServer;
 let sseHttpsServer;
@@ -24,25 +25,6 @@ let buildStatus = {};
 let buildHashes = {};
 
 let serverProcess;
-
-const closeServer = (server) => {
-  /*
-  return new Promise((resolve) => {
-    if (server) {
-      server.close(() => {
-        resolve();
-      });
-    } else {
-      resolve();
-    }
-  });
-  */
-  console.log('server', server?.close);
-
-  server?.close(() => {
-    console.log('server closed');
-  });
-};
 
 // start app server node process
 const startAppServer = () => {
@@ -79,7 +61,7 @@ const startAppServer = () => {
 const restartBuild = () => {
   buildHashes = {};
 
-  webpackWatch?.close(async () => {
+  webpackDMInstance?.close(async () => {
     serverProcess?.kill();
 
     console.log('[chokidar] Development configuration updated. Restarting build process..');
@@ -121,6 +103,33 @@ const wpHandlerSuccess = ({ skipRestart }) => {
   }
 };
 
+const webpackCallback = (err, stats) => {
+  webpackHandler({
+    buildType: 'stack',
+    srcType: 'all',
+    success: () => {
+      webpackPostProcess({ stats });
+      wpHandlerSuccess({});
+    },
+    error: () => {
+      buildStatus['webpack'] = false;
+      chokidarReady = true;
+      restartDev = false;
+    },
+    hashCheck: ({ hash, buildType, srcType }) => {
+      const hashKey = `${buildType}_${srcType}`;
+
+      if (buildHashes[hashKey] === hash) {
+        wpHandlerSuccess({ skipRestart: true });
+        return true;
+      }
+
+      buildHashes[hashKey] = hash + '';
+      return false;
+    }
+  })(err, stats);
+};
+
 // Start webpack watch
 const startWebPack = async () => {
   console.log('[develop] Starting elements and server compilation and watch...');
@@ -137,39 +146,20 @@ const startWebPack = async () => {
     getConfig({ buildType: 'server', srcType: 'whiteboard' })
   ]);
 
-  webpackWatch = webpackCompiler.watch({}, (err, stats) => {
-    webpackHandler({
-      buildType: 'stack',
-      srcType: 'all',
-      success: () => {
-        webpackPostProcess({ stats });
-        wpHandlerSuccess({});
-      },
-      error: () => {
-        buildStatus['webpack'] = false;
-        chokidarReady = true;
-        restartDev = false;
-      },
-      hashCheck: ({ hash, buildType, srcType }) => {
-        const hashKey = `${buildType}_${srcType}`;
-
-        if (buildHashes[hashKey] === hash) {
-          wpHandlerSuccess({ skipRestart: true });
-          return true;
-        }
-
-        buildHashes[hashKey] = hash + '';
-        return false;
-      }
-    })(err, stats);
-  });
+  // webpackWatch = webpackCompiler.watch({});
 
   await sseHttpServer?.destroy();
   await sseHttpsServer?.destroy();
 
   console.log('[develop] Starting development SSE server...');
 
-  const { httpServer, httpsServer } = serverStart(webpackCompiler);
+  const { httpServer, httpsServer, webpackDevMiddleware } = serverStart(webpackCompiler);
+
+  webpackDevMiddleware.waitUntilValid((stats) => {
+    webpackCallback(null, stats);
+  });
+
+  webpackDMInstance = webpackDevMiddleware;
 
   sseHttpServer = httpServer;
   sseHttpsServer = httpsServer;
@@ -178,12 +168,12 @@ const startWebPack = async () => {
 // Monitor development configuration changes
 // TODO: Create regex using component cfg file object?
 const compsBlocksFileRegEx = new RegExp(
-  '^src/(components|blocks)/[a-zA-Z0-9-_]+/src/((variations|metadata).json|(ssr.)?(view|editor).(jsx|js)|template.hbs|(index|render).php|styles.sc?ss)',
+  '^src/(components|blocks)/[a-zA-Z0-9-_]+/src/((variations|metadata).json|(ssr.)?(view|editor).(jsx|js)|template.hbs|(index|render).php|styles.s?css)',
   'i'
 );
 
 const themesPluginsFileRegEx = new RegExp(
-  '^src/(themes|plugins)/[a-zA-Z0-9-_]+/src/((view|editor).(jsx|js)|styles.sc?ss)',
+  '^src/(themes|plugins)/[a-zA-Z0-9-_]+/src/((view|editor).(jsx|js)|styles.s?css)',
   'i'
 );
 
@@ -232,7 +222,7 @@ process.on('SIGINT', async () => {
 
   if (serverProcess?.kill()) console.log('[develop] App server process terminated');
 
-  webpackWatch?.close(function () {
+  webpackDMInstance?.close(function () {
     console.log('[webpack] Stopped.');
     devMonitor?.close().then(() => {
       console.log('[chokidar] Closed.');
