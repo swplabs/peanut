@@ -22,7 +22,7 @@ module.exports = ({
     ]
   ];
 
-  if (!['app', 'components'].includes(srcType) && buildType !== 'server') {
+  if (!['whiteboard', 'components'].includes(srcType) && buildType !== 'server') {
     presets.push('@wordpress/babel-preset-default');
   }
 

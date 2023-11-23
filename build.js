@@ -24,13 +24,13 @@ const addConfig = (bType, sType) => {
 };
 
 // if (['stack', 'ssr'].includes(buildType)) addConfig('ssr');
-// TODO: do we need add back 'client' buildType for app instead of elements
-if (['stack', 'elements'].includes(buildType)) addConfig('elements', 'app');
+// TODO: do we need add back 'client' buildType for whiteboard instead of elements
+if (['stack', 'elements'].includes(buildType)) addConfig('elements', 'whiteboard');
 if (['stack', 'elements'].includes(buildType)) addConfig('elements', 'components');
 if (['stack', 'elements'].includes(buildType)) addConfig('elements', 'blocks');
 if (['stack', 'elements'].includes(buildType)) addConfig('elements', 'plugins');
 if (['stack', 'elements'].includes(buildType)) addConfig('elements', 'themes');
-if (['stack', 'server'].includes(buildType) && !exportType) addConfig('server', 'app');
+if (['stack', 'server'].includes(buildType) && !exportType) addConfig('server', 'whiteboard');
 
 webpackPreProcess({ srcDir: path.resolve(__dirname, './src/') });
 

@@ -13,7 +13,7 @@ module.exports = function (plop) {
 
       const { name } = answers;
 
-      let clientSrc = 'src/client.js.hbs';
+      let clientSrc = 'src/view.js.hbs';
 
       actions = actions.concat([
         {
@@ -31,7 +31,7 @@ module.exports = function (plop) {
       // Add Client JS
       actions.push({
         type: 'add',
-        path: '{{dashCase name}}/src/client.js',
+        path: '{{dashCase name}}/src/view.js',
         templateFile: `./component/${clientSrc}`
       });
 

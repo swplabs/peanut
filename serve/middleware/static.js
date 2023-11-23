@@ -1,4 +1,4 @@
-const { debug: log } = require('../../src/app/shared/utils.js');
+const { debug: log } = require('../../src/whiteboard/shared/utils.js');
 const parseUrl = require('../lib/parse-url.js');
 const { getGzipData } = require('../lib/gzip.js');
 const { resolve, extname } = require('path');

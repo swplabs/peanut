@@ -129,12 +129,12 @@ const startWebPack = async () => {
 
   webpackCompiler = webpack([
     // getConfig({ buildType: 'ssr' }),
-    getConfig({ buildType: 'elements', srcType: 'app' }),
+    getConfig({ buildType: 'elements', srcType: 'whiteboard' }),
     getConfig({ buildType: 'elements', srcType: 'components' }),
     getConfig({ buildType: 'elements', srcType: 'blocks' }),
     getConfig({ buildType: 'elements', srcType: 'plugins' }),
     getConfig({ buildType: 'elements', srcType: 'themes' }),
-    getConfig({ buildType: 'server', srcType: 'app' })
+    getConfig({ buildType: 'server', srcType: 'whiteboard' })
   ]);
 
   webpackWatch = webpackCompiler.watch({}, (err, stats) => {
@@ -178,12 +178,12 @@ const startWebPack = async () => {
 // Monitor development configuration changes
 // TODO: Create regex using component cfg file object?
 const compsBlocksFileRegEx = new RegExp(
-  '^src/(components|blocks)/[a-zA-Z0-9-_]+/src/((variations|metadata).json|(ssr.)?(client|editor-script).(jsx|js)|template.hbs|(index|render).php|styles.scss)',
+  '^src/(components|blocks)/[a-zA-Z0-9-_]+/src/((variations|metadata).json|(ssr.)?(view|editor).(jsx|js)|template.hbs|(index|render).php|styles.sc?ss)',
   'i'
 );
 
 const themesPluginsFileRegEx = new RegExp(
-  '^src/(themes|plugins)/[a-zA-Z0-9-_]+/src/((client|editor-script).(jsx|js)|styles.scss)',
+  '^src/(themes|plugins)/[a-zA-Z0-9-_]+/src/((view|editor).(jsx|js)|styles.sc?ss)',
   'i'
 );
 

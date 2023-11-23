@@ -35,7 +35,7 @@ module.exports = ({ exportType, components, srcPath, wpPath }) => {
       console.log('[build:export:port] Porting:', component, '/', fileName);
 
       // TODO: Check if file arlready exists and if so prompt to overwrite
-      // TODO: Replace require statements in model.js and client.js for component NPM package
+      // TODO: Replace require statements in model.js and view.js for component NPM package
 
       try {
         fs.copyFileSync(file, `${portPath}/${fileName}`);

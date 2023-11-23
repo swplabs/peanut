@@ -1,6 +1,6 @@
 const { debug: log } = require('../../../shared/utils.js');
 
-require('./styles.scss');
+require('./style.scss');
 
 const callComponentClientJs = (clientJs, componentId) => {
   if (typeof clientJs === 'function' && componentId) {

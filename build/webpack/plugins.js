@@ -3,20 +3,12 @@ const WPDepExtractionPlugin = require('@wordpress/dependency-extraction-webpack-
 const { DefinePlugin, HotModuleReplacementPlugin } = require('webpack');
 const { BlocksPlugin } = require('./plugins/block.js');
 const { ComponentsPlugin } = require('./plugins/component.js');
-const { NamedChunkGroupsPlugin } = require('./plugins/chunk.groups.js');
 const { CopyPlugin } = require('./plugins/copy.js');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const pkgData = require('../../package.json');
 const envVars = require('../../shared/envvars.js');
 const environment = envVars.get('ENVIRONMENT') || 'prod';
 const esLintConfig = require('./config.eslint.js');
-
-const nameChunkGroups = ({ chunkGroupsFile, srcType }) => {
-  return new NamedChunkGroupsPlugin({
-    file: chunkGroupsFile,
-    srcType
-  });
-};
 
 const blocks = ({ directory, routes, outputPath }) => {
   return new BlocksPlugin({
@@ -87,10 +79,7 @@ const hotModuleReplacement = () => {
 };
 
 const reactRefresh = () => {
-  return new ReactRefreshWebpackPlugin({
-    // library: `react_${Math.random().toString().substr(2, 8)}`,
-    // forceEnable: true
-  });
+  return new ReactRefreshWebpackPlugin({});
 };
 
 const extractCss = ({ MiniCssExtractPlugin, exportType, filePath }) => {
@@ -105,7 +94,6 @@ const extractCss = ({ MiniCssExtractPlugin, exportType, filePath }) => {
 module.exports = {
   eslint,
   wpDepExtract,
-  nameChunkGroups,
   webpackDefine,
   extractCss,
   hotModuleReplacement,

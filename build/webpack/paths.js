@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const { toCamelCase, debug: log } = require('../../src/app/shared/utils');
+const { toCamelCase, debug: log } = require('../../src/whiteboard/shared/utils.js');
 const { srcDirEntMap } = require('../../shared/src.dir.map.js');
 const { baseRoutes, baseEntries } = require('../../shared/paths.js');
 const envVars = require('../../shared/envvars.js');
@@ -121,11 +121,11 @@ const findRoutes = ({ srcTypeDirEnts, forceBase, srcType }) => {
 };
 
 const getRoutes = ({ buildType, srcType, forceBase = false }) => {
-  if (srcType === 'app') {
-    // TODO: document why we are doing this for app server
+  if (srcType === 'whiteboard') {
+    // TODO: document why we are doing this for whiteboard server
     if (buildType === 'server') {
       routes = [
-        ...findRoutes({ srcType: 'app', forceBase }),
+        ...findRoutes({ srcType: 'whiteboard', forceBase }),
         ...findRoutes({ srcType: 'blocks', forceBase }),
         ...findRoutes({ srcType: 'components', forceBase }),
         ...findRoutes({ srcType: 'plugins', forceBase }),
@@ -211,15 +211,15 @@ const getEntries = ({ buildType, srcType, exportType }) => {
 
     // Handle special file cases
     if (!exportType && type === 'base') {
-      if (buildType === 'server' && srcType === 'app') {
+      if (buildType === 'server' && srcType === 'whiteboard') {
         // Get route's main page template
         newEntries[`hbs_${id}`] = {
-          import: './src/app/base/routes/' + path + '/index.hbs'
+          import: './src/whiteboard/base/routes/' + path + '/index.hbs'
         };
       } else if (buildType === 'elements') {
-        // TODO: this would change back to 'client' once we seperate app srcType buildType
+        // TODO: this would change back to 'client' once we seperate whiteboard srcType buildType
         newEntries[id] = {
-          import: srcPath + path + '/client.js'
+          import: srcPath + path + '/view.js'
         };
       }
     }

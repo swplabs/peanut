@@ -1,4 +1,5 @@
 const srcDirEntMap = {
+  // TODO: remove once we replace with react for whiteboard app
   'template.hbs': {
     flag: 'hasSrcTemplate',
     entryKey: 'hbs_template',
@@ -43,7 +44,8 @@ const srcDirEntMap = {
     exportCfg: {}
   },
   // TODO: for plugin/block client side styles will we need to adjust the library type?
-  'styles.scss': {
+  // TODO: add pattern match so that we can use "editor.s?css"
+  'style.scss': {
     flag: 'hasStyles',
     entryKey: 'styles',
     buildCfg: {
@@ -123,7 +125,8 @@ const srcDirEntMap = {
       }
     }
   },
-  'editor-script.js': {
+  // TODO: Add pattern/alias "index.js"
+  'editor.js': {
     flag: 'hasEditorScript',
     entryKey: 'editor',
     buildCfg: {
@@ -146,7 +149,8 @@ const srcDirEntMap = {
       }
     }
   },
-  'editor-styles.js': {
+  // TODO: add pattern/alias match so that we can use "editor.s?css" and "index.s?css"
+  'editor.scss': {
     flag: 'hasEditorStyles',
     entryKey: 'editor_styles',
     buildCfg: {
@@ -170,7 +174,8 @@ const srcDirEntMap = {
     }
   },
   // TODO: for plugin/block client side js will we need to adjust the library type if we do hot refresh?
-  'client.js': {
+  // TODO: add alias "view.js"
+  'view.js': {
     flag: 'hasSrcClient',
     buildCfg: {
       elements: {

@@ -35,10 +35,10 @@ const serverStart = (compiler) => {
   routes.forEach((route) => router.get(route.url, routeController(route)));
 
   return createServer({
-    port: envVars.get('SSE_PORT') || 9090,
+    port: envVars.get('PFWP_SSE_PORT') || 9090,
     env: environment,
     httpsPort: envVars.getBoolean('PFWP_SSE_ENABLE_HTTPS')
-      ? envVars.get('SSE_HTTPS_PORT') || 9999
+      ? envVars.get('PFWP_SSE_HTTPS_PORT') || 9999
       : null,
     requestHandler: async (req, res) => {
       req.defaultRouter = router;

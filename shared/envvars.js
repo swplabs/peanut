@@ -11,7 +11,7 @@ nconf.env([
   'PFWP_BUILD',
   'PFWP_E_TYPE',
   'PFWP_DIST',
-  'PFWP_APP_PUBLIC_PATH',
+  'PFWP_WB_PUBLIC_PATH',
   'PFWP_WP_PUBLIC_PATH',
   'PFWP_NOCSS',
   'PFWP_APP_SRC_PATH',
@@ -42,7 +42,7 @@ try {
 const defaultConfig = {
   PFWP_BUILD: 'stack',
   PFWP_DIST: 'serve',
-  PFWP_APP_PUBLIC_PATH: '/',
+  PFWP_WB_PUBLIC_PATH: '/',
   PFWP_NOCSS: 'false',
   PFWP_SSE_ENABLE_HTTPS: false,
   PFWP_APP_SRC_PATH: path.resolve(__dirname, '../src/'),

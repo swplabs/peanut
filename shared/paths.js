@@ -1,53 +1,54 @@
 const path = require('path');
-const baseAppRouteDir = '../src/app/base/routes/';
-const baseAppRoutePath = path.join(__dirname, baseAppRouteDir);
+const baseWbRouteDir = '../src/whiteboard/base/routes/';
+const baseWbRoutePath = path.join(__dirname, baseWbRouteDir);
 
 const baseRoutes = {
-  app: [
+  whiteboard: [
     {
       url: '/',
-      title: 'App',
-      id: 'base_app',
-      srcPath: baseAppRoutePath,
+      title: 'Whiteboard',
+      id: 'base_whiteboard',
+      srcPath: baseWbRoutePath,
       path: 'app',
       type: 'base',
-      srcType: 'app',
+      srcType: 'whitebaord',
       controller: 'app'
     },
     {
       url: '/schema/(?<id>[^/]+)?/?',
       title: 'Schema Control',
       id: 'base_schema',
-      srcPath: baseAppRoutePath,
+      srcPath: baseWbRoutePath,
       path: 'schema',
       type: 'base',
-      srcType: 'app',
+      srcType: 'whiteboard',
       controller: 'schema'
     },
     {
       url: '/page/home/',
       title: 'Home',
       id: 'base_home',
-      srcPath: baseAppRoutePath,
+      srcPath: baseWbRoutePath,
       path: 'home',
       type: 'base',
-      srcType: 'app',
+      srcType: 'whiteboard',
       controller: 'base'
     }
   ]
 };
 
+// TODO: remove HBS files and replace with whiteboard react files
 const baseEntries = {
   elements: {
     export: {
       wordpress: {
-        import: `./src/app/base/exports/wordpress.js`
+        import: `./src/whiteboard/base/exports/wordpress.js`
       }
     },
     build: {
-      app: {
+      whiteboard: {
         hbs_prototype: {
-          import: './src/app/base/routes/prototype/client.js',
+          import: './src/whiteboard/base/routes/prototype/view.js',
           library: {
             type: 'window',
             name: 'peanutHbsPrototypeClientJs'
@@ -58,12 +59,12 @@ const baseEntries = {
   },
   server: {
     build: {
-      app: {
+      whiteboard: {
         server: {
-          import: './src/app/server.js'
+          import: './src/whiteboard/server.js'
         },
         hbs_prototype: {
-          import: './src/app/base/routes/prototype/index.hbs'
+          import: './src/whiteboard/base/routes/prototype/index.hbs'
         }
       }
     }

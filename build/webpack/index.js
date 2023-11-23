@@ -10,7 +10,7 @@ const environment = envVars.get('ENVIRONMENT') || 'prod';
 const nodeEnv = envVars.get('NODE_ENV') || 'production';
 const distDir = path.join(__dirname, `../../dist/${envVars.get('PFWP_DIST')}`);
 const staticDir = distDir + '/static';
-const appPublicPath = envVars.get('PFWP_APP_PUBLIC_PATH') || '/';
+const wbPublicPath = envVars.get('PFWP_WB_PUBLIC_PATH') || '/';
 const rootDir = path.resolve(__dirname, '../../');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const appSrcPath = envVars.get('PFWP_APP_SRC_PATH');
@@ -118,8 +118,8 @@ const setFileName =
 const getOutput = ({ buildType, srcType, exportType }) => {
   let outputs = {};
 
-  const outputPath = srcType === 'app' ? staticDir : wordpressRoot;
-  const filePath = srcType === 'app' ? `assets/${srcType}` : `.assets/${srcType}`;
+  const outputPath = srcType === 'whiteboard' ? staticDir : wordpressRoot;
+  const filePath = srcType === 'whiteboard' ? `assets/${srcType}` : `.assets/${srcType}`;
 
   const filename =
     environment === 'local' || exportType || srcType !== 'components'
@@ -131,7 +131,7 @@ const getOutput = ({ buildType, srcType, exportType }) => {
       outputs = {
         filename: setFileName(filename, srcType, buildType),
         path: outputPath,
-        publicPath: srcType === 'app' ? appPublicPath : wordpressPublicPath,
+        publicPath: srcType === 'whiteboard' ? wbPublicPath : wordpressPublicPath,
         chunkFilename: setFileName(filename, srcType, buildType),
         assetModuleFilename: `${filePath}/[hash][ext][query]`,
         hotUpdateChunkFilename: `${filePath}/[id].[fullhash].hot-update.js`,
@@ -159,11 +159,12 @@ const getOutput = ({ buildType, srcType, exportType }) => {
 };
 
 const getModuleRules = ({ isWeb, buildType, exportType, srcType, disableExtract }) => {
-  const rules = srcType === 'app' ? [hbsLoader({ isWeb })] : [];
+  // TODO: remove once we switch to react for whiteboard app
+  const rules = srcType === 'whiteboard' ? [hbsLoader({ isWeb })] : [];
 
   switch (buildType) {
     // case 'ssr':
-    // TODO: add 'client' case that doesn't use php loader for 'app'
+    // TODO: add 'client' case that doesn't use php loader for 'whiteboard'
     case 'elements': {
       rules.push(
         styleLoader({ MiniCssExtractPlugin, exportType, disableExtract }),
@@ -184,8 +185,8 @@ const getModuleRules = ({ isWeb, buildType, exportType, srcType, disableExtract 
 const getPlugins = ({ buildType, srcType, routes, exportType, disableExtract = false }) => {
   const plugins = [webpackDefinePlugin(routes), eslintPlugin({ buildType, srcType })];
 
-  const outputPath = srcType === 'app' ? staticDir : wordpressRoot;
-  const filePath = srcType === 'app' ? `assets/${srcType}` : `.assets/${srcType}`;
+  const outputPath = srcType === 'whiteboard' ? staticDir : wordpressRoot;
+  const filePath = srcType === 'whiteboard' ? `assets/${srcType}` : `.assets/${srcType}`;
 
   if (!disableExtract && exportType !== 'web' && buildType !== 'server')
     plugins.push(extractCssPlugin({ MiniCssExtractPlugin, exportType, filePath }));

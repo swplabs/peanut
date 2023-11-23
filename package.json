@@ -7,10 +7,10 @@
     "start": "node serve.js"
   },
   "keywords": [
-    "Wordpress",
-    "Components",
-    "Webpack",
-    "Peanut"
+    "wordpress",
+    "components",
+    "webpack",
+    "peanut"
   ],
   "author": "SWP Labs",
   "license": "GPL-3.0",

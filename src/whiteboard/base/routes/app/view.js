@@ -1,6 +1,6 @@
 /* global __ROUTES__ */
 
-require('./styles.scss');
+require('./style.scss');
 
 const { debug: log, toCamelCase } = require('../../../shared/utils.js');
 const hashUtils = require('./lib/hash.js');

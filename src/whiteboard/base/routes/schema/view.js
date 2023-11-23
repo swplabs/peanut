@@ -1,4 +1,4 @@
-require('./styles.scss');
+require('./style.scss');
 
 let activeTab = '';
 let component;

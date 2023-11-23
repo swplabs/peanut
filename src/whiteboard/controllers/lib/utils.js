@@ -1,7 +1,7 @@
 const { debug: log } = require('../../shared/utils.js');
 const { extname } = require('path');
 const envVars = require('../../../../shared/envvars.js');
-const appPublicPath = envVars.get('PFWP_APP_PUBLIC_PATH') || '/';
+const wbPublicPath = envVars.get('PFWP_WB_PUBLIC_PATH') || '/';
 const wordpressPublicPath = envVars.get('PFWP_WP_PUBLIC_PATH');
 
 const serverImports = {};
@@ -37,7 +37,7 @@ const buildClientAssets = ({ srcType, id }) => {
   if (!buildAssets[srcType]) buildAssets[srcType] = {};
   if (!buildAssets[srcType][id]) buildAssets[srcType][id] = {};
 
-  const publicPath = srcType === 'app' ? appPublicPath : wordpressPublicPath;
+  const publicPath = srcType === 'whiteboard' ? wbPublicPath : wordpressPublicPath;
 
   // TODO: change to use arrays/join
   let jsString = '';
