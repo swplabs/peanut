@@ -1,7 +1,7 @@
 {
   "PFWP_DIR_ENT_ALLOW_LIST": [],
   "PFWP_WP_ROOT": "/var/www/html",
-  "PFWP_THEME_PATH": "/wp-content/themes/twentytwentyfour",
+  "PFWP_THEME_PATH": "/wp-content/themes/example-theme",
   "PFWP_WP_PUBLIC_PATH": "http://localhost.yourdomain.com/",
   "PFWP_SSE_HOST": "http://localhost.yourdomain.com:9090",
   "PFWP_CORE_BLOCK_FILTERS": {
