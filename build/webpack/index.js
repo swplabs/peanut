@@ -1,7 +1,7 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 const paths = require('./paths.js');
-const { webpackPreProcess, webpackPostProcess: webpackPostProcessHook } = require('./hooks.js');
+const { webpackPreProcess } = require('./hooks.js');
 const loaders = require('./loaders.js');
 const plugins = require('./plugins.js');
 const envVars = require('../../shared/envvars.js');
@@ -38,12 +38,15 @@ const {
 const handler =
   ({ buildType: type, srcType, hashCheck, success, error }) =>
   (err, stats) => {
+    /*
     if (err) {
       console.log(`[webpack:${type}:${srcType}]`);
       console.log(err);
     }
+    */
 
     if (stats.hasErrors()) {
+      /*
       console.log(`[webpack:${type}:${srcType}]`);
       console.log(
         stats.toString({
@@ -51,6 +54,7 @@ const handler =
           errors: true
         })
       );
+      */
 
       if (typeof error === 'function') error();
     } else {
@@ -58,6 +62,7 @@ const handler =
         if (hashCheck({ buildType: type, srcType, hash: stats.hash })) return;
       }
 
+      /*
       if (stats.hasWarnings()) {
         console.log(
           stats.toString({
@@ -66,8 +71,10 @@ const handler =
           })
         );
       }
+      */
 
       console.log(`\n[webpack:${type}:${srcType}] Compilation successful.`);
+      /*
       console.log(
         `${stats.toString({
           all: false,
@@ -77,6 +84,7 @@ const handler =
           groupAssetsByExtension: true
         })}\n`
       );
+      */
 
       if (typeof success === 'function') success();
     }
@@ -318,8 +326,5 @@ module.exports = {
   plugins,
   handler,
   getConfig,
-  webpackPreProcess,
-  webpackPostProcess: ({ stats }) => {
-    webpackPostProcessHook({ stats });
-  }
+  webpackPreProcess
 };

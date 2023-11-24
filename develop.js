@@ -7,7 +7,9 @@ const {
   getConfig,
   handler: webpackHandler,
   webpackPreProcess,
-  webpackPostProcess
+  plugins: {
+    postprocess: postProcessPlugin
+  }
 } = require('./build/webpack/index.js');
 
 const { serverStart } = require('./build/server/index.js');
@@ -15,7 +17,6 @@ const { serverStart } = require('./build/server/index.js');
 let webpackCompiler;
 let restartTO;
 let chokidarReady = false;
-// let webpackWatch;
 let webpackDMInstance;
 let restartDev = true;
 let sseHttpServer;
@@ -108,7 +109,6 @@ const webpackCallback = (err, stats) => {
     buildType: 'stack',
     srcType: 'all',
     success: () => {
-      webpackPostProcess({ stats });
       wpHandlerSuccess({});
     },
     error: () => {
@@ -146,7 +146,9 @@ const startWebPack = async () => {
     getConfig({ buildType: 'server', srcType: 'whiteboard' })
   ]);
 
-  // webpackWatch = webpackCompiler.watch({});
+  postProcessPlugin(({ stats }) => {
+    webpackCallback(null, stats);
+  }).apply(webpackCompiler);
 
   await sseHttpServer?.destroy();
   await sseHttpsServer?.destroy();
@@ -154,10 +156,6 @@ const startWebPack = async () => {
   console.log('[develop] Starting development SSE server...');
 
   const { httpServer, httpsServer, webpackDevMiddleware } = serverStart(webpackCompiler);
-
-  webpackDevMiddleware.waitUntilValid((stats) => {
-    webpackCallback(null, stats);
-  });
 
   webpackDMInstance = webpackDevMiddleware;
 

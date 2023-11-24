@@ -2,6 +2,7 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 const WPDepExtractionPlugin = require('@wordpress/dependency-extraction-webpack-plugin');
 const { DefinePlugin, HotModuleReplacementPlugin } = require('webpack');
 const { BlocksPlugin } = require('./plugins/block.js');
+const { PostProcessPlugin } = require('./plugins/post.process.js');
 const { ComponentsPlugin } = require('./plugins/component.js');
 const { CopyPlugin } = require('./plugins/copy.js');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
@@ -17,6 +18,13 @@ const blocks = ({ directory, routes, outputPath }) => {
     outputPath
   });
 };
+
+const postprocess = (callback) => {
+  return new PostProcessPlugin({
+    callback
+  });
+};
+
 
 const components = ({ directory, routes, outputPath }) => {
   return new ComponentsPlugin({
@@ -99,6 +107,7 @@ module.exports = {
   hotModuleReplacement,
   reactRefresh,
   blocks,
+  postprocess,
   components,
   copy
 };

@@ -36,7 +36,16 @@ const serverStart = (webpackCompiler) => {
 
   const webpackDevMiddleware = wdm(webpackCompiler, {
     writeToDisk: true,
-    stats: false
+    stats: {
+      all: false,
+      colors: true,
+      assets: true,
+      warnings: true,
+      errors: true,
+      logging: 'info',
+      groupAssetsByExtension: true,
+      groupAssetsByEmitStatus: true
+    }
   });
 
   const webpackHotMiddleware = whm(webpackCompiler, {

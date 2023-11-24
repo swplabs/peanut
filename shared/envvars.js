@@ -37,8 +37,6 @@ try {
   console.log('No user config json file available');
 }
 
-// TODO: add wp.hooks import so that we can override envvars programatically
-
 const defaultConfig = {
   PFWP_BUILD: 'stack',
   PFWP_DIST: 'serve',
@@ -51,6 +49,10 @@ const defaultConfig = {
   PFWP_CORE_BLOCK_FILTERS: {},
   ...config
 };
+
+// TODO: add wp.hooks import so that we can override envvars programatically
+
+
 
 // Set the defaults for all environments
 nconf.defaults(defaultConfig);
