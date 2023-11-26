@@ -1,0 +1,33 @@
+.main-sidenav {
+  position: fixed;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  width: 280px;
+  overflow-y: auto;
+  background-color: #2b2a3f;
+
+  &-logo {
+    font-size: 22px;
+    color: #fff;
+    margin: 30px;
+    border-bottom: 1px solid #3c3a56;
+    padding-bottom: 20px;
+    font-weight: 700;
+  }
+
+  &-menu {
+    padding: 0 30px;
+  }
+
+  &-nav {
+    &-item {
+      font-size: 16px;
+      
+      a {
+        color: #bcbbc7;
+      }
+    }
+  }
+}
+

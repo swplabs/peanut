@@ -1,6 +1,6 @@
 # Introducing "Peanut" for Wordpress
 
-Build your wordpress themes and blocks with components.
+Build your wordpress themes and blocks with component-like elements.
 
 ## Documenation and Alpha Release
 

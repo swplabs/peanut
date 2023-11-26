@@ -34,6 +34,9 @@ body {
   background-color: $color-grey-1;
   color: $color-black-1;
   font-family: "Public Sans", system-ui, sans-serif;
+  line-height: 1.5;
 }
 
-@import "./scss/navs.scss";
+.main-content {
+  padding: 0 40px 0 320px;
+}

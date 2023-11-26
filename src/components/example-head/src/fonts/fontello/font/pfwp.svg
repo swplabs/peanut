@@ -1,0 +1,18 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg">
+<metadata>Copyright (C) 2023 by original authors @ fontello.com</metadata>
+<defs>
+<font id="pfwp" horiz-adv-x="1000" >
+<font-face font-family="pfwp" font-weight="400" font-stretch="normal" units-per-em="1000" ascent="850" descent="-150" />
+<missing-glyph horiz-adv-x="1000" />
+<glyph glyph-name="puzzle" unicode="&#xe800;" d="M500-159c-19 0-39 8-53 22l-425 425c-30 30-30 77 0 106l156 156c10 10 23 12 37 6 12-6 17-20 16-33-2-10-2-16-2-24 0-68 54-125 123-125s119 57 119 125c0 69-51 125-119 125-6 0-14-2-22-2-14-4-27 4-33 16-8 12-4 27 6 37l144 145c30 29 78 29 106 0l105-106c24 69 88 119 164 119 96 0 172-78 172-172 0-76-49-142-119-164l104-103c29-29 29-76 0-106l-426-425c-14-14-33-22-53-22z m-330 613l-105-105c-4-4-4-12 1-16l426-426c6-5 10-5 16 0l426 426c6 4 6 12 0 16l-149 150c-10 10-13 26-8 37s20 18 34 18l4-2c1 0 5 0 7 0 61 0 110 49 110 109s-49 110-110 110c-60 0-109-49-109-110 0-2 0-5 2-7v-6c2-14-6-26-18-31s-25-4-35 5l-154 155c-6 6-10 6-16 0l-95-96c82-20 136-94 136-182 0-101-78-187-181-187-88 0-161 62-182 142z" horiz-adv-x="1000" />
+
+<glyph glyph-name="menu" unicode="&#xf0c9;" d="M857 100v-71q0-15-10-25t-26-11h-785q-15 0-25 11t-11 25v71q0 15 11 25t25 11h785q15 0 26-11t10-25z m0 286v-72q0-14-10-25t-26-10h-785q-15 0-25 10t-11 25v72q0 14 11 25t25 10h785q15 0 26-10t10-25z m0 285v-71q0-14-10-25t-26-11h-785q-15 0-25 11t-11 25v71q0 15 11 26t25 10h785q15 0 26-10t10-26z" horiz-adv-x="857.1" />
+
+<glyph glyph-name="angle-up" unicode="&#xf106;" d="M600 189q0-7-6-12l-28-28q-5-6-12-6t-13 6l-220 219-219-219q-5-6-13-6t-12 6l-28 28q-6 5-6 12t6 13l260 260q5 6 12 6t13-6l260-260q6-5 6-13z" horiz-adv-x="642.9" />
+
+<glyph glyph-name="angle-down" unicode="&#xf107;" d="M600 439q0-7-6-12l-260-261q-5-5-13-5t-12 5l-260 261q-6 5-6 12t6 13l28 28q5 6 12 6t13-6l219-219 220 219q5 6 13 6t12-6l28-28q6-5 6-13z" horiz-adv-x="642.9" />
+</font>
+</defs>
+</svg>

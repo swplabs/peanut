@@ -13,7 +13,10 @@
 		?>
 	</head>
 
-	<body>
-	<?php
-		wp_body_open();
-	?>
+<body>
+<?php
+wp_body_open();
+
+get_template_part( 'components/example-main-sidenav/index' );
+?>
+<div class="main-content">
