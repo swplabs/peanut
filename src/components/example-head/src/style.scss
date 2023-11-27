@@ -1,5 +1,7 @@
 @import "./scss/vars.scss";
 @import "./scss/fonts.scss";
+@import "./scss/icons.scss";
+@import "./scss/pfwp-codes.scss";
 
 html {
   box-sizing: border-box;
@@ -39,4 +41,28 @@ body {
 
 .main-content {
   padding: 0 40px 0 320px;
+}
+
+.card {
+  background-color: #fff;
+  margin-bottom: 25px;
+
+  &-body {
+    padding: 25px;
+
+    p {
+      margin-bottom: 15px;
+      line-height: 1.7;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+.page-title {
+  margin: 25px 0 20px;
+  font-size: 24px;
+  font-weight: 700;
 }

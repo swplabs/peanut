@@ -2,7 +2,9 @@
 get_header();
 ?>
 
-<div>Home</div>
+<div class="page-title">
+  Front page
+</div>
 
 <?php
 get_footer();
