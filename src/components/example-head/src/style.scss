@@ -39,8 +39,24 @@ body {
   line-height: 1.5;
 }
 
-.main-content {
+.main-container {
   padding: 0 40px 0 320px;
+  display: flex;
+  justify-content: space-between;
+
+  &-content {
+    width: calc(100% - 425px);
+  }
+
+  &-sidebar {
+    width: 400px;
+  }
+}
+
+.page-title {
+  margin: 25px 40px 20px 320px;
+  font-size: 24px;
+  font-weight: 700;
 }
 
 .card {
@@ -59,10 +75,9 @@ body {
       }
     }
   }
-}
 
-.page-title {
-  margin: 25px 0 20px;
-  font-size: 24px;
-  font-weight: 700;
+  &-head {
+    display: flex;
+    justify-content: space-between;
+  }
 }

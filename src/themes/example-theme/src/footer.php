@@ -1,4 +1,7 @@
 
+  </div>
+
+  <?php get_template_part( 'components/example-sidebar/index' ); ?>
 
 </div>
 

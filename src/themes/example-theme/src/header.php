@@ -19,4 +19,20 @@ wp_body_open();
 
 get_template_part( 'components/example-main-sidenav/index' );
 ?>
-<div class="main-content">
+
+<div class="page-title">
+	<?php
+	if ( is_singular() ) {
+		the_title();
+	} else if ( is_archive() ) {
+		echo single_term_title( '', false );
+	} else {
+		echo 'Peanut For Wordpress';
+	}
+	?>
+</div>
+
+<div class="main-container">
+
+	<div class="main-container-content">
+
