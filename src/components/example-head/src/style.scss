@@ -64,7 +64,7 @@ body {
   margin-bottom: 25px;
 
   &-body {
-    padding: 25px;
+    padding: 30px;
 
     p {
       margin-bottom: 15px;
@@ -79,5 +79,33 @@ body {
   &-head {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 25px;
+    align-items: center;
+  }
+
+  &-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2b2a3f;
+  }
+}
+
+.text-gray {
+  color: #8e8da1;
+}
+
+.button {
+  color: #8e8da2;
+  border: 1px solid #d6d4ec;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+
+  &:hover {
+    background-color: #6560f0;
+    border-color: #6560f0;
+    color: #fff;
   }
 }

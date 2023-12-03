@@ -5,7 +5,7 @@
       
       <div class="card-head">
           <h6 class="card-title">Release Features</h6>
-          <div class="button"> Close <i class="icon icon-close"></i></div>
+          <div class="button">Close <i class="icon icon-close"></i></div>
       </div>
 
       <div class="card-content">
@@ -21,7 +21,7 @@
                       <img src="<?php echo esc_url( get_theme_file_uri( '/assets/images/example-icon.jpg' ) ); ?>" />
                       <div>
                         <div><span>Macbook Air - 8gb</span></div>
-                        <span>14K Item Sold</span>
+                        <span class="text-gray">14K Item Sold</span>
                       </div>
                     </div>
                     <div class="table-list-col">
@@ -33,7 +33,7 @@
                       <img src="<?php echo esc_url( get_theme_file_uri( '/assets/images/example-icon.jpg' ) ); ?>" />
                       <div>
                         <div><span>Macbook Air - 8gb</span></div>
-                        <span>14K Item Sold</span>
+                        <span class="text-gray">14K Item Sold</span>
                       </div>
                     </div>
                     <div class="table-list-col">
@@ -45,7 +45,7 @@
                       <img src="<?php echo esc_url( get_theme_file_uri( '/assets/images/example-icon.jpg' ) ); ?>" />
                       <div>
                         <div><span>Macbook Air - 8gb</span></div>
-                        <span>14K Item Sold</span>
+                        <span class="text-gray">14K Item Sold</span>
                       </div>
                     </div>
                     <div class="table-list-col">
@@ -57,7 +57,7 @@
                       <img src="<?php echo esc_url( get_theme_file_uri( '/assets/images/example-icon.jpg' ) ); ?>" />
                       <div>
                         <div><span>Macbook Air - 8gb</span></div>
-                        <span>14K Item Sold</span>
+                        <span class="text-gray">14K Item Sold</span>
                       </div>
                     </div>
                     <div class="table-list-col">
@@ -69,7 +69,7 @@
                       <img src="<?php echo esc_url( get_theme_file_uri( '/assets/images/example-icon.jpg' ) ); ?>" />
                       <div>
                         <div><span>Macbook Air - 8gb</span></div>
-                        <span>14K Item Sold</span>
+                        <span class="text-gray">14K Item Sold</span>
                       </div>
                     </div>
                     <div class="table-list-col">
