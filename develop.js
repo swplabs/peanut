@@ -166,12 +166,12 @@ const startWebPack = async () => {
 // Monitor development configuration changes
 // TODO: Create regex using component cfg file object?
 const compsBlocksFileRegEx = new RegExp(
-  '^src/(components|blocks)/[a-zA-Z0-9-_]+/src/((variations|metadata).json|(ssr.)?(view|editor).(jsx|js)|template.hbs|(index|render).php|styles.s?css)',
+  '^src/(components|blocks)/[a-zA-Z0-9-_]+/src/((variations|metadata).json|(ssr.)?(view|editor).(jsx|js)|template.hbs|(index|render).php|style.s?css)',
   'i'
 );
 
 const themesPluginsFileRegEx = new RegExp(
-  '^src/(themes|plugins)/[a-zA-Z0-9-_]+/src/((view|editor).(jsx|js)|styles.s?css)',
+  '^src/(themes|plugins)/[a-zA-Z0-9-_]+/src/((view|editor).(jsx|js)|style.s?css)',
   'i'
 );
 
