@@ -4,7 +4,10 @@
     'components/example-card-table/index',
     null,
     array(
-      'title' => 'Popular Features'
+      'attributes' => array(
+        'title' => 'Popular Features',
+        'icon' => 'example-icon.jpg'
+      )
     )
   );
 
@@ -12,9 +15,10 @@
     'components/example-card-table/index',
     null,
     array(
-      'title' => 'Ranked Features',
-      'table_head' => 'RANK',
-      'icon' => 'example-icon.jpg'
+      'attributes' => array(
+        'title' => 'Ranked Features',
+        'table_head' => 'RANK'
+      )
     )
   );
   ?>

@@ -1,5 +1,5 @@
 <div class="main-sidenav">
-  <div class="main-sidenav-logo">Peanut</div>
+  <div class="main-sidenav-logo">Peanut Demo</div>
   <div class="main-sidenav-menu">
     <ul class="main-sidenav-nav">
       <li class="main-sidenav-nav-item">

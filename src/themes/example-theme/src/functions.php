@@ -45,3 +45,6 @@ function pfwp_theme_support() {
 }
 
 add_action( 'after_setup_theme', 'pfwp_theme_support' );
+
+// Custom Comment Walker
+require $theme_dir . '/classes/class-pfwp-walker-comment.php';

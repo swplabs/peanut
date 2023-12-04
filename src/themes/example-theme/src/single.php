@@ -11,4 +11,7 @@ get_header();
 </div>
 
 <?php
+
+comments_template();
+
 get_footer();
