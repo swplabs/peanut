@@ -58,18 +58,6 @@ $attributes = $data['attributes'];
                   <div class="table-list-col">
                     <img src="<?php echo esc_url( get_theme_file_uri( '/assets/images/' . $attributes['icon'] ) ); ?>" />
                     <div>
-                      <div>Dynamic Blocks</div>
-                      <span class="text-gray">Super Dynamic</span>
-                    </div>
-                  </div>
-                  <div class="table-list-col">
-                    <span>102</span>
-                  </div>
-              </li>
-              <li class="table-list-row">
-                  <div class="table-list-col">
-                    <img src="<?php echo esc_url( get_theme_file_uri( '/assets/images/' . $attributes['icon'] ) ); ?>" />
-                    <div>
                       <div><span>Reusable "components"</span></div>
                       <span class="text-gray">Super Used</span>
                     </div>
