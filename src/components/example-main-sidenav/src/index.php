@@ -15,12 +15,6 @@
         </a>
       </li>
       <li class="main-sidenav-nav-item">
-        <a href="/?cat=1">
-          <i class="icon icon-puzzle"></i>
-          <span>Archive Page</span>
-        </a>
-      </li>
-      <li class="main-sidenav-nav-item">
         <a href="/?p=1">
           <i class="icon icon-puzzle"></i>
           <span>Single Post</span>
