@@ -2,7 +2,11 @@
 
 .github-gist {
   &-button-container {
-    display: flex;
+    display: none;
+
+    &--active {
+      display: flex;
+    }
 
     .button {
       margin-left: 5px;
@@ -11,6 +15,11 @@
 
   &-file {
     padding: 0 30px;
+    display: none;
+
+    &--active {
+      display: block;
+    }
   }
 
   &-footer {

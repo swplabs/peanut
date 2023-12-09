@@ -14,7 +14,7 @@ const build = (files, selectContainer, buttons, codeContainer) => {
   const select = document.createElement('select');
   select.onchange = (e) => {
     const index = e.currentTarget?.selectedIndex;
-    if (index && typeof onchanges[index] === 'function') onchanges[index]();
+    if (typeof index === 'number' && typeof onchanges[index] === 'function') onchanges[index]();
   };
 
 
@@ -90,6 +90,7 @@ module.exports = async (instance, data) => {
   const selectContainer = instance.querySelector('.github-gist-select');
   const buttons = instance.querySelector('.github-gist-buttons');
   const footer = instance.querySelector('.github-gist-footer');
+  const title = instance.querySelector('.card-title');
   const codeContainer = instance.querySelector('.github-gist-code');
 
   const {
@@ -101,7 +102,9 @@ module.exports = async (instance, data) => {
   const response = await fetch(`https://api.github.com/gists/${gist_id}`);
   const gistData = await response.json();
 
-  const { files = {}, html_url = '' } = gistData;
+  const { files = {}, html_url = '', description = 'Github Gist' } = gistData;
+
+  title.innerText = description;
 
   footer.innerHTML = html_url
     ? `

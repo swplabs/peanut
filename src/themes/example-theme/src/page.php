@@ -11,4 +11,16 @@ get_header();
 </div>
 
 <?php
+get_template_part(
+  'components/example-github-gist/index',
+  null,
+  array(
+    'attributes' => array(
+      'gist_id' => '9471f01fcfc698a44f515f26b15fcbe3'
+    )
+  )
+);
+?>
+
+<?php
 get_footer();
