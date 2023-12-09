@@ -2,7 +2,7 @@
 get_header();
 ?>
 
-<div class="card">
+<div class="card card--pad">
   <div class="card-body">
     <?php
     the_content();

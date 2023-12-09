@@ -8,7 +8,16 @@ const escapeHtml = (unsafe) =>
     .replaceAll('"', '&quot;')
     .replaceAll(`'`, '&#039;');
 
-const build = (files, tabs, buttons, codeContainer) => {
+const build = (files, selectContainer, buttons, codeContainer) => {
+  const onchanges = [];
+
+  const select = document.createElement('select');
+  select.onchange = (e) => {
+    const index = e.currentTarget?.selectedIndex;
+    if (index && typeof onchanges[index] === 'function') onchanges[index]();
+  };
+
+
   Object.keys(files).map((key, index) => {
     const file = files[key];
 
@@ -28,11 +37,9 @@ const build = (files, tabs, buttons, codeContainer) => {
 
     pre.append(code);
 
-    const tab = document.createElement('div');
-    tab.className = `github-gist-tab${index === 0 ? ' github-gist-tab--active' : ''}`;
-    tab.innerHTML = `
-      <span>${language}</span>
-    `;
+    const option = document.createElement('option');
+    option.text = language;
+    option.value = index;
 
     const buttonContainer = document.createElement('div');
     buttonContainer.className = `github-gist-button-container${
@@ -57,8 +64,9 @@ const build = (files, tabs, buttons, codeContainer) => {
     buttonContainer.append(rawButton);
     buttonContainer.append(copyButton);
 
-    tab.onclick = () => {
-      tabs.querySelector('.github-gist-tab--active')?.classList.remove('github-gist-tab--active');
+    select.append(option);
+
+    onchanges[index] = () => {
       codeContainer
         .querySelector('.github-gist-file--active')
         ?.classList.remove('github-gist-file--active');
@@ -66,20 +74,20 @@ const build = (files, tabs, buttons, codeContainer) => {
         .querySelector('.github-gist-button-container--active')
         ?.classList.remove('github-gist-button-container--active');
 
-      tab.classList.add('github-gist-tab--active');
       container.classList.add('github-gist-file--active');
       buttonContainer.classList.add('github-gist-button-container--active');
     };
 
-    tabs.append(tab);
     buttons.append(buttonContainer);
     container.append(pre);
     codeContainer.append(container);
   });
+
+  selectContainer.append(select);
 };
 
 module.exports = async (instance, data) => {
-  const tabs = instance.querySelector('.github-gist-tabs');
+  const selectContainer = instance.querySelector('.github-gist-select');
   const buttons = instance.querySelector('.github-gist-buttons');
   const footer = instance.querySelector('.github-gist-footer');
   const codeContainer = instance.querySelector('.github-gist-code');
@@ -105,7 +113,7 @@ module.exports = async (instance, data) => {
     'highlightjs',
     'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js',
     () => {
-      build(files, tabs, buttons, codeContainer);
+      build(files, selectContainer, buttons, codeContainer);
     }
   );
 };

@@ -14,9 +14,10 @@ $gist_id = $data['attributes']['gist_id'];
 <div class="card" id="<?php echo $el_uuid = PFWP_Components::get_uuid( __FILE__ ); ?>">
   <div class="card-body">
     <div class="github-gist">
-      <div class="github-gist-header">
-        <div class="github-gist-tabs">
-
+      <div class="card-head card-head--bs card--pad github-gist-header">
+        <h6 class="card-title">Github Gist</h6>
+        <div class="card-select github-gist-select">
+          <span>View</span>
         </div>
         <div class="github-gist-buttons">
 
@@ -27,7 +28,7 @@ $gist_id = $data['attributes']['gist_id'];
 
         </div>
       </div>
-      <div class="github-gist-footer"></div>
+      <div class="card--pad github-gist-footer"></div>
     </div>
   </div>
 </div>

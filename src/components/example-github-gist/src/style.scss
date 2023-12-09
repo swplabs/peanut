@@ -1,1 +1,25 @@
 @import "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/a11y-light.min.css";
+
+.github-gist {
+  &-button-container {
+    display: flex;
+
+    .button {
+      margin-left: 5px;
+    }
+  }
+
+  &-file {
+    padding: 0 30px;
+  }
+
+  &-footer {
+    text-align: right;
+    font-size: 14px;
+    font-weight: 500;
+
+    a {
+      color: #8e8da2;
+    }
+  }
+}

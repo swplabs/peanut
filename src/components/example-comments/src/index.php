@@ -13,7 +13,7 @@ $attributes = $data['attributes'];
 
 $comments = $attributes['comments'];
 ?>
-<div class="card">
+<div class="card card--pad">
   <div class="card-body">
 
     <div class="card-head">

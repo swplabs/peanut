@@ -14,7 +14,7 @@ $attributes = $data['attributes'];
 ?>
 
 <div class="card" id="<?php echo $el_uuid = PFWP_Components::get_uuid( __FILE__ ); ?>">
-  <div class="card-body">
+  <div class="card-body card--pad">
     
     <div class="card-head">
       <h6 class="card-title"><?php echo $attributes['title']; ?></h6>
