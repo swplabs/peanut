@@ -4,6 +4,7 @@ const pfwpThemePath = envVars.get('PFWP_THEME_PATH');
 const pfwpWpRoot = envVars.get('PFWP_WP_ROOT');
 
 const pfwpConfig = {
+  mode: envVars.get('NODE_ENV') || 'production',
   chunk_groups: {},
   core_block_filters: envVars.get('PFWP_CORE_BLOCK_FILTERS'),
   wp_root: pfwpWpRoot,

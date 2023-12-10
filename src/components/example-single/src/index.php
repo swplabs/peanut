@@ -1,22 +1,22 @@
 <?php
 $data = PFWP_Components::parse_args(
-	$args,
-	array(
+  $args,
+  array(
     'attributes' => array(
-			'show_excerpt' => false,
-			'show_taxonomy' => false,
-			'show_more' => false,
-			'show_author' => false,
-			'show_avatar' => false,
-			'show_comments' => false,
-			'show_date' => false,
-			'show_meta' => true,
-			'order' => null,
-			'author' => null,
-			'is_single' => false,
-			'is_singular' => false
-		)
-	)
+      'show_excerpt' => false,
+      'show_taxonomy' => false,
+      'show_more' => false,
+      'show_author' => false,
+      'show_avatar' => false,
+      'show_comments' => false,
+      'show_date' => false,
+      'show_meta' => true,
+      'order' => null,
+      'author' => null,
+      'is_single' => false,
+      'is_singular' => false
+    )
+  )
 );
 
 $attributes = $data['attributes'];
@@ -111,5 +111,5 @@ if ( $order ) {
         <?php
     }
     ?>
-	</div>
+  </div>
 </div>
