@@ -5,7 +5,11 @@
 
 </div>
 
-<?php wp_footer(); ?>
+<?php
+get_template_part( 'components/example-footer/index' ); 
+
+wp_footer();
+?>
 
 </body>
 </html>

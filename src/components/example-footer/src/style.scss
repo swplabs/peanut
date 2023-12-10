@@ -1,0 +1,19 @@
+.footer {
+  margin: 0 0 0 280px;
+  padding-left: 40px;
+  padding-right: 40px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #8e8da2;
+
+  &-links {
+    a {
+      color: #8e8da2;
+    }
+  }
+
+  .card-body {
+    display: flex;
+    justify-content: space-between;
+  }
+}

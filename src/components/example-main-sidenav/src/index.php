@@ -5,7 +5,7 @@
       <li class="main-sidenav-nav-item">
         <a href="/">
           <i class="icon icon-puzzle"></i>
-          <span>Front page</span>
+          <span>Front Page</span>
         </a>
       </li>
       <li class="main-sidenav-nav-item">
