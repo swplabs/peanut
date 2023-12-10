@@ -8,6 +8,10 @@ Alpha release and proper documentation are all coming soon.
 
 ## Quickstart
 
+### Enable Wordpress Debugging
+
+Script Debugging must be set to true when in development mode for Peanut editor scripts to function. See <a href="https://wordpress.org/documentation/article/debugging-in-wordpress/#script_debug" target="_blank">Wordpress debugging mode</a> for instructions on how to turn on in your Wordpress development environment.
+
 ### Update the configuration
 
 Update ./extend/config.json with your Wordpress settings (example shown below)

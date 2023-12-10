@@ -32,7 +32,8 @@ const {
   copy: copyPlugin,
   wpDepExtract: wpDepExtractPlugin,
   hotModuleReplacement: hotModuleReplacementPlugin,
-  reactRefresh: reactRefreshPlugin
+  reactRefresh: reactRefreshPlugin,
+  normalModuleReplacement: normalModuleReplacementPlugin
 } = plugins;
 
 const handler =
@@ -227,7 +228,11 @@ const getPlugins = ({ buildType, srcType, routes, exportType, disableExtract = f
   }
 
   if (nodeEnv === 'development' && ['blocks', 'plugins'].includes(srcType)) {
-    plugins.push(hotModuleReplacementPlugin(), reactRefreshPlugin());
+    plugins.push(
+      hotModuleReplacementPlugin(),
+      reactRefreshPlugin(),
+      normalModuleReplacementPlugin()
+    );
   }
 
   return plugins;

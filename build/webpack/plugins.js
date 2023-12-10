@@ -1,6 +1,10 @@
 const ESLintPlugin = require('eslint-webpack-plugin');
 const WPDepExtractionPlugin = require('@wordpress/dependency-extraction-webpack-plugin');
-const { DefinePlugin, HotModuleReplacementPlugin } = require('webpack');
+const {
+  DefinePlugin,
+  HotModuleReplacementPlugin,
+  NormalModuleReplacementPlugin
+} = require('webpack');
 const { BlocksPlugin } = require('./plugins/block.js');
 const { PostProcessPlugin } = require('./plugins/post.process.js');
 const { ComponentsPlugin } = require('./plugins/component.js');
@@ -86,7 +90,20 @@ const hotModuleReplacement = () => {
 };
 
 const reactRefresh = () => {
-  return new ReactRefreshWebpackPlugin({});
+  return new ReactRefreshWebpackPlugin({
+    overlay: {
+      entry: '@pmmmwh/react-refresh-webpack-plugin/client/ErrorOverlayEntry',
+      module: '@pmmmwh/react-refresh-webpack-plugin/overlay',
+      sockIntegration: 'wds'
+    }
+  });
+};
+
+const normalModuleReplacement = () => {
+  return new NormalModuleReplacementPlugin(
+    /react-refresh-webpack-plugin\/overlay\/containers\/RuntimeErrorContainer/,
+    '/home/ubuntu/www/sassywackypeanut/domains/www.sassywackypeanut.com/peanut/src/whiteboard/shared/runtime-error-container.js'
+  );
 };
 
 const extractCss = ({ MiniCssExtractPlugin, exportType, filePath }) => {
@@ -108,5 +125,6 @@ module.exports = {
   blocks,
   postprocess,
   components,
+  normalModuleReplacement,
   copy
 };

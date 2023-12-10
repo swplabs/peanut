@@ -34,6 +34,7 @@ class PFWP_Components {
 		self::$js_data    = (object) array();
 	}
 
+	// TODO: can we define defaults for a components parse_args in JSON metadata schema and use here if available?
 	public static function parse_args( $array1, $array2 ) {
 		$merged = $array2;
 
@@ -213,6 +214,7 @@ class PFWP_Components {
 
 		// TODO: once we add back async, trigger these on each asset libraries load using <script onload=...
 		// TODO: add async await to clientJs function call
+		// TODO: Should this be moved to src/plugins/peanut/src/view.js file?
 		$js_trigger = <<<TRIGGER
       <script>
         Object.keys(window.pfwp_comp_instances).forEach((comp) => {

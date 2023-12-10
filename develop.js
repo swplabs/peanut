@@ -85,6 +85,7 @@ const checkBuildStatus = () => buildStatus['webpack'] && buildStatus['process'];
 const wpHandlerSuccess = ({ skipRestart }) => {
   buildStatus['webpack'] = true;
 
+  // TODO: make this smarter so that we only restart server on server file changes
   if (!skipRestart) {
     if (buildStatus['process']) {
       serverProcess?.kill();
