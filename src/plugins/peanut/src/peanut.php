@@ -31,15 +31,15 @@ if ( ! defined( 'PFWP_TEMPLATE_DIR' ) ) {
 global $pfwp_global_config;
 $pfwp_global_config = json_decode( @file_get_contents( PFWP_TEMPLATE_DIR . '/pfwp.json' ), false );
 
-add_action( 'admin_notices', function () {
-	global $pfwp_global_config;
-
-	if ( $pfwp_global_config->mode  === 'development' && (!defined( 'SCRIPT_DEBUG' ) || !SCRIPT_DEBUG) ) {
-		$class = 'notice notice-error';
-		$message = __( '<strong>Peanut For Wordpress</strong>: Script Debugging must be set to true when in development mode for Peanut editor scripts to function. See <a href="https://wordpress.org/documentation/article/debugging-in-wordpress/#script_debug" target="_blank">Wordpress debugging mode</a> for instructions.', 'pfwp' );
-			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), $message );
-	}
-});
+if ( $pfwp_global_config->mode === 'development' ) {
+	add_action( 'admin_notices', function () {
+		if  (!defined( 'SCRIPT_DEBUG' ) || !SCRIPT_DEBUG ) {
+			$class = 'notice notice-error';
+			$message = __( '<strong>Peanut For Wordpress</strong>: Script Debugging must be set to true when in development mode for Peanut editor scripts to function. See <a href="https://wordpress.org/documentation/article/debugging-in-wordpress/#script_debug" target="_blank">Wordpress debugging mode</a> for instructions.', 'pfwp' );
+				printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), $message );
+		}
+	});
+}
 
 // TODO: define rest route constants (namespace, version, etc)
 
