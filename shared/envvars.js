@@ -52,8 +52,6 @@ const defaultConfig = {
 
 // TODO: add wp.hooks import so that we can override envvars programatically
 
-
-
 // Set the defaults for all environments
 nconf.defaults(defaultConfig);
 

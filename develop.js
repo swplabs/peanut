@@ -7,9 +7,7 @@ const {
   getConfig,
   handler: webpackHandler,
   webpackPreProcess,
-  plugins: {
-    postprocess: postProcessPlugin
-  }
+  plugins: { postprocess: postProcessPlugin }
 } = require('./build/webpack/index.js');
 
 const { serverStart } = require('./build/server/index.js');

@@ -17,7 +17,6 @@ const build = (files, selectContainer, buttons, codeContainer) => {
     if (typeof index === 'number' && typeof onchanges[index] === 'function') onchanges[index]();
   };
 
-
   Object.keys(files).map((key, index) => {
     const file = files[key];
 
@@ -93,9 +92,7 @@ module.exports = async (instance, data) => {
   const title = instance.querySelector('.card-title');
   const codeContainer = instance.querySelector('.github-gist-code');
 
-  const {
-    gist_id
-  } = data;
+  const { gist_id } = data;
 
   if (typeof gist_id !== 'string') return;
 

@@ -7,9 +7,7 @@ class PostProcessPlugin {
 
   apply(compiler) {
     compiler.hooks.done.tap('PostProcessPlugin', (stats) => {
-      const {
-        callback
-      } = this;
+      const { callback } = this;
 
       webpackPostProcess({ stats });
 

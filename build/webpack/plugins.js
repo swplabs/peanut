@@ -25,7 +25,6 @@ const postprocess = (callback) => {
   });
 };
 
-
 const components = ({ directory, routes, outputPath }) => {
   return new ComponentsPlugin({
     directory,
