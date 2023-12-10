@@ -2,8 +2,8 @@ const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 const paths = require('./paths.js');
 const { webpackPreProcess } = require('./hooks.js');
-const loaders = require('./loaders.js');
-const plugins = require('./plugins.js');
+const webpackLoaders = require('./loaders.js');
+const webpackPlugins = require('./plugins.js');
 const envVars = require('../../shared/envvars.js');
 const { srcDirEntMap } = require('../../shared/src.dir.map.js');
 const environment = envVars.get('ENVIRONMENT') || 'prod';
@@ -21,71 +21,17 @@ const peanutThemePath = envVars.get('PFWP_THEME_PATH');
 
 const { getRoutes, getEntries, getCacheGroups } = paths;
 
-const { handlebars: hbsLoader, style: styleLoader, js: jsLoader, php: phpLoader } = loaders;
-
-const {
-  eslint: eslintPlugin,
-  webpackDefine: webpackDefinePlugin,
-  extractCss: extractCssPlugin,
-  blocks: blocksPlugin,
-  components: componentsPlugin,
-  copy: copyPlugin,
-  wpDepExtract: wpDepExtractPlugin,
-  hotModuleReplacement: hotModuleReplacementPlugin,
-  reactRefresh: reactRefreshPlugin,
-  normalModuleReplacement: normalModuleReplacementPlugin
-} = plugins;
-
-const handler =
+const webpackHandler =
   ({ buildType: type, srcType, hashCheck, success, error }) =>
-  (err, stats) => {
-    /*
-    if (err) {
-      console.log(`[webpack:${type}:${srcType}]`);
-      console.log(err);
-    }
-    */
-
+  (_err, stats) => {
     if (stats.hasErrors()) {
-      /*
-      console.log(`[webpack:${type}:${srcType}]`);
-      console.log(
-        stats.toString({
-          all: false,
-          errors: true
-        })
-      );
-      */
-
       if (typeof error === 'function') error();
     } else {
       if (typeof hashCheck === 'function') {
         if (hashCheck({ buildType: type, srcType, hash: stats.hash })) return;
       }
 
-      /*
-      if (stats.hasWarnings()) {
-        console.log(
-          stats.toString({
-            all: false,
-            warnings: true
-          })
-        );
-      }
-      */
-
       console.log(`\n[webpack:${type}:${srcType}] Compilation successful.`);
-      /*
-      console.log(
-        `${stats.toString({
-          all: false,
-          colors: true,
-          assets: true,
-          logging: 'info',
-          groupAssetsByExtension: true
-        })}\n`
-      );
-      */
 
       if (typeof success === 'function') success();
     }
@@ -167,29 +113,45 @@ const getOutput = ({ buildType, srcType, exportType }) => {
   return outputs;
 };
 
+const { handlebars: hbsLoader, style: styleLoader, js: jsLoader, php: phpLoader } = webpackLoaders;
+
 const getModuleRules = ({ isWeb, buildType, exportType, srcType, disableExtract }) => {
-  // TODO: remove once we switch to react for whiteboard app
+  // TODO: replace with react or remove once we switch to react for whiteboard app
   const rules = srcType === 'whiteboard' ? [hbsLoader({ isWeb })] : [];
 
   switch (buildType) {
     // case 'ssr':
-    // TODO: add 'client' case that doesn't use php loader for 'whiteboard'
     case 'elements': {
       rules.push(
         styleLoader({ MiniCssExtractPlugin, exportType, disableExtract }),
-        jsLoader({ buildType, srcType, exportType }),
-        phpLoader({ output: { peanutThemePath, wordpressRoot } })
+        jsLoader({ buildType, srcType, exportType })
       );
+
+      if (srcType !== 'whiteboard') {
+        rules.push(phpLoader({ output: { peanutThemePath, wordpressRoot } }));
+      }
       break;
     }
     case 'server': {
-      // rules.push();
       break;
     }
   }
 
   return rules;
 };
+
+const {
+  eslint: eslintPlugin,
+  webpackDefine: webpackDefinePlugin,
+  extractCss: extractCssPlugin,
+  blocks: blocksPlugin,
+  components: componentsPlugin,
+  copy: copyPlugin,
+  wpDepExtract: wpDepExtractPlugin,
+  hotModuleReplacement: hotModuleReplacementPlugin,
+  reactRefresh: reactRefreshPlugin,
+  normalModuleReplacement: normalModuleReplacementPlugin
+} = webpackPlugins;
 
 const getPlugins = ({ buildType, srcType, routes, exportType, disableExtract = false }) => {
   const plugins = [webpackDefinePlugin(routes), eslintPlugin({ buildType, srcType })];
@@ -231,7 +193,7 @@ const getPlugins = ({ buildType, srcType, routes, exportType, disableExtract = f
     plugins.push(
       hotModuleReplacementPlugin(),
       reactRefreshPlugin(),
-      normalModuleReplacementPlugin()
+      normalModuleReplacementPlugin({ rootDir })
     );
   }
 
@@ -251,9 +213,8 @@ const getBaseConfig = ({ isWeb, buildType, srcType, exportType, disableExtract }
 
     output: getOutput({ buildType, srcType, exportType }),
 
+    // TODO: use a CONSTANT here node version
     target: isWeb ? 'web' : 'node20.9',
-
-    // cache: false,
 
     node: !isWeb
       ? {
@@ -327,9 +288,9 @@ const getConfig = ({
 
 module.exports = {
   paths,
-  loaders,
-  plugins,
-  handler,
+  loaders: webpackLoaders,
+  plugins: webpackPlugins,
+  handler: webpackHandler,
   getConfig,
   webpackPreProcess
 };

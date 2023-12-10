@@ -99,10 +99,10 @@ const reactRefresh = () => {
   });
 };
 
-const normalModuleReplacement = () => {
+const normalModuleReplacement = ({ rootDir }) => {
   return new NormalModuleReplacementPlugin(
     /react-refresh-webpack-plugin\/overlay\/containers\/RuntimeErrorContainer/,
-    '/home/ubuntu/www/sassywackypeanut/domains/www.sassywackypeanut.com/peanut/src/whiteboard/shared/runtime-error-container.js'
+    `${rootDir}/src/whiteboard/shared/runtime-error-container.js`
   );
 };
 
