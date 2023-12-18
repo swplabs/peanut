@@ -60,6 +60,7 @@ const setFileName =
     let name = `${fileName}`;
 
     if (entryId === `${srcType}_${buildType}_webpack_runtime`) {
+      // TODO: add hash as version in plugin wp_register_script call
       name = `wp-content/plugins/peanut/assets/[name].[chunkhash:20].js`;
     } else if (['plugins', 'themes'].includes(srcType)) {
       const { pathName, entryFile } = getEntryInfo(srcType, entryId);

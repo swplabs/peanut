@@ -159,7 +159,7 @@ module.exports = ({ buildType, srcType }) => {
       'brace-style': ['error', '1tbs', { allowSingleLine: true }],
       'callback-return': 'off',
       camelcase: 'off',
-      'comma-dangle': 'error',
+      'comma-dangle': 'warn',
       'comma-spacing': ['error', { before: false, after: true }],
       'comma-style': ['error', 'last'],
       complexity: ['off', 11],

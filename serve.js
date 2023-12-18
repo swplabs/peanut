@@ -1,3 +1,5 @@
+// TODO: rename this file whiteboard.js
+
 const path = require('path');
 const envVars = require('./shared/envvars.js');
 const distPath = path.join(__dirname, `./dist/${envVars.get('PFWP_DIST')}`);

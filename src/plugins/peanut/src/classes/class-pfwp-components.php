@@ -166,19 +166,22 @@ class PFWP_Components {
 		self::$js_data->$key->$uuid = $data;
 	}
 
-	public static function get_uuid( $file_name ) {
+	public static function get_uuid( $file_name, $uuid = null ) {
 		global $wpdb;
 
 		$matches = self::match_file_name( $file_name );
 
-		// $prefix = $wpdb->prefix;
 		$prefix = '';
 
 		if ( isset( $matches['element'] ) ) {
 			$prefix .= $matches['element'] . '-';
 		}
 
-		$uuid = uniqid( $prefix );
+		if ( !isset( $uuid ) ) {
+			$uuid = uniqid();
+		}
+
+		$uuid = $prefix . $uuid;
 
 		if ( isset( $matches['element'] ) ) {
 			// Initialize data if we ask for a uuid
@@ -207,7 +210,7 @@ class PFWP_Components {
 		foreach ( self::$components as $key => $value ) {
 			if ( property_exists( $value->assets, 'js' ) ) {
 				foreach ( $value->assets->js as $asset_key => $asset_value ) {
-					echo '<script src="' . $asset_value . '" id="pfwp_js_' . $asset_key . '_' . $key . '"></script>' . PHP_EOL;
+					echo '<script src="' . $asset_value . '" id="pfwp_js_' . $key . '_' . $asset_key . '"></script>' . PHP_EOL;
 				}
 			}
 		}
@@ -249,7 +252,7 @@ class PFWP_Components {
 		foreach ( self::$components as $key => $value ) {
 			if ( property_exists( $value->assets, 'css' ) ) {
 				foreach ( $value->assets->css as $asset_key => $asset_value ) {
-					$styles .= '<link rel="stylesheet" href="' . $asset_value . '" id="pfwp_css_' . $asset_key . '_' . $key . '"/>' . PHP_EOL;
+					$styles .= '<link rel="stylesheet" href="' . $asset_value . '" id="pfwp_css_' . $key . '_' . $asset_key . '"/>' . PHP_EOL;
 				}
 			}
 		}

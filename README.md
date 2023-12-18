@@ -2,15 +2,19 @@
 
 Build your wordpress themes and blocks with component-like elements.
 
-## Documenation and Alpha Release
+## Alpha Release
 
 Alpha release and proper documentation are all coming soon.
+
+## Requirements
+
+Peanut For Wordpress requires an environment running both [Node.js](https://nodejs.org/en/about) and, of course, [Wordpress](https://wordpress.org/about/).
 
 ## Quickstart
 
 ### Enable Wordpress Debugging
 
-Script Debugging must be set to true when in development mode for Peanut editor scripts to function. See <a href="https://wordpress.org/documentation/article/debugging-in-wordpress/#script_debug" target="_blank">Wordpress debugging mode</a> for instructions on how to turn on in your Wordpress development environment.
+Script Debugging must be set to true when in development mode for Peanut editor scripts to function. See [Wordpress debugging mode](https://wordpress.org/documentation/article/debugging-in-wordpress/#script_debug) for instructions on how to turn on in your Wordpress development environment.
 
 ### Update the configuration
 
@@ -22,7 +26,8 @@ Update ./extend/config.json with your Wordpress settings (example shown below)
   "PFWP_WP_ROOT": "/var/www/html",
   "PFWP_THEME_PATH": "/wp-content/themes/twentytwentyfour",
   "PFWP_WP_PUBLIC_PATH": "http://localhost/",
-  "PFWP_SSE_HOST": "http://localhost:9090",
+  "PFWP_WB_SSE_HOST": "http://localhost:9090",
+  "PFWP_WB_SSE_PORT": 9090,
   "PFWP_CORE_BLOCK_FILTERS": {
     "on_pre_render": {},
     "on_render": {}
@@ -43,6 +48,10 @@ make develop
 ### Components and Blocks Examples
 
 Coming soon.
+
+## Documentation
+
+Alpha release and proper documentation are all coming soon.
 
 ## Support Us
 
