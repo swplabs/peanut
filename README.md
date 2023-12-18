@@ -12,11 +12,18 @@ Peanut For Wordpress requires an environment running both [Node.js](https://node
 
 ## Quickstart
 
-### Enable Wordpress Debugging
+### Wordpress Environment Settings
+
+
+#### Enable Permalinks
+
+Permalinks are the permanent URLs of your Wordpress content. At the moment, Peanut For Wordpress requires that Permalinks to set to something other than the default "Plain". See "[Choosing your permalink structure](https://wordpress.org/documentation/article/customize-permalinks/)" for instructions on how to change your permalink settings.
+
+#### Enable Debugging
 
 Script Debugging must be set to true when in development mode for Peanut editor scripts to function. See [Wordpress debugging mode](https://wordpress.org/documentation/article/debugging-in-wordpress/#script_debug) for instructions on how to turn on in your Wordpress development environment.
 
-### Update the configuration
+### Peanut configuration
 
 Update ./extend/config.json with your Wordpress settings (example shown below)
 
@@ -44,6 +51,14 @@ nvm install
 make install
 make develop
 ```
+
+### Enable the Peanut WP Plugin
+
+Once you start the Peanut app, the peanut plugin will auto compile into your Wordpress plugins folder. You'll need to then go into your Wordpress Admin and enable the plugin.
+
+### Start building...
+
+You should be good to go. Try out the examples in the ./src/ folder or create your own!
 
 ### Components and Blocks Examples
 
