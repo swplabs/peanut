@@ -44,7 +44,9 @@ Update ./extend/config.json with your Wordpress settings (example shown below)
 
 **Note:** Ensure that the directories you specify have the proper write permissions.
 
-### Start the App
+### Install and Start the Node App
+
+Run the following commands in the root directory to install the appropriate version on Node.js and start the Peanut development application:
 
 ```
 nvm install
@@ -54,15 +56,15 @@ make develop
 
 ### Enable the Peanut WP Plugin
 
-Once you start the Peanut app, the peanut plugin will auto compile into your Wordpress plugins folder. You'll need to then go into your Wordpress Admin and enable the plugin.
+Once you start the Peanut app, the Peanut plugin will auto compile into your Wordpress plugins folder. You'll need to then go into your Wordpress Admin and [enable the plugin](https://wordpress.org/documentation/article/manage-plugins/).
 
 ### Start building...
 
-You should be good to go. Try out the examples in the ./src/ folder or create your own!
+Now you're ready to go. Try out the examples in the ./src/ folder or create your own!
 
 ### Components and Blocks Examples
 
-Coming soon.
+This repo comes with an example theme and example components that auto compile to your Wordpress themes folder. To get a demo of some of the ways to use Peanut For Wordpress, [enable that example theme](https://wordpress.org/documentation/article/work-with-themes/#activating-the-theme) in your Wordpress Admin.
 
 ## Documentation
 
