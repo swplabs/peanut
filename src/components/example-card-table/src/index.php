@@ -17,7 +17,7 @@ $attributes = $data['attributes'];
   <div class="card-body card--pad">
     
     <div class="card-head">
-      <h6 class="card-title"><?php echo $attributes['title']; ?></h6>
+      <h6 class="card-title"><?php echo esc_html( $attributes['title'] ); ?></h6>
       <div class="button">Close <i class="icon icon-close"></i></div>
     </div>
 
@@ -26,7 +26,7 @@ $attributes = $data['attributes'];
       <div class="table table-grid">
         <div class="table-head">
           <span>FEATURE</span>
-          <span><?php echo $attributes['table_head']; ?></span>
+          <span><?php echo esc_html( $attributes['table_head'] ); ?></span>
         </div>
         <div class="table-content">
           <ul class="table-list">

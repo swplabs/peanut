@@ -36,6 +36,7 @@ class PFWP_Assets {
 	private static function register_runtime_script( $script_name ) {
 		global $pfwp_global_config;
 
+		// TODO: add hash as version
 		if ( property_exists( $pfwp_global_config->runtime, $script_name ) ) {
 			wp_register_script(
 				$script_name . '_webpack_runtime',

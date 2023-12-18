@@ -1,6 +1,7 @@
 const whm = require('webpack-hot-middleware');
 const wdm = require('webpack-dev-middleware');
 const envVars = require('../../shared/envvars.js');
+// TODO: move ./serve into ./shared
 const router = require('../../serve/lib/router.js');
 const { createServer } = require('../../serve/lib/servers.js');
 const environment = envVars.get('ENVIRONMENT');

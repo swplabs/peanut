@@ -25,10 +25,12 @@ let buildHashes = {};
 
 let serverProcess;
 
+// TODO: rename these code blocks to be more  whiteboard specific
 // start app server node process
 const startAppServer = () => {
   console.log('[develop] Starting app server...');
 
+  // TODO: rename file to whiteboad.js and move ./serve into ./shared folder
   serverProcess = spawn('node', ['./serve.js']);
 
   serverProcess.on('spawn', () => {
