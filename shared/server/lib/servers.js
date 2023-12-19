@@ -1,7 +1,6 @@
 const http = require('http');
 const https = require('https');
 const { readFileSync } = require('fs');
-const { debug: log } = require('../../../src/whiteboard/shared/utils.js');
 
 const extendServer = (server) => {
   const connections = {};
@@ -38,8 +37,8 @@ const createServer = ({ env, port, httpsPort, requestHandler }) => {
   const httpServer = http.createServer({}, requestHandler);
 
   httpServer.listen(port, () => {
-    log('[server]', 'App running on http://localhost:' + port);
-    log('[server]', 'Environment set to: ' + env);
+    console.log(`[server] App runing on http://localhost:${port}`);
+    console.log('[server]', 'Environment set to: ' + env);
   });
 
   extendServer(httpServer);
@@ -55,7 +54,7 @@ const createServer = ({ env, port, httpsPort, requestHandler }) => {
     );
 
     httpsServer.listen(httpsPort, () => {
-      log('[server]', 'HTTPS is enabled and running on https://localhost:' + httpsPort);
+      console.log('[server]', 'HTTPS is enabled and running on https://localhost:' + httpsPort);
     });
 
     extendServer(httpsServer);

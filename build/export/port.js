@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { srcDirEntMap } = require('../../shared/src.dir.map.js');
+const { srcDirectoryEntryMap } = require('../../shared/src.dir.map.js');
 
 // TODO: Pull in Wordpress path
 module.exports = ({ exportType, components, srcPath, wpPath }) => {
@@ -21,12 +21,12 @@ module.exports = ({ exportType, components, srcPath, wpPath }) => {
       return;
     }
 
-    Object.keys(srcDirEntMap).map((key) => {
-      const { exportCfg } = srcDirEntMap[key];
+    Object.keys(srcDirectoryEntryMap).map((key) => {
+      const { exportConfig } = srcDirectoryEntryMap[key];
 
       const fileName = key;
 
-      const cfg = exportCfg?.[exportType];
+      const cfg = exportConfig?.[exportType];
       const portCfg = cfg?.port;
       const file = `${compSrcDir}/${fileName}`;
 

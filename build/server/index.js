@@ -18,7 +18,10 @@ const cntrls = {
   }
 };
 
-const { sse: defaultRequests, health: healthCheck } = require('../../shared/server/middleware/index.js');
+const {
+  sse: defaultRequests,
+  health: healthCheck
+} = require('../../shared/server/middleware/index.js');
 
 // Set up route controllers
 const routeController = (route) => {

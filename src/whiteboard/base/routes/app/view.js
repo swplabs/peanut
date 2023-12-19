@@ -43,7 +43,7 @@ const init = () => {
   const { variations = {} } = window.peanutApp;
 
   routes
-    .filter(({ type }) => type === 'prototype')
+    .filter(({ type }) => type === 'element')
     .map((route) => {
       const { id, url, title, path } = route;
       const li = document.createElement('li');

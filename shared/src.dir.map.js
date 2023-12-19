@@ -1,37 +1,9 @@
-const srcDirEntMap = {
-  // TODO: remove once we replace with react for whiteboard app
-  'template.hbs': {
-    flag: 'hasSrcTemplate',
-    entryKey: 'hbs_template',
-    excludeSrcTypes: ['blocks', 'components', 'themes', 'plugins'],
-    buildCfg: {
-      server: {
-        entry: {
-          enabled: true,
-          library: {
-            type: 'commonjs2'
-          }
-        }
-      }
-    },
-    exportCfg: {
-      web: {
-        entry: {
-          enabled: true,
-          library: {
-            type: 'window',
-            name: ['peanutComps', '[name]']
-          },
-          buildTypes: ['elements']
-        }
-      }
-    }
-  },
+const srcDirectoryEntryMap = {
   'variations.json': {
     flag: 'hasVars',
     entryKey: 'variations',
     excludeSrcTypes: ['themes', 'plugins'],
-    buildCfg: {
+    buildConfig: {
       server: {
         entry: {
           enabled: true,
@@ -41,14 +13,14 @@ const srcDirEntMap = {
         }
       }
     },
-    exportCfg: {}
+    exportConfig: {}
   },
   // TODO: for plugin/block client side styles will we need to adjust the library type?
   // TODO: add pattern match so that we can use "editor.s?css"
   'style.scss': {
     flag: 'hasStyles',
     entryKey: 'styles',
-    buildCfg: {
+    buildConfig: {
       elements: {
         entry: {
           enabled: true,
@@ -59,7 +31,7 @@ const srcDirEntMap = {
         }
       }
     },
-    exportCfg: {
+    exportConfig: {
       web: {
         entry: {
           enabled: true,
@@ -81,14 +53,14 @@ const srcDirEntMap = {
     flag: 'hasIndexPhp',
     entryKey: 'php_index',
     excludeSrcTypes: ['themes', 'plugins'],
-    buildCfg: {
+    buildConfig: {
       elements: {
         entry: {
           enabled: true
         }
       }
     },
-    exportCfg: {
+    exportConfig: {
       web: {
         port: {
           enabled: true
@@ -105,14 +77,14 @@ const srcDirEntMap = {
     flag: 'hasRenderPhp',
     entryKey: 'php_render',
     excludeSrcTypes: ['themes', 'plugins'],
-    buildCfg: {
+    buildConfig: {
       elements: {
         entry: {
           enabled: true
         }
       }
     },
-    exportCfg: {
+    exportConfig: {
       web: {
         port: {
           enabled: true
@@ -129,14 +101,14 @@ const srcDirEntMap = {
   'editor.js': {
     flag: 'hasEditorScript',
     entryKey: 'editor',
-    buildCfg: {
+    buildConfig: {
       elements: {
         entry: {
           enabled: true
         }
       }
     },
-    exportCfg: {
+    exportConfig: {
       web: {
         port: {
           enabled: true
@@ -153,14 +125,14 @@ const srcDirEntMap = {
   'editor.scss': {
     flag: 'hasEditorStyles',
     entryKey: 'editor_styles',
-    buildCfg: {
+    buildConfig: {
       elements: {
         entry: {
           enabled: true
         }
       }
     },
-    exportCfg: {
+    exportConfig: {
       web: {
         port: {
           enabled: true
@@ -177,7 +149,7 @@ const srcDirEntMap = {
   // TODO: add alias "view.js"
   'view.js': {
     flag: 'hasSrcClient',
-    buildCfg: {
+    buildConfig: {
       elements: {
         entry: {
           enabled: true,
@@ -186,9 +158,17 @@ const srcDirEntMap = {
             name: ['peanutSrcClientJs', '[name]']
           }
         }
+      },
+      server: {
+        entry: {
+          enabled: true,
+          library: {
+            type: 'commonjs2'
+          }
+        }
       }
     },
-    exportCfg: {
+    exportConfig: {
       web: {
         entry: {
           enabled: true,
@@ -209,5 +189,5 @@ const srcDirEntMap = {
 };
 
 module.exports = {
-  srcDirEntMap
+  srcDirectoryEntryMap
 };
