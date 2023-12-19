@@ -11,7 +11,8 @@ const baseRoutes = {
       srcPath: baseWbRoutePath,
       path: 'app',
       type: 'base',
-      srcType: 'whitebaord',
+      srcType: 'whiteboard',
+      buildType: 'elements',
       controller: 'app'
     },
     {
@@ -22,6 +23,7 @@ const baseRoutes = {
       path: 'schema',
       type: 'base',
       srcType: 'whiteboard',
+      buildType: 'elements',
       controller: 'schema'
     },
     {
@@ -32,6 +34,7 @@ const baseRoutes = {
       path: 'home',
       type: 'base',
       srcType: 'whiteboard',
+      buildType: 'elements',
       controller: 'base'
     }
   ]

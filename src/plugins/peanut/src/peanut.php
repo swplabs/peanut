@@ -41,6 +41,13 @@ if ( $pfwp_global_config->mode === 'development' ) {
 	});
 }
 
+switch ( wp_get_environment_type() ) {
+	case 'local':
+	case 'development':
+		// TODO: open up rest routes to any data
+	break;
+}
+
 // TODO: define rest route constants (namespace, version, etc)
 
 // Assets Engine

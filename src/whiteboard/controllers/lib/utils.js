@@ -7,10 +7,10 @@ const wordpressPublicPath = envVars.get('PFWP_WP_PUBLIC_PATH');
 const serverImports = {};
 let buildAssets = {};
 
-let chunkGroupsDist;
+let pfwpConfig;
 
-const setChunkGroups = (dist) => {
-  chunkGroupsDist = dist;
+const setConfig = (config) => {
+  pfwpConfig = config;
 };
 
 // TODO: Add max limit to "cached" files
@@ -29,13 +29,15 @@ const getServerFile = async (key) => {
   return serverImports[key];
 };
 
-const resetAssets = ({ srcType }) => {
-  buildAssets[srcType] = {};
+const resetAssets = ({ srcType, buildType }) => {
+  buildAssets[`${srcType}_${buildType}`] = {};
 };
 
-const buildClientAssets = ({ srcType, id }) => {
-  if (!buildAssets[srcType]) buildAssets[srcType] = {};
-  if (!buildAssets[srcType][id]) buildAssets[srcType][id] = {};
+const buildClientAssets = ({ srcType, buildType, id }) => {
+  const assetIndex = `${srcType}_${buildType}`;
+
+  if (!buildAssets[assetIndex]) buildAssets[assetIndex] = {};
+  if (!buildAssets[assetIndex][id]) buildAssets[assetIndex][id] = {};
 
   const publicPath = srcType === 'whiteboard' ? wbPublicPath : wordpressPublicPath;
 
@@ -43,18 +45,18 @@ const buildClientAssets = ({ srcType, id }) => {
   let jsString = '';
   let cssString = '';
 
-  const clientAssets = chunkGroupsDist[srcType][id];
+  const clientAssets = pfwpConfig.chunk_groups[assetIndex][id];
 
-  if (clientAssets?.assets?.length) {
-    clientAssets.assets.forEach(({ name }) => {
+  if (clientAssets.main_assets?.length) {
+    clientAssets.main_assets.forEach(({ name }) => {
       const type = extname(name)?.substring(1);
 
-      if (!buildAssets[srcType][id][type]) {
-        buildAssets[srcType][id][type] = {};
+      if (!buildAssets[assetIndex][id][type]) {
+        buildAssets[assetIndex][id][type] = {};
       }
 
-      if (typeof buildAssets[srcType][id][type][name] === 'undefined') {
-        buildAssets[srcType][id][type][name] = true;
+      if (typeof buildAssets[assetIndex][id][type][name] === 'undefined') {
+        buildAssets[assetIndex][id][type][name] = true;
 
         if (type === 'js') {
           jsString += `<script src="${publicPath}${name}"></script>`;
@@ -62,13 +64,13 @@ const buildClientAssets = ({ srcType, id }) => {
           cssString += `<link rel="stylesheet" type="text/css" href="${publicPath}${name}" />`;
         }
 
-        log(`[server] Generated ${type} client asset:`, srcType, id, name);
+        log(`[server] Generated ${type} client asset:`, assetIndex, id, name);
       } else {
-        log('[server] Already generated client asset:', srcType, id, name);
+        log('[server] Already generated client asset:', assetIndex, id, name);
       }
     });
   } else {
-    log('[server] Requested empty client asset:', srcType, id);
+    log('[server] Requested empty client asset:', assetIndex, id);
   }
   return {
     js: jsString,
@@ -119,7 +121,7 @@ const addParamsToData = (compData, { schema, params }) => {
 };
 
 module.exports = {
-  setChunkGroups,
+  setConfig,
   buildClientAssets,
   resetAssets,
   getServerFile,
