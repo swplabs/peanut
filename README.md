@@ -14,7 +14,6 @@ Peanut For Wordpress requires an environment running both [Node.js](https://node
 
 ### Wordpress Environment Settings
 
-
 #### Enable Permalinks
 
 Permalinks are the permanent URLs of your Wordpress content. At the moment, Peanut For Wordpress requires that Permalinks to set to something other than the default "Plain". See "[Choosing your permalink structure](https://wordpress.org/documentation/article/customize-permalinks/)" for instructions on how to change your permalink settings.

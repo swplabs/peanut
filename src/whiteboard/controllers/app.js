@@ -5,13 +5,13 @@ const cntrlResponses = {};
 
 const controller = ({ route, routes }) => {
   return async () => {
-    const { id, title, srcType } = route;
+    const { id, title, srcType, buildType } = route;
     let variations = [];
 
     if (typeof cntrlResponses[id] !== 'string') {
       log('[server] Getting base response:', id);
 
-      resetAssets({ srcType });
+      resetAssets({ srcType, buildType });
 
       const template = await getServerFile(`hbs_${id}.js`);
 
@@ -60,7 +60,7 @@ const controller = ({ route, routes }) => {
         variations = await Promise.all(varProms);
       }
 
-      const { js = '', css = '' } = buildClientAssets({ srcType, id }) || {};
+      const { js = '', css = '' } = buildClientAssets({ srcType, buildType, id }) || {};
 
       cntrlResponses[id] =
         typeof template === 'function'

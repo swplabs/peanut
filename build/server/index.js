@@ -1,9 +1,8 @@
 const whm = require('webpack-hot-middleware');
 const wdm = require('webpack-dev-middleware');
 const envVars = require('../../shared/envvars.js');
-// TODO: move ./serve into ./shared
-const router = require('../../serve/lib/router.js');
-const { createServer } = require('../../serve/lib/servers.js');
+const router = require('../../shared/server/lib/router.js');
+const { createServer } = require('../../shared/server/lib/servers.js');
 const environment = envVars.get('ENVIRONMENT');
 const isLocal = environment === 'local';
 const minorSeconds = isLocal ? 0 : 60;
@@ -19,7 +18,7 @@ const cntrls = {
   }
 };
 
-const { sse: defaultRequests, health: healthCheck } = require('../../serve/middleware/index.js');
+const { sse: defaultRequests, health: healthCheck } = require('../../shared/server/middleware/index.js');
 
 // Set up route controllers
 const routeController = (route) => {

@@ -1,7 +1,7 @@
 const http = require('http');
 const https = require('https');
 const { readFileSync } = require('fs');
-const { debug: log } = require('../../src/whiteboard/shared/utils.js');
+const { debug: log } = require('../../../src/whiteboard/shared/utils.js');
 
 const extendServer = (server) => {
   const connections = {};

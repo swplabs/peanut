@@ -1,8 +1,8 @@
 /* global __ROUTES__ */
 
 const envVars = require('../../shared/envvars.js');
-const router = require('../../serve/lib/router.js');
-const { createServer } = require('../../serve/lib/servers.js');
+const router = require('../../shared/server/lib/router.js');
+const { createServer } = require('../../shared/server/lib/servers.js');
 const environment = envVars.get('ENVIRONMENT');
 const isLocal = environment === 'local';
 const minorSeconds = isLocal ? 0 : 60;
@@ -22,7 +22,7 @@ const {
   default: defaultRequests,
   health: healthCheck,
   serveStatic
-} = require('../../serve/middleware/index.js');
+} = require('../../shared/server/middleware/index.js');
 
 const staticFiles = serveStatic(`./dist/${envVars.get('PFWP_DIST')}/static`, {
   minorSeconds,
@@ -52,8 +52,8 @@ const useMiddleware = (req, res) => {
   );
 };
 
-const serverStart = (chunkgroups) => {
-  cntrls.utils.setChunkGroups(chunkgroups);
+const serverStart = (config) => {
+  cntrls.utils.setConfig(config);
 
   routes.forEach((route) => router.get(route.url, routeController(route)));
 

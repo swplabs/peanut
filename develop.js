@@ -23,18 +23,16 @@ let sseHttpsServer;
 let buildStatus = {};
 let buildHashes = {};
 
-let serverProcess;
+let whiteboardProcess;
 
-// TODO: rename these code blocks to be more  whiteboard specific
-// start app server node process
-const startAppServer = () => {
-  console.log('[develop] Starting app server...');
+// start whiteboard node process
+const startWhiteBoardServer = () => {
+  console.log('[develop] Starting Whiteboard server...');
 
-  // TODO: rename file to whiteboad.js and move ./serve into ./shared folder
-  serverProcess = spawn('node', ['./serve.js']);
+  whiteboardProcess = spawn('node', ['./whiteboard.js']);
 
-  serverProcess.on('spawn', () => {
-    console.log('[develop] App server started.');
+  whiteboardProcess.on('spawn', () => {
+    console.log('[develop] Whiteboard server started.', "\n");
 
     buildStatus['process'] = true;
 
@@ -44,15 +42,15 @@ const startAppServer = () => {
     }
   });
 
-  serverProcess.stdout.on('data', (data) => {
+  whiteboardProcess.stdout.on('data', (data) => {
     console.log(data.toString().trim());
   });
 
-  serverProcess.stderr.on('data', (data) => {
+  whiteboardProcess.stderr.on('data', (data) => {
     console.log(data.toString().trim());
   });
 
-  serverProcess.on('error', (error) => {
+  whiteboardProcess.on('error', (error) => {
     console.log(`[develop] Server process error: ${error.message}`);
   });
 };
@@ -63,7 +61,7 @@ const restartBuild = () => {
   buildHashes = {};
 
   webpackDMInstance?.close(async () => {
-    serverProcess?.kill();
+    whiteboardProcess?.kill();
 
     console.log('[chokidar] Development configuration updated. Restarting build process..');
 
@@ -90,13 +88,13 @@ const wpHandlerSuccess = ({ skipRestart }) => {
   // TODO: make this smarter so that we only restart server on server file changes
   if (!skipRestart) {
     if (buildStatus['process']) {
-      serverProcess?.kill();
+      whiteboardProcess?.kill();
       buildStatus['process'] = false;
     }
   }
 
   if (!buildStatus['process']) {
-    startAppServer();
+    startWhiteBoardServer();
   }
 
   if (checkBuildStatus()) {
@@ -219,7 +217,7 @@ process.on('SIGINT', async () => {
 
   if (restartTO) clearTimeout(restartTO);
 
-  if (serverProcess?.kill()) console.log('[develop] App server process terminated');
+  if (whiteboardProcess?.kill()) console.log('[develop] App server process terminated');
 
   webpackDMInstance?.close(function () {
     console.log('[webpack] Stopped.');

@@ -5,16 +5,16 @@ const cntrlResponses = {};
 
 const controller = ({ route }) => {
   return async () => {
-    const { id, title, srcType } = route;
+    const { id, title, srcType, buildType } = route;
 
     if (typeof cntrlResponses[id] !== 'string') {
       log('[server] Getting base response:', id);
 
-      resetAssets({ srcType });
+      resetAssets({ srcType, buildType });
 
       const template = await getServerFile(`hbs_${id}.js`);
 
-      const { js = '', css = '' } = buildClientAssets({ id, srcType }) || {};
+      const { js = '', css = '' } = buildClientAssets({ id, srcType, buildType }) || {};
 
       cntrlResponses[id] =
         typeof template === 'function'

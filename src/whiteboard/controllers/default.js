@@ -39,7 +39,7 @@ const addComponentAssets = ({
   disableSrcClient = false,
   isSubComp = false
 }) => {
-  const { templateType, hasStyles, hasSrcClient, type, srcType } = compRoute;
+  const { templateType, hasStyles, hasSrcClient, type, srcType, buildType } = compRoute;
 
   const js = [];
   const css = [];
@@ -49,10 +49,10 @@ const addComponentAssets = ({
     type === 'prototype' && templateType === 'default' ? 'hbs_prototype' : 'proto_' + compId;
 
   const { js: baseJsAsset = '', css: baseCssAsset = '' } =
-    buildClientAssets({ srcType, id: compId }) || {};
+    buildClientAssets({ srcType, buildType, id: compId }) || {};
 
   const { js: protoJsAsset = '', css: protoCssAsset = '' } =
-    buildClientAssets({ srcType, id: hpAssetId }) || {};
+    buildClientAssets({ srcType, buildType, id: hpAssetId }) || {};
 
   if (!isSubComp && protoCssAsset) css.push(protoCssAsset);
   if (baseCssAsset) css.push(baseCssAsset);
@@ -60,7 +60,7 @@ const addComponentAssets = ({
   // TODO: if no css extraction, use stylesJsAsset
   if (hasStyles) {
     const { css: stylesCssAsset = '' } =
-      buildClientAssets({ srcType, id: 'styles_' + compId }) || {};
+      buildClientAssets({ srcType, buildType, id: 'styles_' + compId }) || {};
     if (stylesCssAsset) css.push(stylesCssAsset);
   }
 
@@ -91,13 +91,14 @@ const controller = ({ route }) => {
       hasSrcTemplate,
       hasSrcClient,
       hasSchema,
-      srcType
+      srcType,
+      buildType
     } = route;
 
     // TODO: add back response caching using some sort of hash of url/searchparams
     log('[server] Getting controller response:', id);
 
-    resetAssets({ srcType });
+    resetAssets({ srcType, buildType });
 
     componentJs = [];
     componentCss = [];

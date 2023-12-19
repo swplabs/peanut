@@ -58,7 +58,7 @@ const getCacheGroups = ({ buildType }) => {
   );
 };
 
-const findRoutes = ({ srcTypeDirEnts, forceBase, srcType }) => {
+const findRoutes = ({ srcTypeDirEnts, forceBase, srcType, buildType }) => {
   let srcTypePaths;
   const srcTypeDir = `${appSrcPath}/${srcType}/`;
 
@@ -87,6 +87,7 @@ const findRoutes = ({ srcTypeDirEnts, forceBase, srcType }) => {
             path,
             type: 'prototype',
             srcType,
+            buildType,
             controllerType: 'default',
             templateType: 'default',
             initialData: {}
@@ -125,17 +126,17 @@ const getRoutes = ({ buildType, srcType, forceBase = false }) => {
     // TODO: document why we are doing this for whiteboard server
     if (buildType === 'server') {
       routes = [
-        ...findRoutes({ srcType: 'whiteboard', forceBase }),
-        ...findRoutes({ srcType: 'blocks', forceBase }),
-        ...findRoutes({ srcType: 'components', forceBase }),
-        ...findRoutes({ srcType: 'plugins', forceBase }),
-        ...findRoutes({ srcType: 'themes', forceBase })
+        ...findRoutes({ srcType: 'whiteboard', buildType, forceBase }),
+        ...findRoutes({ srcType: 'blocks', buildType, forceBase }),
+        ...findRoutes({ srcType: 'components', buildType, forceBase }),
+        ...findRoutes({ srcType: 'plugins', buildType, forceBase }),
+        ...findRoutes({ srcType: 'themes', buildType, forceBase })
       ];
     } else {
       routes = baseRoutes?.[srcType] ? [...baseRoutes[srcType]] : [];
     }
   } else {
-    routes = findRoutes({ srcType, forceBase });
+    routes = findRoutes({ srcType, buildType, forceBase });
   }
 
   return routes;

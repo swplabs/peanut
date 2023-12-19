@@ -9,7 +9,7 @@ const { baseIdPrefix } = require('../../../shared/src.dir.map.js');
 
 const controller = ({ route, routes }) => {
   return async ({ req }) => {
-    const { id, title, srcType } = route;
+    const { id, title, srcType, buildType } = route;
 
     const component = req?.locals?.route?.match?.id || '';
     let compSchema;
@@ -20,11 +20,11 @@ const controller = ({ route, routes }) => {
     // TODO: add back response caching using some sort of hash of url
     log('[server] Getting schema response:', key);
 
-    resetAssets({ srcType });
+    resetAssets({ srcType, buildType });
 
     const template = await getServerFile(`hbs_${id}.js`);
 
-    const { js = '', css = '' } = buildClientAssets({ srcType, id }) || {};
+    const { js = '', css = '' } = buildClientAssets({ srcType, buildType, id }) || {};
 
     if (component) {
       const compId = `${baseIdPrefix}${component}`;
