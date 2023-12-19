@@ -1,12 +1,13 @@
 const path = require('path');
 const fs = require('fs');
 const { toCamelCase, debug: log } = require('../../src/whiteboard/shared/utils.js');
-const { srcDirEntMap } = require('../../shared/src.dir.map.js');
-const { baseRoutes, baseEntries } = require('../../shared/paths.js');
+const { srcDirectoryEntryMap } = require('../../shared/src.dir.map.js');
+const { baseRoutes, baseEntries } = require('../../shared/base.paths.js');
 const envVars = require('../../shared/envvars.js');
 const appSrcPath = envVars.get('PFWP_APP_SRC_PATH');
-const dirEntSrcPath = envVars.get('PFWP_DIR_ENT_SRC_PATH');
 const nodeEnv = envVars.get('NODE_ENV') || 'production';
+const serverSideEventHost = envVars.get('PFWP_SSE_HOST');
+const serverSideEventTimeout = 10000;
 
 let entries = {};
 let routes;
@@ -27,12 +28,12 @@ const getCacheGroups = ({ buildType }) => {
         'node_modules/css-loader',
         'node_modules/postcss-loader',
         'node_modules/sass-loader'
-      ],
-      hbs_runtime: ['node_modules/handlebars', '/build/handlebars/helpers/']
+      ]
+      // hbs_runtime: ['node_modules/handlebars', '/build/handlebars/helpers/']
     };
   } else if (buildType === 'server') {
     cacheGroupsCfg = {
-      hbs_helpers: ['build/handlebars/helpers']
+      // hbs_helpers: ['build/handlebars/helpers']
     };
   }
 
@@ -58,70 +59,97 @@ const getCacheGroups = ({ buildType }) => {
   );
 };
 
-const findRoutes = ({ srcTypeDirEnts, forceBase, srcType, buildType }) => {
+const findRoutes = ({
+  srcTypeDirectoryEntries,
+  forceBase,
+  srcType,
+  srcTypeSubDirectory = '',
+  buildType,
+  directoryEntrySrcPath = '/src'
+}) => {
   let srcTypePaths;
-  const srcTypeDir = `${appSrcPath}/${srcType}/`;
+  const srcTypeDirectory = `${appSrcPath}/${srcType}/${srcTypeSubDirectory}`;
 
   try {
-    srcTypePaths = fs.readdirSync(srcTypeDir, {});
+    srcTypePaths = fs.readdirSync(srcTypeDirectory, {});
   } catch (e) {
     log('[build:webpack:paths] error:', e?.message);
     srcTypePaths = [];
   }
 
   return srcTypePaths.reduce(
-    (protoRoutes, path) => {
+    (srcRoutes, srcTypePath) => {
       try {
-        const srcPath = srcTypeDir + path;
+        const srcPath = srcTypeDirectory + srcTypePath + directoryEntrySrcPath;
 
-        if (fs.existsSync(`${srcPath}${dirEntSrcPath}`)) {
-          const compDirEnts = fs.readdirSync(`${srcPath}${dirEntSrcPath}`, {
+        if (fs.existsSync(srcPath)) {
+          const compDirEnts = fs.readdirSync(srcPath, {
             withFileTypes: true
           });
 
           const tempRoute = {
-            url: `/prototypes/${srcType}/${path}`,
-            title: toCamelCase(path),
-            id: `${srcType}_${path}`,
+            // TODO: url will need to point to wordpress custom route
+            url: `/elements/${srcType}/${srcTypePath}`,
+            title: toCamelCase(srcTypePath),
+            id: `${srcType}_${srcTypePath}`,
             srcPath,
-            path,
-            type: 'prototype',
+            path: srcTypePath,
+            type: 'element',
             srcType,
             buildType,
-            controllerType: 'default',
-            templateType: 'default',
+            controller: 'default',
+            // templateType: 'default',
             initialData: {}
           };
 
           const routeFlags = compDirEnts.reduce((flags, dirEnt) => {
             if (dirEnt.isFile()) {
-              const map = srcDirEntMap[dirEnt.name];
+              const map = srcDirectoryEntryMap[dirEnt.name];
               if (map && map.excludeSrcTypes?.includes(srcType) !== true) flags[map.flag] = true;
             }
 
             return flags;
           }, {});
 
-          protoRoutes.push({
-            ...tempRoute,
-            ...routeFlags
-          });
+          const existingRouteIndex = srcRoutes.findIndex(
+            ({ path: srcRoutePath }) => srcRoutePath === srcTypePath
+          );
+
+          if (existingRouteIndex >= 0) {
+            srcRoutes[existingRouteIndex] = {
+              ...tempRoute,
+              ...srcRoutes[existingRouteIndex],
+              ...routeFlags
+            };
+          } else {
+            srcRoutes.push({
+              ...tempRoute,
+              ...routeFlags
+            });
+          }
         }
       } catch (e) {
         log('[build:webpack:paths] error:', e?.message);
       }
 
-      return protoRoutes;
+      return srcRoutes;
     },
-    !forceBase && Array.isArray(srcTypeDirEnts)
+    !forceBase && Array.isArray(srcTypeDirectoryEntries)
       ? []
-      : baseRoutes?.[srcType]
-        ? [...baseRoutes[srcType]]
+      : baseRoutes?.[buildType]?.[srcType]
+        ? [...baseRoutes[buildType][srcType]]
         : []
   );
 };
 
-const getRoutes = ({ buildType, srcType, forceBase = false }) => {
+const getRoutes = ({
+  buildType,
+  srcType,
+  srcTypeSubDirectory,
+  forceBase = false,
+  directoryEntrySrcPath
+}) => {
+  /*
   if (srcType === 'whiteboard') {
     // TODO: document why we are doing this for whiteboard server
     if (buildType === 'server') {
@@ -132,37 +160,47 @@ const getRoutes = ({ buildType, srcType, forceBase = false }) => {
         ...findRoutes({ srcType: 'plugins', buildType, forceBase }),
         ...findRoutes({ srcType: 'themes', buildType, forceBase })
       ];
-    } else {
+    }
+    else {
       routes = baseRoutes?.[srcType] ? [...baseRoutes[srcType]] : [];
+      routes = findRoutes({ srcType, buildType, forceBase });
     }
   } else {
     routes = findRoutes({ srcType, buildType, forceBase });
   }
+  */
+
+  routes = findRoutes({
+    srcType,
+    srcTypeSubDirectory,
+    buildType,
+    forceBase,
+    directoryEntrySrcPath
+  });
 
   return routes;
 };
 
-const addSrcDirEntEntry = (
+const getHotMiddlewareEntry = ({ srcType, buildType }) =>
+  `webpack-hot-middleware/client?name=${srcType}_${buildType}&timeout=${serverSideEventTimeout}&path=${encodeURIComponent(
+    `${serverSideEventHost}/__webpack_hmr`
+  )}`;
+
+const addSrcDirectoryEntry = (
   newEntries,
-  srcPath,
-  buildType,
-  srcType,
-  { id, entryKey, file, library }
+  { buildType, srcType, srcPath, id, entryKey, file, library }
 ) => {
   const key = entryKey ? `${entryKey}_${id}` : id;
 
-  const entries = [`${srcPath}${dirEntSrcPath}/${file}`];
+  const entries = [`${srcPath}/${file}`];
 
+  // TODO: create shared function for this clause
   if (
     nodeEnv === 'development' &&
     ['blocks', 'plugins'].includes(srcType) &&
     ['editor'].includes(entryKey)
   ) {
-    entries.push(
-      `webpack-hot-middleware/client?name=${srcType}_${buildType}&timeout=10000&path=${encodeURIComponent(
-        envVars.get('PFWP_SSE_HOST') + '/__webpack_hmr'
-      )}`
-    );
+    entries.push(getHotMiddlewareEntry({ srcType, buildType }));
   }
 
   newEntries[key] = {
@@ -182,25 +220,28 @@ const getEntries = ({ buildType, srcType, exportType }) => {
   };
 
   routes.forEach((route) => {
-    const { path, id, type, srcPath } = route;
+    const { path, id, srcPath } = route;
 
     // Handle component source files
-    Object.keys(srcDirEntMap).map((key) => {
-      const { flag, entryKey, buildCfg, exportCfg } = srcDirEntMap[key];
+    Object.keys(srcDirectoryEntryMap).map((key) => {
+      const { flag, entryKey, buildConfig, exportConfig } = srcDirectoryEntryMap[key];
 
-      const buildCfgEntry = buildCfg?.[buildType]?.entry;
-      const exportCfgEntry = exportCfg?.[exportType]?.entry;
+      const buildConfigEntry = buildConfig?.[buildType]?.entry;
+      const exportConfigEntry = exportConfig?.[exportType]?.entry;
 
       if (
         route[flag] &&
-        ((buildCfgEntry?.enabled && !exportType) ||
+        ((buildConfigEntry?.enabled && !exportType) ||
           (exportType &&
-            exportCfgEntry?.enabled &&
-            exportCfgEntry?.buildTypes?.includes(buildType)))
+            exportConfigEntry?.enabled &&
+            exportConfigEntry?.buildTypes?.includes(buildType)))
       ) {
-        const library = exportType ? exportCfgEntry?.library : buildCfgEntry?.library;
+        const library = exportType ? exportConfigEntry?.library : buildConfigEntry?.library;
 
-        addSrcDirEntEntry(newEntries, srcPath, buildType, srcType, {
+        addSrcDirectoryEntry(newEntries, {
+          srcPath,
+          buildType,
+          srcType,
           id,
           path,
           entryKey,
@@ -209,21 +250,6 @@ const getEntries = ({ buildType, srcType, exportType }) => {
         });
       }
     });
-
-    // Handle special file cases
-    if (!exportType && type === 'base') {
-      if (buildType === 'server' && srcType === 'whiteboard') {
-        // Get route's main page template
-        newEntries[`hbs_${id}`] = {
-          import: './src/whiteboard/base/routes/' + path + '/index.hbs'
-        };
-      } else if (buildType === 'elements') {
-        // TODO: this would change back to 'client' once we seperate whiteboard srcType buildType
-        newEntries[id] = {
-          import: srcPath + path + '/view.js'
-        };
-      }
-    }
   });
 
   entries[buildType] = newEntries;

@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const { srcDirEntMap } = require('../../../shared/src.dir.map.js');
+const { srcDirectoryEntryMap } = require('../../../shared/src.dir.map.js');
 
 class CopyPlugin {
   constructor({ directory, srcType, routes, filter = /\.(js|jsx|scss)$/ }) {
@@ -9,8 +9,8 @@ class CopyPlugin {
     this.routes = routes;
     this.elements = [];
     this.filter = filter;
-    this.preCompiledFilter = Object.keys(srcDirEntMap).filter((key) => {
-      const excludes = srcDirEntMap[key].excludeSrcTypes;
+    this.preCompiledFilter = Object.keys(srcDirectoryEntryMap).filter((key) => {
+      const excludes = srcDirectoryEntryMap[key].excludeSrcTypes;
       return !excludes || !excludes.includes(srcType);
     });
 
@@ -82,7 +82,7 @@ class CopyPlugin {
       this.routes.forEach((route) => {
         const { srcPath, path: routePath } = route;
 
-        const srcDir = `${srcPath}/src/`;
+        const srcDir = `${srcPath}/`;
         const destDir = `${this.directory}/${routePath}`;
 
         this.elements[routePath] = {

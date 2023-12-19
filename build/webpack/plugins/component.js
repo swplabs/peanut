@@ -26,8 +26,6 @@ class ComponentsPlugin {
         ...JSON.parse(metadata)
       };
 
-      // fs.writeFileSync(`${dir}/component.json`, JSON.stringify(data));
-
       this.filesToEmit[key] = {
         filename: `${dir.replace(this.outputPath, '')}/component.json`,
         source: JSON.stringify(data),
@@ -64,7 +62,7 @@ class ComponentsPlugin {
 
           const { srcPath } = routes.find(({ path }) => path === srcElement);
 
-          const jsonFile = `${srcPath}/src/metadata.json`;
+          const jsonFile = `${srcPath}/metadata.json`;
 
           if (fs.existsSync(jsonFile)) {
             const data = {

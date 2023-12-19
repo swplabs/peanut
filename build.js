@@ -10,21 +10,22 @@ const {
 const buildType = envVars.get('PFWP_BUILD') || 'stack';
 const exportType = envVars.get('PFWP_E_TYPE');
 
-let srcTypeDirEnts;
+let srcTypeDirectoryEntries;
 
 const dirEntEnvVar = envVars.get('PFWP_DIR_ENTS');
 if (dirEntEnvVar) {
-  srcTypeDirEnts = dirEntEnvVar.split(',');
+  srcTypeDirectoryEntries = dirEntEnvVar.split(',');
 }
 
 const configs = [];
 
 const addConfig = (bType, sType) => {
-  configs.push(getConfig({ buildType: bType, srcType: sType, srcTypeDirEnts, exportType }));
+  configs.push(
+    getConfig({ buildType: bType, srcType: sType, srcTypeDirectoryEntries, exportType })
+  );
 };
 
 // if (['stack', 'ssr'].includes(buildType)) addConfig('ssr');
-// TODO: do we need add back 'client' buildType for whiteboard instead of elements
 if (['stack', 'elements'].includes(buildType)) addConfig('elements', 'whiteboard');
 if (['stack', 'elements'].includes(buildType)) addConfig('elements', 'components');
 if (['stack', 'elements'].includes(buildType)) addConfig('elements', 'blocks');

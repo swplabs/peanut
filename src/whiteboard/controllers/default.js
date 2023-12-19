@@ -46,7 +46,7 @@ const addComponentAssets = ({
 
   // Get static assets
   const hpAssetId =
-    type === 'prototype' && templateType === 'default' ? 'hbs_prototype' : 'proto_' + compId;
+    type === 'element' && templateType === 'default' ? 'hbs_prototype' : 'proto_' + compId;
 
   const { js: baseJsAsset = '', css: baseCssAsset = '' } =
     buildClientAssets({ srcType, buildType, id: compId }) || {};
@@ -114,7 +114,7 @@ const controller = ({ route }) => {
       peanutDisplayMode: true
     };
 
-    const useDefaultTemplate = type === 'prototype' && templateType === 'default';
+    const useDefaultTemplate = type === 'element' && templateType === 'default';
 
     const template = useDefaultTemplate
       ? await getServerFile('hbs_prototype.js')

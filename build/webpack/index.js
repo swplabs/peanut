@@ -5,7 +5,7 @@ const { webpackPreProcess } = require('./hooks.js');
 const webpackLoaders = require('./loaders.js');
 const webpackPlugins = require('./plugins.js');
 const envVars = require('../../shared/envvars.js');
-const { srcDirEntMap } = require('../../shared/src.dir.map.js');
+const { srcDirectoryEntryMap } = require('../../shared/src.dir.map.js');
 const environment = envVars.get('ENVIRONMENT') || 'prod';
 const nodeEnv = envVars.get('NODE_ENV') || 'production';
 const distDir = path.join(__dirname, `../../dist/${envVars.get('PFWP_DIST')}`);
@@ -14,10 +14,11 @@ const wbPublicPath = envVars.get('PFWP_WB_PUBLIC_PATH') || '/';
 const rootDir = path.resolve(__dirname, '../../');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const appSrcPath = envVars.get('PFWP_APP_SRC_PATH');
-const dirEntAllowList = envVars.get('PFWP_DIR_ENT_ALLOW_LIST');
+const directoryEntryAllowList = envVars.get('PFWP_DIR_ENT_ALLOW_LIST');
 const wordpressRoot = envVars.get('PFWP_WP_ROOT');
 const wordpressPublicPath = envVars.get('PFWP_WP_PUBLIC_PATH');
 const peanutThemePath = envVars.get('PFWP_THEME_PATH');
+const directoryEntrySrcPath = envVars.get('PFWP_DIR_ENT_SRC_PATH');
 
 const { getRoutes, getEntries, getCacheGroups } = paths;
 
@@ -31,20 +32,22 @@ const webpackHandler =
         if (hashCheck({ buildType: type, srcType, hash: stats.hash })) return;
       }
 
-      console.log(`\n[webpack:${type}:${srcType}] Compilation successful.`);
+      console.log(`\n[webpack:${type}:${srcType}] Compilation successful.\n`);
 
       if (typeof success === 'function') success();
     }
   };
 
 const getEntryInfo = (srcType, entryId) => {
-  const entryFile = Object.keys(srcDirEntMap).find((key) =>
-    entryId.startsWith(`${srcDirEntMap[key].entryKey}_${srcType}`)
+  const entryFile = Object.keys(srcDirectoryEntryMap).find((key) =>
+    entryId.startsWith(`${srcDirectoryEntryMap[key].entryKey}_${srcType}`)
   );
 
   return {
     pathName: entryFile
-      ? entryId.replace(`${srcDirEntMap[entryFile].entryKey}_`, '').replace(`${srcType}_`, '')
+      ? entryId
+          .replace(`${srcDirectoryEntryMap[entryFile].entryKey}_`, '')
+          .replace(`${srcType}_`, '')
       : 'pfwp-shared-assets',
     entryFile: entryFile
       ? entryFile.replace(path.extname(entryFile), '')
@@ -114,11 +117,10 @@ const getOutput = ({ buildType, srcType, exportType }) => {
   return outputs;
 };
 
-const { handlebars: hbsLoader, style: styleLoader, js: jsLoader, php: phpLoader } = webpackLoaders;
+const { style: styleLoader, js: jsLoader, php: phpLoader } = webpackLoaders;
 
-const getModuleRules = ({ isWeb, buildType, exportType, srcType, disableExtract }) => {
-  // TODO: replace with react or remove once we switch to react for whiteboard app
-  const rules = srcType === 'whiteboard' ? [hbsLoader({ isWeb })] : [];
+const getModuleRules = ({ buildType, exportType, srcType, disableExtract }) => {
+  const rules = [];
 
   switch (buildType) {
     // case 'ssr':
@@ -134,6 +136,11 @@ const getModuleRules = ({ isWeb, buildType, exportType, srcType, disableExtract 
       break;
     }
     case 'server': {
+      rules
+        .push
+        // TODO: replace with react or remove once we switch to react for whiteboard app
+        // jsLoader({ buildType, srcType, exportType })
+        ();
       break;
     }
   }
@@ -215,7 +222,7 @@ const getBaseConfig = ({ isWeb, buildType, srcType, exportType, disableExtract }
     output: getOutput({ buildType, srcType, exportType }),
 
     // TODO: use a CONSTANT here node version
-    target: isWeb ? 'web' : 'node20.9',
+    target: isWeb ? 'web' : 'node20.10',
 
     node: !isWeb
       ? {
@@ -259,7 +266,7 @@ const getBaseConfig = ({ isWeb, buildType, srcType, exportType, disableExtract }
 const getConfig = ({
   buildType,
   srcType,
-  srcTypeDirEnts,
+  srcTypeDirectoryEntries,
   exportType: eType,
   disableExtract: dExtract
 }) => {
@@ -269,9 +276,13 @@ const getConfig = ({
   const routeArgs = {
     buildType,
     srcType,
-    srcTypeDirEnts:
-      Array.isArray(dirEntAllowList) && dirEntAllowList.length ? dirEntAllowList : srcTypeDirEnts,
-    forceBase: dirEntAllowList?.length > 0
+    srcTypeSubDirectory: srcType === 'whiteboard' ? 'shared/routes/' : '',
+    srcTypeDirectoryEntries:
+      Array.isArray(directoryEntryAllowList) && directoryEntryAllowList.length
+        ? directoryEntryAllowList
+        : srcTypeDirectoryEntries,
+    forceBase: directoryEntryAllowList?.length > 0,
+    directoryEntrySrcPath: srcType === 'whiteboard' ? '' : directoryEntrySrcPath
   };
 
   const isWeb = isWebTarget({ buildType });

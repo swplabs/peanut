@@ -4,25 +4,6 @@ const babelConfig = require('./config.babel.js');
 const envVars = require('../../shared/envvars.js');
 const nodeEnv = envVars.get('NODE_ENV') || 'production';
 
-const handlebars = ({ isWeb }) => {
-  const hbHelperPath = path.resolve(__dirname, '../handlebars');
-  const helperDirs = [`${hbHelperPath}/shared`];
-
-  if (!isWeb) helperDirs.push(`${hbHelperPath}/server`);
-
-  return {
-    test: /\.hbs$/,
-    loader: 'handlebars-loader',
-    options: {
-      runtime: 'handlebars/runtime',
-      helperDirs,
-      precompileOptions: {
-        knownHelpersOnly: false
-      }
-    }
-  };
-};
-
 const style = ({ MiniCssExtractPlugin, exportType, disableExtract = false }) => {
   return {
     test: /\.s?css$/i,
@@ -100,7 +81,6 @@ const php = ({ output }) => {
 };
 
 module.exports = {
-  handlebars,
   js,
   ts,
   style,

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const zlib = require('zlib');
-const { srcDirEntMap, baseIdPrefix } = require('../../shared/src.dir.map.js');
+const { srcDirectoryEntryMap, baseIdPrefix } = require('../../shared/src.dir.map.js');
 
 const buildIndex = (component) => {
   return `<!doctype html>
@@ -56,10 +56,10 @@ module.exports = ({ exportType, components, distPath }) => {
     const id = `${baseIdPrefix}${component}`;
     const contents = [];
 
-    Object.keys(srcDirEntMap).map((key) => {
-      const { entryKey, exportCfg } = srcDirEntMap[key];
+    Object.keys(srcDirectoryEntryMap).map((key) => {
+      const { entryKey, exportConfig } = srcDirectoryEntryMap[key];
 
-      if (!exportCfg?.[exportType]?.entry?.enabled) return;
+      if (!exportConfig?.[exportType]?.entry?.enabled) return;
 
       const fileName = entryKey ? `${entryKey}_${id}` : `${id}`;
 

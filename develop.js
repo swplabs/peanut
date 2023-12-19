@@ -13,9 +13,9 @@ const {
 const { serverStart } = require('./build/server/index.js');
 
 let webpackCompiler;
-let restartTO;
+let restartBuildTimeout;
 let chokidarReady = false;
-let webpackDMInstance;
+let devMiddlewareInstance;
 let restartDev = true;
 let sseHttpServer;
 let sseHttpsServer;
@@ -23,16 +23,16 @@ let sseHttpsServer;
 let buildStatus = {};
 let buildHashes = {};
 
-let whiteboardProcess;
+let whiteBoardProcess;
 
 // start whiteboard node process
 const startWhiteBoardServer = () => {
   console.log('[develop] Starting Whiteboard server...');
 
-  whiteboardProcess = spawn('node', ['./whiteboard.js']);
+  whiteBoardProcess = spawn('node', ['./whiteboard.js']);
 
-  whiteboardProcess.on('spawn', () => {
-    console.log('[develop] Whiteboard server started.', "\n");
+  whiteBoardProcess.on('spawn', () => {
+    console.log('[develop] Whiteboard server started.', '\n');
 
     buildStatus['process'] = true;
 
@@ -42,30 +42,28 @@ const startWhiteBoardServer = () => {
     }
   });
 
-  whiteboardProcess.stdout.on('data', (data) => {
+  whiteBoardProcess.stdout.on('data', (data) => {
     console.log(data.toString().trim());
   });
 
-  whiteboardProcess.stderr.on('data', (data) => {
+  whiteBoardProcess.stderr.on('data', (data) => {
     console.log(data.toString().trim());
   });
 
-  whiteboardProcess.on('error', (error) => {
+  whiteBoardProcess.on('error', (error) => {
     console.log(`[develop] Server process error: ${error.message}`);
   });
 };
 
-// start sse app node process
-
 const restartBuild = () => {
   buildHashes = {};
 
-  webpackDMInstance?.close(async () => {
-    whiteboardProcess?.kill();
+  devMiddlewareInstance?.close(async () => {
+    whiteBoardProcess?.kill();
 
     console.log('[chokidar] Development configuration updated. Restarting build process..');
 
-    restartTO = setTimeout(async () => {
+    restartBuildTimeout = setTimeout(async () => {
       resetBuildStatus();
 
       await startWebPack();
@@ -88,7 +86,7 @@ const wpHandlerSuccess = ({ skipRestart }) => {
   // TODO: make this smarter so that we only restart server on server file changes
   if (!skipRestart) {
     if (buildStatus['process']) {
-      whiteboardProcess?.kill();
+      whiteBoardProcess?.kill();
       buildStatus['process'] = false;
     }
   }
@@ -152,11 +150,11 @@ const startWebPack = async () => {
   await sseHttpServer?.destroy();
   await sseHttpsServer?.destroy();
 
-  console.log('[develop] Starting development SSE server...');
+  console.log(`\n[develop] Starting development SSE server...`);
 
   const { httpServer, httpsServer, webpackDevMiddleware } = serverStart(webpackCompiler);
 
-  webpackDMInstance = webpackDevMiddleware;
+  devMiddlewareInstance = webpackDevMiddleware;
 
   sseHttpServer = httpServer;
   sseHttpsServer = httpsServer;
@@ -165,7 +163,7 @@ const startWebPack = async () => {
 // Monitor development configuration changes
 // TODO: Create regex using component cfg file object?
 const compsBlocksFileRegEx = new RegExp(
-  '^src/(components|blocks)/[a-zA-Z0-9-_]+/src/((variations|metadata).json|(ssr.)?(view|editor).(jsx|js)|template.hbs|(index|render).php|style.s?css)',
+  '^src/(components|blocks)/[a-zA-Z0-9-_]+/src/((variations|metadata).json|(ssr.)?(view|editor).(jsx|js)|(index|render).php|style.s?css)',
   'i'
 );
 
@@ -203,7 +201,7 @@ const devMonitor = chokidar
     }
   })
   .on('ready', async () => {
-    console.log('[chokidar] Monitoring development configuration...');
+    console.log(`\n[chokidar] Monitoring development configuration...`);
     await startWebPack();
   });
 
@@ -215,11 +213,11 @@ process.on('SIGINT', async () => {
   await sseHttpServer?.destroy();
   await sseHttpsServer?.destroy();
 
-  if (restartTO) clearTimeout(restartTO);
+  if (restartBuildTimeout) clearTimeout(restartBuildTimeout);
 
-  if (whiteboardProcess?.kill()) console.log('[develop] App server process terminated');
+  if (whiteBoardProcess?.kill()) console.log('[develop] App server process terminated');
 
-  webpackDMInstance?.close(function () {
+  devMiddlewareInstance?.close(function () {
     console.log('[webpack] Stopped.');
     devMonitor?.close().then(() => {
       console.log('[chokidar] Closed.');

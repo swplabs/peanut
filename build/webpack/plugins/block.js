@@ -28,8 +28,6 @@ class BlocksPlugin {
         ...assets
       };
 
-      // fs.writeFileSync(`${dir}/block.json`, JSON.stringify(data));
-
       this.filesToEmit[key] = {
         filename: `${dir.replace(this.outputPath, '')}/block.json`,
         source: JSON.stringify(data)
@@ -67,7 +65,7 @@ class BlocksPlugin {
             ({ path }) => path === srcElement
           );
 
-          const jsonFile = `${srcPath}/src/metadata.json`;
+          const jsonFile = `${srcPath}/metadata.json`;
 
           if (fs.existsSync(jsonFile)) {
             const data = {
