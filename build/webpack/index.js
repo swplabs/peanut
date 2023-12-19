@@ -136,10 +136,11 @@ const getModuleRules = ({ buildType, exportType, srcType, disableExtract }) => {
       break;
     }
     case 'server': {
-      rules.push(
+      rules
+        .push
         // TODO: replace with react or remove once we switch to react for whiteboard app
         // jsLoader({ buildType, srcType, exportType })
-      );
+        ();
       break;
     }
   }

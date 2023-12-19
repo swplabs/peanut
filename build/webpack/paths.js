@@ -59,7 +59,14 @@ const getCacheGroups = ({ buildType }) => {
   );
 };
 
-const findRoutes = ({ srcTypeDirectoryEntries, forceBase, srcType, srcTypeSubDirectory = '', buildType, directoryEntrySrcPath = '/src' }) => {
+const findRoutes = ({
+  srcTypeDirectoryEntries,
+  forceBase,
+  srcType,
+  srcTypeSubDirectory = '',
+  buildType,
+  directoryEntrySrcPath = '/src'
+}) => {
   let srcTypePaths;
   const srcTypeDirectory = `${appSrcPath}/${srcType}/${srcTypeSubDirectory}`;
 
@@ -104,7 +111,9 @@ const findRoutes = ({ srcTypeDirectoryEntries, forceBase, srcType, srcTypeSubDir
             return flags;
           }, {});
 
-          const existingRouteIndex = srcRoutes.findIndex(({ path: srcRoutePath }) => srcRoutePath === srcTypePath);
+          const existingRouteIndex = srcRoutes.findIndex(
+            ({ path: srcRoutePath }) => srcRoutePath === srcTypePath
+          );
 
           if (existingRouteIndex >= 0) {
             srcRoutes[existingRouteIndex] = {
@@ -133,7 +142,13 @@ const findRoutes = ({ srcTypeDirectoryEntries, forceBase, srcType, srcTypeSubDir
   );
 };
 
-const getRoutes = ({ buildType, srcType, srcTypeSubDirectory, forceBase = false, directoryEntrySrcPath }) => {
+const getRoutes = ({
+  buildType,
+  srcType,
+  srcTypeSubDirectory,
+  forceBase = false,
+  directoryEntrySrcPath
+}) => {
   /*
   if (srcType === 'whiteboard') {
     // TODO: document why we are doing this for whiteboard server
@@ -155,14 +170,21 @@ const getRoutes = ({ buildType, srcType, srcTypeSubDirectory, forceBase = false,
   }
   */
 
-  routes = findRoutes({ srcType, srcTypeSubDirectory, buildType, forceBase, directoryEntrySrcPath });
+  routes = findRoutes({
+    srcType,
+    srcTypeSubDirectory,
+    buildType,
+    forceBase,
+    directoryEntrySrcPath
+  });
 
   return routes;
 };
 
-const getHotMiddlewareEntry = ({ srcType, buildType }) => `webpack-hot-middleware/client?name=${srcType}_${buildType}&timeout=${serverSideEventTimeout}&path=${encodeURIComponent(
-  `${serverSideEventHost}/__webpack_hmr`
-)}`;
+const getHotMiddlewareEntry = ({ srcType, buildType }) =>
+  `webpack-hot-middleware/client?name=${srcType}_${buildType}&timeout=${serverSideEventTimeout}&path=${encodeURIComponent(
+    `${serverSideEventHost}/__webpack_hmr`
+  )}`;
 
 const addSrcDirectoryEntry = (
   newEntries,

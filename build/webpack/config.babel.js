@@ -12,7 +12,7 @@ module.exports = ({
         useBuiltIns: 'entry',
         // TODO: use a CONSTANT here corejs version
         corejs: 3.34,
-        targets: [/* 'ssr', */'server'].includes(buildType)
+        targets: [/* 'ssr', */ 'server'].includes(buildType)
           ? {
               // TODO: use a CONSTANT here node version
               node: '20.10'
