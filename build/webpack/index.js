@@ -19,6 +19,7 @@ const wordpressRoot = envVars.get('PFWP_WP_ROOT');
 const wordpressPublicPath = envVars.get('PFWP_WP_PUBLIC_PATH');
 const peanutThemePath = envVars.get('PFWP_THEME_PATH');
 const directoryEntrySrcPath = envVars.get('PFWP_DIR_ENT_SRC_PATH');
+const { node, hotRefreshEnabled, isWebTarget } = require('../../shared/definitions.js');
 
 const { getRoutes, getEntries, getCacheGroups } = paths;
 
@@ -99,7 +100,6 @@ const getOutput = ({ buildType, srcType, exportType }) => {
       };
       break;
     }
-    // case 'ssr':
     case 'server': {
       outputs = {
         filename: '[name].js',
@@ -120,15 +120,11 @@ const getOutput = ({ buildType, srcType, exportType }) => {
 const { style: styleLoader, js: jsLoader, php: phpLoader } = webpackLoaders;
 
 const getModuleRules = ({ buildType, exportType, srcType, disableExtract }) => {
-  const rules = [];
+  const rules = [jsLoader({ buildType, srcType, exportType })];
 
   switch (buildType) {
-    // case 'ssr':
     case 'elements': {
-      rules.push(
-        styleLoader({ MiniCssExtractPlugin, exportType, disableExtract }),
-        jsLoader({ buildType, srcType, exportType })
-      );
+      rules.push(styleLoader({ MiniCssExtractPlugin, exportType, disableExtract }));
 
       if (srcType !== 'whiteboard') {
         rules.push(phpLoader({ output: { peanutThemePath, wordpressRoot } }));
@@ -136,11 +132,6 @@ const getModuleRules = ({ buildType, exportType, srcType, disableExtract }) => {
       break;
     }
     case 'server': {
-      rules
-        .push
-        // TODO: replace with react or remove once we switch to react for whiteboard app
-        // jsLoader({ buildType, srcType, exportType })
-        ();
       break;
     }
   }
@@ -197,19 +188,20 @@ const getPlugins = ({ buildType, srcType, routes, exportType, disableExtract = f
     );
   }
 
-  if (nodeEnv === 'development' && ['blocks', 'plugins'].includes(srcType)) {
+  if (hotRefreshEnabled(srcType)) {
     plugins.push(
       hotModuleReplacementPlugin(),
       reactRefreshPlugin(),
-      normalModuleReplacementPlugin({ rootDir })
+      // normalModuleReplacementPlugin({ rootDir })
+      normalModuleReplacementPlugin(
+        /react-refresh-webpack-plugin\/overlay\/containers\/RuntimeErrorContainer/,
+        `${rootDir}/src/whiteboard/shared/runtime-error-container.js`
+      )
     );
   }
 
   return plugins;
 };
-
-// TODO: adjust this because we use 'elements' instead of 'client' nomenclature now
-const isWebTarget = ({ buildType }) => ![/*'ssr',*/ 'server'].includes(buildType);
 
 const getBaseConfig = ({ isWeb, buildType, srcType, exportType, disableExtract }) => {
   return {
@@ -221,8 +213,7 @@ const getBaseConfig = ({ isWeb, buildType, srcType, exportType, disableExtract }
 
     output: getOutput({ buildType, srcType, exportType }),
 
-    // TODO: use a CONSTANT here node version
-    target: isWeb ? 'web' : 'node20.10',
+    target: isWeb ? 'web' : `node${node}`,
 
     node: !isWeb
       ? {
@@ -245,13 +236,11 @@ const getBaseConfig = ({ isWeb, buildType, srcType, exportType, disableExtract }
 
     optimization: {
       usedExports: true,
-      // TODO: create shared function isHotModuleEnabled
-      runtimeChunk:
-        nodeEnv === 'development' && ['blocks', 'plugins'].includes(srcType)
-          ? {
-              name: `${srcType}_${buildType}_webpack_runtime`
-            }
-          : false,
+      runtimeChunk: hotRefreshEnabled(srcType)
+        ? {
+            name: `${srcType}_${buildType}_webpack_runtime`
+          }
+        : false,
       splitChunks: {
         chunks: 'all',
         cacheGroups: getCacheGroups({ isWeb, buildType })

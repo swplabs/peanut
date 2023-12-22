@@ -28,16 +28,10 @@ Update ./extend/config.json with your Wordpress settings (example shown below)
 
 ```
 {
-  "PFWP_DIR_ENT_ALLOW_LIST": [],
   "PFWP_WP_ROOT": "/var/www/html",
   "PFWP_THEME_PATH": "/wp-content/themes/twentytwentyfour",
   "PFWP_WP_PUBLIC_PATH": "http://localhost/",
-  "PFWP_WB_SSE_HOST": "http://localhost:9090",
-  "PFWP_WB_SSE_PORT": 9090,
-  "PFWP_CORE_BLOCK_FILTERS": {
-    "on_pre_render": {},
-    "on_render": {}
-  }
+  "PFWP_SSE_HOST": "http://localhost/"
 }
 ```
 

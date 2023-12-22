@@ -1,8 +1,6 @@
 const path = require('path');
 const basePostCssConfig = require('./config.postcss.js');
 const babelConfig = require('./config.babel.js');
-const envVars = require('../../shared/envvars.js');
-const nodeEnv = envVars.get('NODE_ENV') || 'production';
 
 const style = ({ MiniCssExtractPlugin, exportType, disableExtract = false }) => {
   return {
@@ -44,15 +42,17 @@ const js = ({ buildType, srcType, exportType }) => {
   return {
     test: /\.m?js$/,
     exclude: /node_modules|\.min\.js/,
-    use: [
+    use: (resourceInfo) => [
       {
         loader: 'babel-loader',
-        options: babelConfig({ buildType, srcType, exportType, nodeEnv })
+        options: babelConfig({ buildType, srcType, exportType, resourceInfo })
       }
     ]
   };
 };
 
+/*
+TODO: include option for enabling typescript
 const ts = ({ buildType, exportType }) => {
   return {
     test: /\.ts$/,
@@ -65,15 +65,17 @@ const ts = ({ buildType, exportType }) => {
     ]
   };
 };
+*/
 
 const php = ({ output }) => {
   return {
     test: /\.php$/,
-    use: [
+    use: (resourceInfo) => [
       {
         loader: path.resolve(__dirname, './loaders/php.js'),
         options: {
-          output
+          output,
+          resourceInfo
         }
       }
     ]
@@ -82,7 +84,7 @@ const php = ({ output }) => {
 
 module.exports = {
   js,
-  ts,
+  // ts,
   style,
   php
 };

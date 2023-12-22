@@ -9,13 +9,6 @@ const baseRoutes = {
         path: 'app'
       },
       {
-        url: '/schema/(?<id>[^/]+)?/?',
-        title: 'Schema Control',
-        type: 'base',
-        controller: 'schema',
-        path: 'schema'
-      },
-      {
         url: '/page/home/',
         title: 'Home',
         type: 'base',

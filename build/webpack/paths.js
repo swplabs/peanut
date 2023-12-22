@@ -6,7 +6,7 @@ const { baseRoutes, baseEntries } = require('../../shared/base.paths.js');
 const envVars = require('../../shared/envvars.js');
 const appSrcPath = envVars.get('PFWP_APP_SRC_PATH');
 const nodeEnv = envVars.get('NODE_ENV') || 'production';
-const serverSideEventHost = envVars.get('PFWP_SSE_HOST');
+const serverSideEventHost = `${envVars.get('PFWP_SSE_HOST')}:${envVars.get('PFWP_SSE_PORT')}`;
 const serverSideEventTimeout = 10000;
 
 let entries = {};
@@ -29,12 +29,9 @@ const getCacheGroups = ({ buildType }) => {
         'node_modules/postcss-loader',
         'node_modules/sass-loader'
       ]
-      // hbs_runtime: ['node_modules/handlebars', '/build/handlebars/helpers/']
     };
   } else if (buildType === 'server') {
-    cacheGroupsCfg = {
-      // hbs_helpers: ['build/handlebars/helpers']
-    };
+    cacheGroupsCfg = {};
   }
 
   // TODO: Needs to be smarter to support hot module files not getting rolled in?
@@ -149,27 +146,6 @@ const getRoutes = ({
   forceBase = false,
   directoryEntrySrcPath
 }) => {
-  /*
-  if (srcType === 'whiteboard') {
-    // TODO: document why we are doing this for whiteboard server
-    if (buildType === 'server') {
-      routes = [
-        ...findRoutes({ srcType: 'whiteboard', buildType, forceBase }),
-        ...findRoutes({ srcType: 'blocks', buildType, forceBase }),
-        ...findRoutes({ srcType: 'components', buildType, forceBase }),
-        ...findRoutes({ srcType: 'plugins', buildType, forceBase }),
-        ...findRoutes({ srcType: 'themes', buildType, forceBase })
-      ];
-    }
-    else {
-      routes = baseRoutes?.[srcType] ? [...baseRoutes[srcType]] : [];
-      routes = findRoutes({ srcType, buildType, forceBase });
-    }
-  } else {
-    routes = findRoutes({ srcType, buildType, forceBase });
-  }
-  */
-
   routes = findRoutes({
     srcType,
     srcTypeSubDirectory,

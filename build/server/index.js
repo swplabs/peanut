@@ -2,7 +2,7 @@ const whm = require('webpack-hot-middleware');
 const wdm = require('webpack-dev-middleware');
 const envVars = require('../../shared/envvars.js');
 const router = require('../../shared/server/lib/router.js');
-const { createServer } = require('../../shared/server/lib/servers.js');
+const { createServer } = require('../../shared/server/create.js');
 const environment = envVars.get('ENVIRONMENT');
 const isLocal = environment === 'local';
 const minorSeconds = isLocal ? 0 : 60;
@@ -57,10 +57,10 @@ const serverStart = (webpackCompiler) => {
   });
 
   const servers = createServer({
-    port: envVars.get('PFWP_SSE_PORT') || 9090,
+    port: envVars.get('PFWP_SSE_PORT') || 5050,
     env: environment,
     httpsPort: envVars.getBoolean('PFWP_SSE_ENABLE_HTTPS')
-      ? envVars.get('PFWP_SSE_HTTPS_PORT') || 9999
+      ? envVars.get('PFWP_SSE_HTTPS_PORT') || 9090
       : null,
     requestHandler: async (req, res) => {
       req.defaultRouter = router;

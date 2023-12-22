@@ -29,12 +29,12 @@ const getServerFile = async (key) => {
   return serverImports[key];
 };
 
-const resetAssets = ({ srcType, buildType }) => {
-  buildAssets[`${srcType}_${buildType}`] = {};
+const resetAssets = ({ srcType }) => {
+  buildAssets[`${srcType}_elements`] = {};
 };
 
-const buildClientAssets = ({ srcType, buildType, id }) => {
-  const assetIndex = `${srcType}_${buildType}`;
+const buildClientAssets = ({ srcType, id }) => {
+  const assetIndex = `${srcType}_elements`;
 
   if (!buildAssets[assetIndex]) buildAssets[assetIndex] = {};
   if (!buildAssets[assetIndex][id]) buildAssets[assetIndex][id] = {};
@@ -95,7 +95,7 @@ const addParamsToData = (compData, { schema, params }) => {
         } else if (input === 'checkbox') {
           const paramVal = params.get(key);
           value = typeof paramVal === 'string' ? paramVal === 'true' : params.get(key);
-        } else if (input === 'complex-list') {
+        } else if (input === 'object') {
           const keyValue = params.has(key) ? params.getAll(key) : null;
 
           if (Array.isArray(keyValue)) {

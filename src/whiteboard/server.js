@@ -2,7 +2,7 @@
 
 const envVars = require('../../shared/envvars.js');
 const router = require('../../shared/server/lib/router.js');
-const { createServer } = require('../../shared/server/lib/servers.js');
+const { createServer } = require('../../shared/server/create.js');
 const environment = envVars.get('ENVIRONMENT');
 const isLocal = environment === 'local';
 const minorSeconds = isLocal ? 0 : 60;
@@ -58,9 +58,11 @@ const serverStart = (config) => {
   routes.forEach((route) => router.get(route.url, routeController(route)));
 
   createServer({
-    port: envVars.get('PORT') || 8080,
+    port: envVars.get('PFWP_WB_PORT') || 5000,
     env: environment,
-    httpsPort: envVars.getBoolean('ENABLE_HTTPS') ? envVars.get('HTTPS_PORT') || 9090 : null,
+    httpsPort: envVars.getBoolean('PFWP_WB_ENABLE_HTTPS')
+      ? envVars.get('PFWP_WB_HTTPS_PORT') || 9000
+      : null,
     requestHandler: (req, res) => {
       req.defaultRouter = router;
       req.cacheTimings = {

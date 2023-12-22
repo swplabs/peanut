@@ -18,6 +18,7 @@ const schema = {
   }
 };
 
+// TODO: use resourceInfo.compiler for this
 const getSrcInfo = (path) => {
   const { groups = {} } =
     /src\/(?<srcType>blocks|components|plugins|themes)\/(?<srcElement>[^/]+)\/src\/(?<srcFileName>[^./]+)\.php$/.exec(
