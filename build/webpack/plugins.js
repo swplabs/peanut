@@ -99,11 +99,8 @@ const reactRefresh = () => {
   });
 };
 
-const normalModuleReplacement = ({ rootDir }) => {
-  return new NormalModuleReplacementPlugin(
-    /react-refresh-webpack-plugin\/overlay\/containers\/RuntimeErrorContainer/,
-    `${rootDir}/src/whiteboard/shared/runtime-error-container.js`
-  );
+const normalModuleReplacement = (...args) => {
+  return new NormalModuleReplacementPlugin(...args);
 };
 
 const extractCss = ({ MiniCssExtractPlugin, exportType, filePath }) => {

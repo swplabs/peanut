@@ -19,8 +19,13 @@ nconf.env([
   'PFWP_THEME_PATH',
   'PFWP_DIR_ENT_SRC_PATH',
   'PFWP_CORE_BLOCK_FILTERS',
+  'PFWP_WB_PORT',
+  'PFWP_WB_HTTPS_PORT',
+  'PFWP_WB_ENABLE_HTTPS',
+  'PFWP_SSE_HOST',
+  'PFWP_SSE_PORT',
   'PFWP_SSE_ENABLE_HTTPS',
-  'PFWP_SSE_HOST'
+  'PFWP_SSE_HTTPS_PORT'
 ]);
 // Get environment based overrides
 const environment = nconf.get('ENVIRONMENT');
@@ -40,13 +45,18 @@ try {
 const defaultConfig = {
   PFWP_BUILD: 'stack',
   PFWP_DIST: 'serve',
-  PFWP_WB_PUBLIC_PATH: '/',
   PFWP_NOCSS: 'false',
-  PFWP_SSE_ENABLE_HTTPS: false,
   PFWP_APP_SRC_PATH: path.resolve(__dirname, '../src/'),
   PFWP_DIR_ENT_SRC_PATH: '/src',
   PFWP_COMP_ALLOW_LIST: [],
   PFWP_CORE_BLOCK_FILTERS: {},
+  PFWP_WB_PORT: 5000,
+  PFWP_WB_HTTPS_PORT: 9000,
+  PFWP_WB_ENABLE_HTTPS: false,
+  PFWP_SSE_HOST: 'http://localhost',
+  PFWP_SSE_PORT: 5050,
+  PFWP_SSE_ENABLE_HTTPS: false,
+  PFWP_SSE_HTTPS_PORT: 9090,
   ...config
 };
 

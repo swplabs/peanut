@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
   if (status === 200) {
     const { headers = {}, content = '' } = getGzipData({
       acceptEncoding,
-      content: await route.handler({ req })
+      content: await route.handler({ req, res })
     });
 
     res.writeHead(status, {

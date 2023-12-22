@@ -20,7 +20,7 @@
     "url": "https://github.com/swplabs/peanut.git"
   },
   "engines": {
-    "node": "20.10.0"
+    "node": "20.10"
   },
   "dependencies": {
     "nconf": "0.12.1",

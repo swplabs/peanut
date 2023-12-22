@@ -145,7 +145,6 @@ const srcDirectoryEntryMap = {
       }
     }
   },
-  // TODO: for plugin/block client side js will we need to adjust the library type if we do hot refresh?
   // TODO: add alias "view.js"
   'view.js': {
     flag: 'hasSrcClient',
@@ -156,14 +155,6 @@ const srcDirectoryEntryMap = {
           library: {
             type: 'window',
             name: ['peanutSrcClientJs', '[name]']
-          }
-        }
-      },
-      server: {
-        entry: {
-          enabled: true,
-          library: {
-            type: 'commonjs2'
           }
         }
       }
@@ -182,6 +173,20 @@ const srcDirectoryEntryMap = {
       wordpress: {
         port: {
           enabled: true
+        }
+      }
+    }
+  },
+  'render.js': {
+    flag: 'hasRenderJs',
+    entryKey: 'js_render',
+    buildConfig: {
+      server: {
+        entry: {
+          enabled: true,
+          library: {
+            type: 'commonjs2'
+          }
         }
       }
     }

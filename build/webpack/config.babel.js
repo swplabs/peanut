@@ -1,38 +1,46 @@
+const { node, corejs, browsers, hotRefreshEnabled } = require('../../shared/definitions.js');
+
 module.exports = ({
   buildType,
   srcType = 'components',
   modules = 'auto',
-  nodeEnv = 'production'
+  resourceInfo = {},
+  enableReactPreset = false
 }) => {
+  const resource = resourceInfo.realResource || '';
+
   const presets = [
     [
       '@babel/preset-env',
       {
         modules,
         useBuiltIns: 'entry',
-        // TODO: use a CONSTANT here corejs version
-        corejs: 3.34,
-        targets: [/* 'ssr', */ 'server'].includes(buildType)
+        corejs,
+        targets: ['server'].includes(buildType)
           ? {
-              // TODO: use a CONSTANT here node version
-              node: '20.10'
+              node
             }
           : {
-              browsers: ['last 2 versions, not dead']
+              browsers
             }
       }
     ]
   ];
 
-  // TODO: remove whiteboard to add react support
-  if (!['whiteboard', 'components'].includes(srcType) && buildType !== 'server') {
+  // TODO: add condition to constants.js
+  if (
+    enableReactPreset ||
+    !['whiteboard', 'components'].includes(srcType) ||
+    (srcType === 'whiteboard' &&
+      resource.match(/peanut\/src\/whiteboard\/shared\/(routes|components)/))
+  ) {
     presets.push('@wordpress/babel-preset-default');
   }
 
   const plugins = [];
 
   // TODO: add whiteboard to add react refresh support
-  if (nodeEnv === 'development' && ['plugins', 'blocks'].includes(srcType)) {
+  if (hotRefreshEnabled(srcType)) {
     plugins.push('react-refresh/babel');
   }
 

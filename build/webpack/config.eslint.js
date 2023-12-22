@@ -1,5 +1,11 @@
 const babelConfig = require('./config.babel.js');
 
+const customReactRules = {
+  'react/jsx-indent': 'off',
+  'react/jsx-indent-props': 'off',
+  'react/jsx-curly-spacing': 'off'
+};
+
 module.exports = ({ buildType, srcType }) => {
   return {
     globals: {
@@ -22,14 +28,10 @@ module.exports = ({ buildType, srcType }) => {
       }
     },
     plugins: ['import'],
-    extends:
-      buildType === 'server' || srcType === 'components'
-        ? []
-        : ['plugin:@wordpress/eslint-plugin/react'],
+    extends: ['components', 'whiteboard'].includes(srcType)
+      ? []
+      : ['plugin:@wordpress/eslint-plugin/react'],
     rules: {
-      'react/jsx-indent': 'off',
-      'react/jsx-indent-props': 'off',
-      'react/jsx-curly-spacing': 'off',
       'no-alert': 'off',
       'no-array-constructor': 'off',
       'no-bitwise': 'off',
@@ -233,13 +235,35 @@ module.exports = ({ buildType, srcType }) => {
       'wrap-iife': 'off',
       'wrap-regex': 'off',
       'yield-star-spacing': 'off',
-      yoda: 'off'
+      yoda: 'off',
+      ...customReactRules
     },
     env: {
       browser: true,
       es6: true,
       node: true,
       commonjs: true
-    }
+    },
+    overrides:
+      srcType === 'whiteboard'
+        ? [
+            {
+              files: [
+                './src/whiteboard/shared/routes/**/*.js',
+                './src/whiteboard/shared/components/**/*.js'
+              ],
+              extends: ['plugin:@wordpress/eslint-plugin/react'],
+              parserOptions: {
+                babelOptions: {
+                  configFile: false,
+                  ...babelConfig({ buildType, srcType, enableReactPreset: true })
+                }
+              },
+              rules: {
+                ...customReactRules
+              }
+            }
+          ]
+        : []
   };
 };
