@@ -1,4 +1,4 @@
-/* global PFWP */
+/* global pfwp */
 
 const ns = 'pfwp_';
 
@@ -16,7 +16,7 @@ const getElementId = (element) => {
   return id;
 };
 
-window.PFWP = {
+window.pfwp = {
   state: {},
 
   eventStates: {},
@@ -24,8 +24,8 @@ window.PFWP = {
   dispatch: (propertyName, data, element) => {
     const eventName = `${ns}${propertyName}${getElementId(element)}`;
 
-    PFWP.eventStates[eventName] = true;
-    PFWP.state[eventName] = data;
+    pfwp.eventStates[eventName] = true;
+    pfwp.state[eventName] = data;
 
     const event = new CustomEvent(eventName, {
       detail: data
@@ -40,8 +40,8 @@ window.PFWP = {
   subscribe: (propertyName, callback, element) => {
     const eventName = `${ns}${propertyName}${getElementId(element)}`;
 
-    if (PFWP.eventStates[eventName]) {
-      callback(PFWP.state[eventName]);
+    if (pfwp.eventStates[eventName]) {
+      callback(pfwp.state[eventName]);
     }
 
     const listener = (e) => {
@@ -94,16 +94,16 @@ window.PFWP = {
 
   getComponentAssets: async (component, assets = [], callback, execAsset = false) => {
     const hasCb = typeof callback === 'function';
-    const state = PFWP.assetStates[component];
+    const state = pfwp.assetStates[component];
     const eventName = `component_loaded_${component}`;
 
     if (state !== 'loaded') {
-      PFWP.subscribe(eventName, () => {
+      pfwp.subscribe(eventName, () => {
         if (hasCb) callback();
       });
 
       if (state !== 'loading') {
-        PFWP.assetStates[component] = 'loading';
+        pfwp.assetStates[component] = 'loading';
 
         const waitList = [];
 
@@ -111,7 +111,7 @@ window.PFWP = {
           waitList.push(
             (async () => {
               try {
-                await PFWP.addAsset({
+                await pfwp.addAsset({
                   asset,
                   component,
                   index
@@ -125,13 +125,13 @@ window.PFWP = {
 
         await Promise.all(waitList);
 
-        PFWP.assetStates[component] = 'loaded';
+        pfwp.assetStates[component] = 'loaded';
 
         if (execAsset) {
           window.peanutSrcClientJs[`components_${component}`].default('', {});
         }
 
-        PFWP.dispatch(eventName, {});
+        pfwp.dispatch(eventName, {});
       }
     } else {
       if (hasCb) callback();
@@ -140,5 +140,5 @@ window.PFWP = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  PFWP.dispatch('pageDomLoaded', {});
+  pfwp.dispatch('pageDomLoaded', {});
 });

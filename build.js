@@ -21,7 +21,12 @@ const configs = [];
 
 const addConfig = (bType, sType) => {
   configs.push(
-    getConfig({ buildType: bType, srcType: sType, srcTypeDirectoryEntries, exportType })
+    getConfig({
+      buildType: bType,
+      srcType: sType,
+      srcTypeDirectoryEntries,
+      exportType
+    })
   );
 };
 

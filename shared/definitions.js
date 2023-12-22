@@ -14,6 +14,6 @@ module.exports = {
   hotRefreshEnabled,
   isWebTarget,
   corejs: parseFloat(devDependencies['core-js']),
-  node,
+  node: `${parseFloat(node)}`,
   browsers: ['last 2 versions, not dead']
 };

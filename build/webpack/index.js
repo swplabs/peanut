@@ -163,18 +163,31 @@ const getPlugins = ({ buildType, srcType, routes, exportType, disableExtract = f
 
   if (srcType === 'blocks') {
     plugins.push(
-      blocksPlugin({ directory: `${wordpressRoot}${peanutThemePath}`, routes, outputPath })
+      blocksPlugin({
+        directory: `${wordpressRoot}${peanutThemePath}`,
+        routes,
+        outputPath
+      })
     );
   }
 
   if (srcType === 'components') {
     plugins.push(
-      componentsPlugin({ directory: `${wordpressRoot}${peanutThemePath}`, routes, outputPath })
+      componentsPlugin({
+        directory: `${wordpressRoot}${peanutThemePath}`,
+        routes,
+        outputPath
+      })
     );
   }
 
   if (['blocks', 'plugins', 'themes'].includes(srcType)) {
-    plugins.push(wpDepExtractPlugin({ directory: `${wordpressRoot}${peanutThemePath}`, srcType }));
+    plugins.push(
+      wpDepExtractPlugin({
+        directory: `${wordpressRoot}${peanutThemePath}`,
+        srcType
+      })
+    );
   }
 
   if (['themes', 'plugins'].includes(srcType)) {
@@ -231,7 +244,13 @@ const getBaseConfig = ({ isWeb, buildType, srcType, exportType, disableExtract }
     },
 
     module: {
-      rules: getModuleRules({ isWeb, buildType, srcType, exportType, disableExtract })
+      rules: getModuleRules({
+        isWeb,
+        buildType,
+        srcType,
+        exportType,
+        disableExtract
+      })
     },
 
     optimization: {
@@ -276,13 +295,25 @@ const getConfig = ({
 
   const isWeb = isWebTarget({ buildType });
   const routes = getRoutes(routeArgs);
-  const base = getBaseConfig({ isWeb, buildType, srcType, exportType, disableExtract });
+  const base = getBaseConfig({
+    isWeb,
+    buildType,
+    srcType,
+    exportType,
+    disableExtract
+  });
 
   return {
     ...base,
     ...{
       entry: getEntries({ buildType, srcType, exportType }),
-      plugins: getPlugins({ buildType, srcType, routes, exportType, disableExtract })
+      plugins: getPlugins({
+        buildType,
+        srcType,
+        routes,
+        exportType,
+        disableExtract
+      })
     }
   };
 };

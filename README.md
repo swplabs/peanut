@@ -1,3 +1,7 @@
+<p>
+<img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fswplabs%2Fpeanut%2Fraw%2Fmain%2Fpackage.json&query=%24.engines.node&label=node%20version">
+</p>
+
 # Introducing "Peanut" for Wordpress
 
 Build your wordpress themes and blocks with component-like elements.
@@ -37,13 +41,29 @@ Update ./extend/config.json with your Wordpress settings (example shown below)
 
 **Note:** Ensure that the directories you specify have the proper write permissions.
 
-### Install and Start the Node App
+### Installing and starting the application
 
-Run the following commands in the root directory to install the appropriate version on Node.js and start the Peanut development application:
+#### Installing the minimum required version of Node.js
+
+The minimum version of Node.js required can be found in the package.json of this project under "engines > node" within the file and is listed below using a badge:
+
+<p>
+<img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fswplabs%2Fpeanut%2Fraw%2Fmain%2Fpackage.json&query=%24.engines.node&label=node%20version">
+</p>
+
+You will need to install and use this version when using our application. We recommend using [NVM](https://github.com/nvm-sh/nvm) or [Volta](https://docs.volta.sh/guide/getting-started) to manage your Node.js versions.
+
+#### Install the Node NPM package dependencies
+
+Run the following commands in the root directory to install the necessary npm packages.
 
 ```
-nvm install
 make install
+```
+
+#### Start up the application
+
+```
 make develop
 ```
 

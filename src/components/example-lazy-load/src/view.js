@@ -1,17 +1,15 @@
-/* global PFWP */
+/* global pfwp */
 
-const lazyLoadObserver = new IntersectionObserver(
-  (entries, observer) => {
-    entries.forEach((entry) => {
-      const { target, isIntersecting } = entry;
-      if (isIntersecting) {
-        observer.unobserve(target);
+const lazyLoadObserver = new IntersectionObserver((entries, observer) => {
+  entries.forEach((entry) => {
+    const { target, isIntersecting } = entry;
+    if (isIntersecting) {
+      observer.unobserve(target);
 
-        PFWP.dispatch('onObserve', {}, target);
-      }
-    });
-  }
-);
+      pfwp.dispatch('onObserve', {}, target);
+    }
+  });
+});
 
 const lazyLoad = async ({ instance, componentName, dataString = '' }) => {
   const response = await fetch(`/wp-json/pfwp/v1/components/${componentName}/${dataString}`, {
@@ -42,7 +40,7 @@ const lazyLoad = async ({ instance, componentName, dataString = '' }) => {
       }, []);
 
     if (Array.isArray(keyAssets) && keyAssets.length) {
-      PFWP.getComponentAssets(jsonAssetKey, keyAssets, () => {
+      pfwp.getComponentAssets(jsonAssetKey, keyAssets, () => {
         const clientJs = window.peanutSrcClientJs?.[`components_${jsonAssetKey}`];
 
         let componentJs;
@@ -97,7 +95,7 @@ module.exports = async (instance, data) => {
     )}`;
   }
 
-  PFWP.subscribe('pageDomLoaded', async () => {
+  pfwp.subscribe('pageDomLoaded', async () => {
     const load = async () => {
       await lazyLoad({
         instance,
@@ -108,7 +106,7 @@ module.exports = async (instance, data) => {
 
     const lazy = async () => {
       if (observed) {
-        PFWP.subscribe('onObserve', load, instance);
+        pfwp.subscribe('onObserve', load, instance);
         lazyLoadObserver.observe(instance);
       } else {
         await load();
@@ -116,7 +114,7 @@ module.exports = async (instance, data) => {
     };
 
     if (conditional) {
-      PFWP.subscribe(
+      pfwp.subscribe(
         'lazyLoadCondition',
         (conditionData) => {
           const { condition } = conditionData;

@@ -1,4 +1,4 @@
-/* global PFWP */
+/* global pfwp */
 
 const escapeHtml = (unsafe) =>
   unsafe
@@ -109,7 +109,7 @@ module.exports = async (instance, data) => {
   `
     : '';
 
-  PFWP.getComponentAssets(
+  pfwp.getComponentAssets(
     'highlightjs',
     ['https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js'],
     () => {

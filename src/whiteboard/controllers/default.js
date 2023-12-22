@@ -150,7 +150,12 @@ const controller = ({ route }) => {
 
     const rendSrcTemplate =
       typeof srcTemplate === 'function'
-        ? srcTemplate({ ...data, locals, componentRef: hbs_template_ref, componentId: id })
+        ? srcTemplate({
+            ...data,
+            locals,
+            componentRef: hbs_template_ref,
+            componentId: id
+          })
         : '';
 
     return typeof template === 'function'

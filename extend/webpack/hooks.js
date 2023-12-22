@@ -8,7 +8,10 @@ module.exports = {
 
     try {
       if (fs.existsSync(fontelloCodeFile)) {
-        const css = fs.readFileSync(fontelloCodeFile, { encoding: 'utf8', flag: 'r' });
+        const css = fs.readFileSync(fontelloCodeFile, {
+          encoding: 'utf8',
+          flag: 'r'
+        });
         const sass = css.replace(
           /\.icon-([\w-]+)[\w-:\s{]+'(\\\w+)'.+/gi,
           "    --icon-code-$1: '$2';"

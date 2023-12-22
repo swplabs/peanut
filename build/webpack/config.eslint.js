@@ -256,7 +256,11 @@ module.exports = ({ buildType, srcType }) => {
               parserOptions: {
                 babelOptions: {
                   configFile: false,
-                  ...babelConfig({ buildType, srcType, enableReactPreset: true })
+                  ...babelConfig({
+                    buildType,
+                    srcType,
+                    enableReactPreset: true
+                  })
                 }
               },
               rules: {

@@ -116,7 +116,9 @@ class BlocksPlugin {
       Object.keys(this.filesToEmit).forEach((key) => {
         const { filename, source } = this.filesToEmit[key];
 
-        compilation.emitAsset(filename, new RawSource(source), { component: key });
+        compilation.emitAsset(filename, new RawSource(source), {
+          component: key
+        });
 
         // TODO: update the compilation hash
       });
