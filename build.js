@@ -16,18 +16,18 @@ if (directoryEntryEnvVar) {
   srcTypeDirectoryEntries = directoryEntryEnvVar.split(',');
 }
 
-const config = Object.keys(srcDirectories).reduce((configData, srcType) => {
+const config = [];
+
+for (let [srcType, srcDirectory] of Object.entries(srcDirectories)) {
   const {
     buildTypes,
     webpack: { configPresets }
-  } = srcDirectories[srcType];
+  } = srcDirectory;
 
   buildTypes.forEach((buildType) => {
-    configData.push(getConfig({ buildType, srcType, srcTypeDirectoryEntries, ...configPresets }));
+    config.push(getConfig({ buildType, srcType, srcTypeDirectoryEntries, ...configPresets }));
   });
-
-  return configData;
-}, []);
+}
 
 webpackPreProcess({ srcDir: path.resolve(__dirname, './src/') });
 

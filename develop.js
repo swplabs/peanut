@@ -134,18 +134,18 @@ const startWebPack = async () => {
 
   webpackPreProcess({ srcDir: path.resolve(__dirname, './src/') });
 
-  const config = Object.keys(srcDirectories).reduce((configData, srcType) => {
+  const config = [];
+
+  for (let [srcType, srcDirectory] of Object.entries(srcDirectories)) {
     const {
       buildTypes,
       webpack: { configPresets }
-    } = srcDirectories[srcType];
+    } = srcDirectory;
 
     buildTypes.forEach((buildType) => {
-      configData.push(getConfig({ buildType, srcType, ...configPresets }));
+      config.push(getConfig({ buildType, srcType, ...configPresets }));
     });
-
-    return configData;
-  }, []);
+  }
 
   webpackCompiler = webpack(config);
 
