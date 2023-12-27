@@ -4,7 +4,7 @@ module.exports = {
   // TODO: move trigger to "hooks" plugin
   webpackPreProcess: ({ srcDir }) => {
     const fontelloCodeFile =
-      srcDir + '/components/example-head/src/fonts/fontello/css/pfwp-codes.css';
+      srcDir + '/whiteboard/shared/components/app/fonts/fontello/css/pfwp-codes.css';
 
     try {
       if (fs.existsSync(fontelloCodeFile)) {

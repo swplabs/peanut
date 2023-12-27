@@ -138,15 +138,13 @@ const getModuleRules = ({ buildType, exportType, srcType, enableCssInJs }) => {
       break;
     }
     case 'server': {
-      rules.push(
-        {
-          test: /\.(png|woff2|woff|ttf|jpg)$/i,
-          type: 'asset/resource',
-          generator: {
-            emit: false
-          }
+      rules.push({
+        test: /\.(png|woff2|woff|ttf|jpg)$/i,
+        type: 'asset/resource',
+        generator: {
+          emit: false
         }
-      );
+      });
 
       break;
     }
