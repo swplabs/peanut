@@ -94,8 +94,6 @@ const findRoutes = ({
             type: 'element',
             srcType,
             buildType,
-            controller: 'default',
-            // templateType: 'default',
             initialData: {}
           };
 

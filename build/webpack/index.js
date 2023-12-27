@@ -1,4 +1,4 @@
-const path = require('path');
+const nodePath = require('path');
 const nodeExternals = require('webpack-node-externals');
 const paths = require('./paths.js');
 const { webpackPreProcess, webpackPostProcess } = require('./hooks.js');
@@ -8,10 +8,10 @@ const envVars = require('../../shared/envvars.js');
 const { srcDirectoryEntryMap } = require('../../shared/src.directory.entry.map.js');
 const environment = envVars.get('ENVIRONMENT') || 'prod';
 const nodeEnv = envVars.get('NODE_ENV') || 'production';
-const distDir = path.join(__dirname, `../../dist/${envVars.get('PFWP_DIST')}`);
+const distDir = nodePath.join(__dirname, `../../dist/${envVars.get('PFWP_DIST')}`);
 const staticDir = distDir + '/static';
 const wbPublicPath = envVars.get('PFWP_WB_PUBLIC_PATH') || '/';
-const rootDir = path.resolve(__dirname, '../../');
+const rootDir = nodePath.resolve(__dirname, '../../');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const appSrcPath = envVars.get('PFWP_APP_SRC_PATH');
 const directoryEntryAllowList = envVars.get('PFWP_DIR_ENT_ALLOW_LIST');
@@ -19,7 +19,11 @@ const wordpressRoot = envVars.get('PFWP_WP_ROOT');
 const wordpressPublicPath = envVars.get('PFWP_WP_PUBLIC_PATH');
 const peanutThemePath = envVars.get('PFWP_THEME_PATH');
 const directoryEntrySrcPath = envVars.get('PFWP_DIR_ENT_SRC_PATH');
-const { node, hotRefreshEnabled, isWebTarget } = require('../../shared/definitions.js');
+const {
+  node: nodeVersion,
+  hotRefreshEnabled,
+  isWebTarget
+} = require('../../shared/definitions.js');
 
 const routeInfo = {};
 
@@ -53,8 +57,8 @@ const getEntryInfo = (srcType, entryId) => {
           .replace(`${srcType}_`, '')
       : 'pfwp-shared-assets',
     entryFile: entryFile
-      ? entryFile.replace(path.extname(entryFile), '')
-      : entryId.replace(path.extname(entryId), '')
+      ? entryFile.replace(nodePath.extname(entryFile), '')
+      : entryId.replace(nodePath.extname(entryId), '')
   };
 };
 
@@ -66,7 +70,6 @@ const setFileName =
     let name = `${fileName}`;
 
     if (entryId === `${srcType}_${buildType}_webpack_runtime`) {
-      // TODO: add hash as version in plugin wp_register_script call
       name = `wp-content/plugins/peanut/assets/[name].[chunkhash:20].js`;
     } else if (['plugins', 'themes'].includes(srcType)) {
       const { pathName, entryFile } = getEntryInfo(srcType, entryId);
@@ -121,10 +124,10 @@ const getOutput = ({ buildType, srcType, exportType }) => {
 
 const { style: styleLoader, js: jsLoader, php: phpLoader } = webpackLoaders;
 
-const getModuleRules = ({ buildType, exportType, srcType, disableExtract }) => {
+const getModuleRules = ({ buildType, exportType, srcType, enableCssInJs }) => {
   const rules = [
     jsLoader({ buildType, srcType, exportType }),
-    styleLoader({ MiniCssExtractPlugin, buildType, srcType, exportType, disableExtract })
+    styleLoader({ MiniCssExtractPlugin, buildType, srcType, exportType, enableCssInJs })
   ];
 
   switch (buildType) {
@@ -135,6 +138,16 @@ const getModuleRules = ({ buildType, exportType, srcType, disableExtract }) => {
       break;
     }
     case 'server': {
+      rules.push(
+        {
+          test: /\.(png|woff2|woff|ttf|jpg)$/i,
+          type: 'asset/resource',
+          generator: {
+            emit: false
+          }
+        }
+      );
+
       break;
     }
   }
@@ -155,14 +168,14 @@ const {
   normalModuleReplacement: normalModuleReplacementPlugin
 } = webpackPlugins;
 
-const getPlugins = ({ buildType, srcType, routes, exportType, disableExtract = false }) => {
+const getPlugins = ({ buildType, srcType, routes, exportType, enableCssInJs = false }) => {
   const plugins = [webpackDefinePlugin(routes), eslintPlugin({ buildType, srcType })];
 
   const outputPath = srcType === 'whiteboard' ? staticDir : wordpressRoot;
   const filePath = srcType === 'whiteboard' ? `assets/${srcType}` : `.assets/${srcType}`;
 
   // TODO: add to definitions.js
-  if (!disableExtract && exportType !== 'web' && srcType !== 'whiteboard')
+  if (!enableCssInJs && exportType !== 'web' && srcType !== 'whiteboard')
     plugins.push(extractCssPlugin({ MiniCssExtractPlugin, exportType, filePath }));
 
   if (srcType === 'blocks') {
@@ -206,7 +219,7 @@ const getPlugins = ({ buildType, srcType, routes, exportType, disableExtract = f
   return plugins;
 };
 
-const getBaseConfig = ({ isWeb, buildType, srcType, exportType, disableExtract }) => {
+const getBaseConfig = ({ isWeb, buildType, srcType, exportType, enableCssInJs }) => {
   return {
     context: rootDir,
 
@@ -216,7 +229,7 @@ const getBaseConfig = ({ isWeb, buildType, srcType, exportType, disableExtract }
 
     output: getOutput({ buildType, srcType, exportType }),
 
-    target: isWeb ? 'web' : `node${node}`,
+    target: isWeb ? 'web' : `node${nodeVersion}`,
 
     node: !isWeb
       ? {
@@ -234,7 +247,7 @@ const getBaseConfig = ({ isWeb, buildType, srcType, exportType, disableExtract }
     },
 
     module: {
-      rules: getModuleRules({ isWeb, buildType, srcType, exportType, disableExtract })
+      rules: getModuleRules({ isWeb, buildType, srcType, exportType, enableCssInJs })
     },
 
     optimization: {
@@ -259,11 +272,11 @@ const getConfig = ({
   buildType,
   srcType,
   srcTypeDirectoryEntries,
-  exportType: eType,
-  disableExtract: dExtract
+  exportType: exportTypeArg,
+  enableCssInJs: enableCssInJsArg
 }) => {
-  const exportType = eType || envVars.get('PFWP_E_TYPE');
-  const disableExtract = dExtract || envVars.getBoolean('PFWP_NOCSS') === true;
+  const exportType = exportTypeArg || envVars.get('PFWP_EXPORT_TYPE');
+  const enableCssInJs = enableCssInJsArg || envVars.getBoolean('PFWP_CSS_IN_JS') === true;
 
   const routeArgs = {
     buildType,
@@ -279,7 +292,7 @@ const getConfig = ({
 
   const isWeb = isWebTarget({ buildType });
   const routes = getRoutes(routeArgs);
-  const base = getBaseConfig({ isWeb, buildType, srcType, exportType, disableExtract });
+  const base = getBaseConfig({ isWeb, buildType, srcType, exportType, enableCssInJs });
 
   routeInfo[`${srcType}_${buildType}`] = routes;
 
@@ -287,7 +300,7 @@ const getConfig = ({
     ...base,
     ...{
       entry: getEntries({ buildType, srcType, exportType }),
-      plugins: getPlugins({ buildType, srcType, routes, exportType, disableExtract })
+      plugins: getPlugins({ buildType, srcType, routes, exportType, enableCssInJs })
     }
   };
 };

@@ -9,7 +9,7 @@ const pfwpConfig = {
   mode: envVars.get('NODE_ENV') || 'production',
   core_block_filters: envVars.get('PFWP_CORE_BLOCK_FILTERS'),
   wp_root: pfwpWpRoot,
-  css_inject: envVars.getBoolean('PFWP_NOCSS') === true,
+  css_inject: envVars.getBoolean('PFWP_CSS_IN_JS') === true,
   public_path: envVars.get('PFWP_WP_PUBLIC_PATH'),
   compilations: {}
 };

@@ -2,7 +2,7 @@ const { spawn } = require('child_process');
 const webpack = require('webpack');
 const chokidar = require('chokidar');
 const path = require('path');
-
+const { srcDirectories } = require('./shared/src.directory.entry.map.js');
 const {
   getConfig,
   handler: webpackHandler,
@@ -11,7 +11,6 @@ const {
   plugins: { postprocess: postProcessPlugin },
   routeInfo
 } = require('./build/webpack/index.js');
-
 const { serverStart } = require('./build/server/index.js');
 
 let webpackCompiler;
@@ -135,15 +134,17 @@ const startWebPack = async () => {
 
   webpackPreProcess({ srcDir: path.resolve(__dirname, './src/') });
 
-  webpackCompiler = webpack([
-    // getConfig({ buildType: 'ssr' }),
-    getConfig({ buildType: 'elements', srcType: 'whiteboard' }),
-    getConfig({ buildType: 'elements', srcType: 'components' }),
-    getConfig({ buildType: 'elements', srcType: 'blocks' }),
-    getConfig({ buildType: 'elements', srcType: 'plugins' }),
-    getConfig({ buildType: 'elements', srcType: 'themes' }),
-    getConfig({ buildType: 'server', srcType: 'whiteboard' })
-  ]);
+  const config = Object.keys(srcDirectories).reduce((configData, srcType) => {
+    const { buildTypes, webpack: { configPresets } } = srcDirectories[srcType];
+
+    buildTypes.forEach((buildType) => {
+      configData.push(getConfig({ buildType, srcType, ...configPresets }));
+    });
+
+    return configData;
+  }, []);
+
+  webpackCompiler = webpack(config);
 
   postProcessPlugin(({ stats }) => {
     webpackPostProcess({ stats, routeInfo });
