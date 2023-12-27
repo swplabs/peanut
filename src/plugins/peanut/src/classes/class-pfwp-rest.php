@@ -42,7 +42,7 @@ class PFWP_REST {
       return false;
     }
 
-    $data = json_decode( rawurldecode( $param ), true );
+    $data = json_decode( base64_decode( rawurldecode( $param ) ), true );
 
     if ( !is_array( $data ) ) {
       return false;

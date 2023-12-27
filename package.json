@@ -4,7 +4,18 @@
   "description": "Peanut for Wordpress. Build your themes and blocks with components.",
   "main": "./dist/server.js",
   "scripts": {
-    "start": "node serve.js"
+    "start": "npm run develop",
+    "develop": "node ./develop.js",
+    "build": "node ./build.js",
+    "clean": "npx rimraf ./dist && npx rimraf ./package-lock.json && npx rimraf ./node_modules",
+    "clean-dist": "PFWP_DIST=${PFWP_DIST:=develop} && npx rimraf ./dist/${PFWP_DIST}/*",
+    "make-dist": "PFWP_DIST=${PFWP_DIST:=develop} && npx mkdirp ./dist/${PFWP_DIST}",
+    "format": "npx prettier --write \"**/*.+(js|json|md)\"",
+    "generate-component": "npx plop --plopfile=./build/plop/plopfile.js --dest=./src/components/",
+    "whiteboard": "PFWP_DIST=${PFWP_DIST:=develop} node ./whiteboard.js",
+    "install-app": "NODE_ENV=development npm install",
+    "install-extend": "NODE_ENV=development npm install ./extend",
+    "clean-install": "npm run clean && npm run install-app"
   },
   "keywords": [
     "wordpress",
@@ -44,6 +55,7 @@
     "eslint-plugin-import": "2.29.1",
     "eslint-webpack-plugin": "4.0.1",
     "mini-css-extract-plugin": "2.7.6",
+    "mkdirp": "3.0.1",
     "plop": "4.0.1",
     "postcss": "8.4.32",
     "postcss-import": "15.1.0",
@@ -52,6 +64,7 @@
     "prettier": "3.1.1",
     "react-refresh": "0.14.0",
     "resolve-url-loader": "5.0.0",
+    "rimraf": "5.0.5",
     "sass": "1.69.5",
     "sass-loader": "13.3.3",
     "style-loader": "3.3.3",

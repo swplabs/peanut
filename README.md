@@ -44,7 +44,7 @@ Update ./extend/config.json with your Wordpress settings (example shown below)
 The minimum version of Node.js required can be found in the package.json of this project and is also listed below:
 
 <p>
-<img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fswplabs%2Fpeanut%2Fraw%2Fmain%2Fpackage.json&query=%24.engines.node&label=node%20version">
+<img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fswplabs%2Fpeanut%2Fraw%2Fmain%2Fpackage.json&query=%24.engines.node&label=node">
 </p>
 
 You will need to install and use this version when using our application. We recommend using [NVM](https://github.com/nvm-sh/nvm) or [Volta](https://docs.volta.sh/guide/getting-started) to manage your Node.js versions.
@@ -53,14 +53,14 @@ You will need to install and use this version when using our application. We rec
 
 Run the following commands in the root directory to install the necessary npm packages.
 
-```
-make install
+```shell
+npm run install-app
 ```
 
 #### Start up the application
 
-```
-make develop
+```shell
+npm run develop
 ```
 
 ### Enable the Peanut WP Plugin

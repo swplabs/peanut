@@ -1,16 +1,11 @@
 /* global __ROUTES__ */
 
-require('./style.scss');
-
-const { debug: log, toCamelCase } = require('../../../shared/utils.js');
-const hashUtils = require('./lib/hash.js');
+const hashUtils = require('./hash.js');
 
 const routes = __ROUTES__;
 const appNav = document.createElement('ul');
 const iframeComponents = document.getElementById('iframe_components');
 const iframeControl = document.getElementById('iframe_control');
-
-window.peanutApp = window.peanutApp || {};
 
 let paramsToIgnore = [];
 
@@ -62,8 +57,6 @@ const init = () => {
       li.appendChild(button);
 
       if (variationParams && Object.keys(variationParams)?.length) {
-        log('[app:client] variation data:', id, variationParams);
-
         const div = document.createElement('div');
 
         for (const [key, value] of Object.entries(variationParams)) {
@@ -95,17 +88,19 @@ const init = () => {
     const { pathname, search } =
       document.getElementById('iframe_components').contentWindow.location;
 
-    log('[app:client] comp iframe load:', pathname, search);
-
     hashUtils.updateHash({
       compSrc: `${pathname}${search}`
     });
   });
 };
 
-window.peanutApp.updateHash = (params, updatesToIngore = []) => {
+const updateHash = (params, updatesToIngore = []) => {
   paramsToIgnore = updatesToIngore;
   hashUtils.updateHash(params);
 };
 
-document.addEventListener('DOMContentLoaded', init);
+module.exports = {
+  updateHash,
+  init,
+  onHashChange
+};

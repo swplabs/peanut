@@ -27,12 +27,6 @@ nconf.env([
   'PFWP_SSE_ENABLE_HTTPS',
   'PFWP_SSE_HTTPS_PORT'
 ]);
-// Get environment based overrides
-const environment = nconf.get('ENVIRONMENT');
-
-if (!environment) {
-  console.log('ENVIRONMENT NOT SET');
-}
 
 let config = {};
 
@@ -43,8 +37,10 @@ try {
 }
 
 const defaultConfig = {
+  ENVIRONMENT: 'local',
+  NODE_ENV: 'development',
   PFWP_BUILD: 'stack',
-  PFWP_DIST: 'serve',
+  PFWP_DIST: 'develop',
   PFWP_CSS_IN_JS: 'false',
   PFWP_APP_SRC_PATH: path.resolve(__dirname, '../src/'),
   PFWP_DIR_ENT_SRC_PATH: '/src',
