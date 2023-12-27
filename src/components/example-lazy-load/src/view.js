@@ -89,9 +89,11 @@ module.exports = async (instance, data) => {
 
   if (component_data) {
     dataString = `?data=${encodeURIComponent(
-      JSON.stringify({
-        attributes: component_data
-      })
+      window.btoa(
+        JSON.stringify({
+          attributes: component_data
+        })
+      )
     )}`;
   }
 
