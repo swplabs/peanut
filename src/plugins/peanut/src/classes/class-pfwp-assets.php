@@ -9,27 +9,13 @@ if ( ! defined( 'PFWP_VERSION' ) ) {
 class PFWP_Assets {
 	private static $assets;
 
-	public static function get_key( $group, $key ) {
-		return $key;
-	}
-
-	public static function get_base_key( $group, $chunkGroupKey, $entryKeyPrefix = null ) {
-		$repl = $group . '_';
-
-		if ( $entryKeyPrefix ) {
-			$repl = $entryKeyPrefix . '_' . $repl;
-		}
-
-		return str_replace( $repl, '', $chunkGroupKey );
-	}
-
 	public static function initialize() {
 		global $pfwp_global_config;
 
 		self::$assets = (object) array(
-			'blocks'     => $pfwp_global_config->chunk_groups->blocks_elements,
-			'components' => $pfwp_global_config->chunk_groups->components_elements,
-			'plugins'    => $pfwp_global_config->chunk_groups->plugins_elements,
+			'blocks' => $pfwp_global_config->compilations->blocks_elements,
+			'components' => $pfwp_global_config->compilations->components_elements,
+			'plugins' => $pfwp_global_config->compilations->plugins_elements,
 		);
 	}
 
@@ -37,10 +23,10 @@ class PFWP_Assets {
 		global $pfwp_global_config;
 
 		// TODO: add hash as version
-		if ( property_exists( $pfwp_global_config->runtime, $script_name ) ) {
+		if ( isset( $pfwp_global_config->compilations->{$script_name}->runtime ) ) {
 			wp_register_script(
 				$script_name . '_webpack_runtime',
-				'/' . $pfwp_global_config->runtime->{$script_name}
+				'/' . $pfwp_global_config->compilations->{$script_name}->runtime
 			);
 		}
 	}
@@ -52,25 +38,14 @@ class PFWP_Assets {
 
 	public static function get_assets( $group = null ) {
 		if ( isset( $group ) ) {
-			return self::$assets->$group;
+			return self::$assets->{$group};
 		} else {
 			return self::$assets;
 		}
 	}
 
-	public static function has_php( $group = 'components', $realKey = '' ) {
-		return property_exists( self::$assets->$group, $realKey ) && property_exists( self::$assets->$group->$realKey, 'php' ) && self::$assets->$group->$realKey->php === true;
-	}
-
-	public static function has_asset( $group = 'components', $key = '', $entryKey = '' ) {
-		$realKey = ( $entryKey ? $entryKey . '_' : '' ) . $group . '_' . $key;
-
-		return property_exists( self::$assets->$group, $realKey ) && property_exists( self::$assets->$group->$realKey, 'main_assets' );
-	}
-
-	public static function get_asset( $group = 'components', $key = '', $entryKey = '' ) {
-		$realKey = ( $entryKey ? $entryKey . '_' : '' ) . $group . '_' . $key;
-		return self::$assets->$group->$realKey->$type;
+	public static function has_asset( $group = 'components', $key = '', $entry_key = '' ) {
+		return property_exists( self::$assets->{$group}->entry_map->{$key}, $entry_key );
 	}
 
 	private static function simple_minify( $content ) {
@@ -81,40 +56,18 @@ class PFWP_Assets {
 		return $content;
 	}
 
-	public static function process_assets( $key_assets ) {
-		global $pfwp_global_config;
+	public static function get_key_assets( $group = 'components', $key = '', $entry_key = '' ) {
+		$entry_map = self::$assets->{$group}->entry_map->{$key};
 
-		$assets = (object) array(
-			'js'  => array(),
-			'css' => array(),
-		);
+		if ( property_exists( $entry_map, $entry_key ) ) {
+			$asset_key = $entry_map->{$entry_key};
 
-		if ( property_exists( $key_assets, 'css' ) ) {
-			foreach ( $key_assets->css as $key => $value ) {
-				array_push( $assets->css, $pfwp_global_config->public_path . $value );
-			}
-		}
-
-		if ( property_exists( $key_assets, 'js' ) ) {
-			foreach ( $key_assets->js as $key => $value ) {
-				array_push( $assets->js, $pfwp_global_config->public_path . $value );
-			}
-		}
-
-		return $assets;
-	}
-
-	// TODO: create get_main_asset function... match url /.assets/entryKey_group_key.js in assets array
-	public static function get_key_assets( $group = 'components', $key = '', $entryKey = '' ) {
-		$realKey = ( $entryKey ? $entryKey . '_' : '' ) . $group . '_' . $key;
-		$assets  = self::$assets->$group->$realKey->main_assets;
-
-		if ( is_array( $assets ) ) {
+			$assets = self::$assets->{$group}->chunk_groups->{$asset_key}->main_assets;
 			$key_assets = (object) array();
 
 			foreach ( $assets as $key => $value ) {
 				$file = $value->name;
-				$ext  = pathinfo( $file, PATHINFO_EXTENSION );
+				$ext  = $value->type;
 
 				if ( ! property_exists( $key_assets, $ext ) ) {
 					$key_assets->$ext = array();

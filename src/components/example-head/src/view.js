@@ -128,7 +128,7 @@ window.pfwp = {
         pfwp.assetStates[component] = 'loaded';
 
         if (execAsset) {
-          window.peanutSrcClientJs[`components_${component}`].default('', {});
+          window.peanutSrcClientJs[`view_components_${component}`].default('', {});
         }
 
         pfwp.dispatch(eventName, {});

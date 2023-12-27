@@ -1,5 +1,3 @@
-const { webpackPostProcess } = require('../hooks.js');
-
 class PostProcessPlugin {
   constructor({ callback }) {
     this.callback = callback;
@@ -8,8 +6,6 @@ class PostProcessPlugin {
   apply(compiler) {
     compiler.hooks.done.tap('PostProcessPlugin', (stats) => {
       const { callback } = this;
-
-      webpackPostProcess({ stats });
 
       if (typeof callback === 'function') {
         callback({ stats });

@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const { toCamelCase, debug: log } = require('../../src/whiteboard/shared/utils.js');
-const { srcDirectoryEntryMap } = require('../../shared/src.dir.map.js');
+const { srcDirectoryEntryMap } = require('../../shared/src.directory.entry.map.js');
 const { baseRoutes, baseEntries } = require('../../shared/base.paths.js');
 const envVars = require('../../shared/envvars.js');
 const appSrcPath = envVars.get('PFWP_APP_SRC_PATH');

@@ -11,8 +11,6 @@ const majorSeconds = isLocal ? 0 : 31536000;
 const routes = __ROUTES__;
 
 const cntrls = {
-  default: require('./controllers/default.js'),
-  schema: require('./controllers/schema.js'),
   base: require('./controllers/base.js'),
   app: require('./controllers/app.js'),
   utils: require('./controllers/lib/utils.js')
@@ -41,7 +39,7 @@ const exportFiles = isLocal
 
 // Set up route controllers
 const routeController = (route) => {
-  const { controller: routeCntrl = 'default' } = route;
+  const { controller: routeCntrl = 'base' } = route;
 
   return cntrls[routeCntrl].controller({ route, routes });
 };

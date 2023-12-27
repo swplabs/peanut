@@ -1,5 +1,4 @@
 const { debug: log } = require('../../shared/utils.js');
-const { extname } = require('path');
 const envVars = require('../../../../shared/envvars.js');
 const wbPublicPath = envVars.get('PFWP_WB_PUBLIC_PATH') || '/';
 const wordpressPublicPath = envVars.get('PFWP_WP_PUBLIC_PATH');
@@ -33,6 +32,25 @@ const resetAssets = ({ srcType }) => {
   buildAssets[`${srcType}_elements`] = {};
 };
 
+const addAssetData = ({ id, type, assetIndex, name, publicPath, data }) => {
+  if (!buildAssets[assetIndex][id][type]) {
+    buildAssets[assetIndex][id][type] = {};
+  }
+
+  if (typeof buildAssets[assetIndex][id][type][name] === 'undefined') {
+    buildAssets[assetIndex][id][type][name] = true;
+
+    data.push({
+      parentId: id,
+      url: `${publicPath}${name}`
+    });
+
+    log(`[server] Generated ${type} client asset:`, assetIndex, id, name);
+  } else {
+    log('[server] Already generated client asset:', assetIndex, id, name);
+  }
+};
+
 const buildClientAssets = ({ srcType, id }) => {
   const assetIndex = `${srcType}_elements`;
 
@@ -41,40 +59,31 @@ const buildClientAssets = ({ srcType, id }) => {
 
   const publicPath = srcType === 'whiteboard' ? wbPublicPath : wordpressPublicPath;
 
-  // TODO: change to use arrays/join
-  let jsString = '';
-  let cssString = '';
+  const jsData = [];
+  const cssData = [];
 
-  const clientAssets = pfwpConfig.chunk_groups[assetIndex][id];
+  const compilation = pfwpConfig.compilations[assetIndex];
+  const clientAssets = compilation.chunk_groups[`view_${id}`];
+
+  const eachAsset = ({ name, type }) =>
+    addAssetData({
+      id,
+      type,
+      assetIndex,
+      name,
+      publicPath,
+      data: type === 'js' ? jsData : cssData
+    });
 
   if (clientAssets.main_assets?.length) {
-    clientAssets.main_assets.forEach(({ name }) => {
-      const type = extname(name)?.substring(1);
-
-      if (!buildAssets[assetIndex][id][type]) {
-        buildAssets[assetIndex][id][type] = {};
-      }
-
-      if (typeof buildAssets[assetIndex][id][type][name] === 'undefined') {
-        buildAssets[assetIndex][id][type][name] = true;
-
-        if (type === 'js') {
-          jsString += `<script src="${publicPath}${name}"></script>`;
-        } else if (type === 'css') {
-          cssString += `<link rel="stylesheet" type="text/css" href="${publicPath}${name}" />`;
-        }
-
-        log(`[server] Generated ${type} client asset:`, assetIndex, id, name);
-      } else {
-        log('[server] Already generated client asset:', assetIndex, id, name);
-      }
-    });
+    clientAssets.deps?.forEach(eachAsset);
+    clientAssets.main_assets.forEach(eachAsset);
   } else {
     log('[server] Requested empty client asset:', assetIndex, id);
   }
   return {
-    js: jsString,
-    css: cssString
+    js: jsData,
+    css: cssData
   };
 };
 
@@ -120,10 +129,41 @@ const addParamsToData = (compData, { schema, params }) => {
   }
 };
 
+const htmlTemplate = ({ id, reactHtml, js, css }) => {
+  const html = `
+    <html>
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Whiteboard (Peanut For Wordpress)</title>
+        ${css
+          .map((item) => {
+            return `<link rel="stylesheet" href="${item.url}" />\n`;
+          })
+          .join('')}
+      </head>
+      <body>
+        <div id="root">${reactHtml}</div>
+        ${js
+          .map((item) => {
+            return `<script src="${item.url}"></script>\n`;
+          })
+          .join('')}
+        <script>
+          window.peanutSrcClientJs['view_${id}'].default({});
+        </script>
+      </body>
+    </html>
+  `;
+
+  return html;
+};
+
 module.exports = {
   setConfig,
   buildClientAssets,
   resetAssets,
   getServerFile,
-  addParamsToData
+  addParamsToData,
+  htmlTemplate
 };

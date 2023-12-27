@@ -104,6 +104,8 @@ class ComponentsPlugin {
 
         const { show_in_rest = false, data_schema } = data;
 
+        // TODO: figure out why it's not included in stats everytime and if we can cache somewhere
+        // TODO: might need to save it "stats" somewhere which would probably fix compilation hash todo as well
         compilation.emitAsset(filename, new RawSource(source), {
           component: key,
           showInRest: show_in_rest,
@@ -113,7 +115,8 @@ class ComponentsPlugin {
         // TODO: update the compilation hash
       });
 
-      this.filesToEmit = {};
+      // TODO: commented this out so that it appears in stats everytime. Revisit
+      // this.filesToEmit = {};
     });
 
     compiler.hooks.done.tap('ComponentsPlugin', (stats) => {

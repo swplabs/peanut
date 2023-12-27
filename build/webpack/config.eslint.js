@@ -162,8 +162,8 @@ module.exports = ({ buildType, srcType }) => {
       'callback-return': 'off',
       camelcase: 'off',
       'comma-dangle': 'warn',
-      'comma-spacing': ['error', { before: false, after: true }],
-      'comma-style': ['error', 'last'],
+      'comma-spacing': ['warn', { before: false, after: true }],
+      'comma-style': ['warn', 'last'],
       complexity: ['off', 11],
       'computed-property-spacing': 'off',
       'consistent-return': 'off',
@@ -211,7 +211,7 @@ module.exports = ({ buildType, srcType }) => {
       'prefer-spread': 'off',
       'prefer-template': 'off',
       'quote-props': 'off',
-      quotes: ['error', 'single', { allowTemplateLiterals: true }],
+      quotes: ['warn', 'single', { allowTemplateLiterals: true }],
       radix: 'off',
       'id-match': 'off',
       'id-blacklist': 'off',
@@ -256,11 +256,7 @@ module.exports = ({ buildType, srcType }) => {
               parserOptions: {
                 babelOptions: {
                   configFile: false,
-                  ...babelConfig({
-                    buildType,
-                    srcType,
-                    enableReactPreset: true
-                  })
+                  ...babelConfig({ buildType, srcType, enableReactPreset: true })
                 }
               },
               rules: {

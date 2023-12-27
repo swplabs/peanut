@@ -68,10 +68,7 @@ module.exports = ({ exportType, components, srcPath, distPath, disableExtract })
               );
             }
 
-            packModules.push({
-              id: `${moduleNamePrefix}_${type}`,
-              file: `./${packFile}`
-            });
+            packModules.push({ id: `${moduleNamePrefix}_${type}`, file: `./${packFile}` });
           } catch (e) {
             console.log('[build:export:pack] error:', e?.message);
           }

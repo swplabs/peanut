@@ -21,11 +21,9 @@ class PFWP_Blocks {
 		self::$deps   = require get_template_directory() . '/blocks/deps.php';
 
 		// Register block index files
-		foreach ( self::$blocks as $key => $value ) {
-
-			if ( str_starts_with( $key, 'php_index' ) ) {
-				$baseKey = PFWP_Assets::get_base_key( 'blocks', $key, 'php_index' );
-				require_once get_template_directory() . '/blocks/' . $baseKey . '/index.php';
+		foreach ( self::$blocks->entry_map as $key => $value ) {
+			if ( property_exists( $value, 'php_index' ) ) {
+				require_once get_template_directory() . '/blocks/' . $key . '/index.php';
 			}
 		}
 
@@ -39,53 +37,31 @@ class PFWP_Blocks {
 	}
 
 	public static function register() {
-		foreach ( self::$blocks as $key => $value ) {
+		foreach ( self::$blocks->entry_map as $key => $value ) {
 
-			if ( str_starts_with( $key, 'editor' ) ) {
-				$baseKey = PFWP_Assets::get_base_key( 'blocks', $key, 'editor' );
-				$assets  = PFWP_Components::process_assets( PFWP_Assets::get_key_assets( 'blocks', $baseKey, 'editor' ) );
-				$deps    = self::$deps[ '.assets/blocks/' . $key . '.js' ];
+			if ( property_exists( $value, 'editor' ) ) {
+				$assets  = PFWP_Components::process_assets( PFWP_Assets::get_key_assets( 'blocks', $key, 'editor' ) );
+				$deps    = self::$deps[ '.assets/blocks/' . $value->editor . '.js' ];
 
 				array_push( $deps['dependencies'], 'blocks_elements_webpack_runtime' );
 
 				// TODO: loop through assets object above so as to support webpack code split deps
-				wp_register_script(
-					$key,
+				$added = wp_register_script(
+					$value->editor,
 					$assets->js[0],
 					$deps['dependencies'],
 					$deps['version']
 				);
 
-				$blockFile = get_template_directory() . '/blocks/' . $baseKey . '/block.json';
+				$blockFile = get_template_directory() . '/blocks/' . $key . '/block.json';
 
 				if ( is_file( $blockFile ) ) {
-						register_block_type_from_metadata( $blockFile );
+					register_block_type_from_metadata( $blockFile );
 				}
 			}
 		}
 
 		// TODO: add do_action for block localize passing in all handles that we registered above
-	}
-
-	/**
-	 * Render callback helper for block > component one-to-one matches
-	 */
-	public static function component_render_callback( $attributes, $content, $block ) {
-		$assetKey = str_replace( 'pfwp/', '', $block->name );
-
-		// Dynamic blocks use components for rendering. Static blocks are completely javascript driven
-		if ( '' !== locate_template( 'components/' . $assetKey . '/index.php', false, false ) ) {
-			return PFWP_Components::get_template_part(
-				'components/' . $assetKey . '/index',
-				null,
-				array(
-					'attributes' => $attributes,
-					'content'    => $content,
-				)
-			);
-		} else {
-			return $content;
-		}
 	}
 
 	/**
@@ -111,10 +87,6 @@ class PFWP_Blocks {
 		}
 
 		return $block_content;
-	}
-
-	public static function filter_data( $parsed_block, $source_block, $parent_block ) {
-		return $parsed_block;
 	}
 
 	public static function filter_pre_render( $pre_render, $parsed_block, $parent_block ) {
@@ -143,8 +115,6 @@ class PFWP_Blocks {
 
 
 add_filter( 'pre_render_block', array( 'PFWP_Blocks', 'filter_pre_render' ), 99999, 3 );
-
-// add_filter( 'render_block_data', array( 'PFWP_Blocks', 'filter_data' ), 99999, 3 );
 
 add_filter( 'render_block', array( 'PFWP_Blocks', 'filter_render' ), 99999, 2 );
 

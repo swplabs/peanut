@@ -7,7 +7,9 @@ const {
   getConfig,
   handler: webpackHandler,
   webpackPreProcess,
-  plugins: { postprocess: postProcessPlugin }
+  webpackPostProcess,
+  plugins: { postprocess: postProcessPlugin },
+  routeInfo
 } = require('./build/webpack/index.js');
 
 const { serverStart } = require('./build/server/index.js');
@@ -144,6 +146,7 @@ const startWebPack = async () => {
   ]);
 
   postProcessPlugin(({ stats }) => {
+    webpackPostProcess({ stats, routeInfo });
     webpackCallback(null, stats);
   }).apply(webpackCompiler);
 

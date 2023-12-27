@@ -1,13 +1,11 @@
-const App = ({ _css, _js }) => {
+import Schema from '../schema/view.js';
+import styles from './style.scss';
+
+const App = () => {
   return (
-    <html>
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Whiteboard (Peanut For Wordpress)</title>
-      </head>
-      <body>Hello World</body>
-    </html>
+    <div className={styles.schema}>
+      <Schema />
+    </div>
   );
 };
 

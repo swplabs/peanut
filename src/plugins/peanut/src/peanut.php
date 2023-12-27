@@ -45,6 +45,8 @@ switch ( wp_get_environment_type() ) {
 	case 'local':
 	case 'development':
 		// TODO: open up rest routes to any data
+
+		// TODO: create custom permalink route for whiteboard
 	break;
 }
 

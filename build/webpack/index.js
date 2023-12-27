@@ -1,11 +1,11 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 const paths = require('./paths.js');
-const { webpackPreProcess } = require('./hooks.js');
+const { webpackPreProcess, webpackPostProcess } = require('./hooks.js');
 const webpackLoaders = require('./loaders.js');
 const webpackPlugins = require('./plugins.js');
 const envVars = require('../../shared/envvars.js');
-const { srcDirectoryEntryMap } = require('../../shared/src.dir.map.js');
+const { srcDirectoryEntryMap } = require('../../shared/src.directory.entry.map.js');
 const environment = envVars.get('ENVIRONMENT') || 'prod';
 const nodeEnv = envVars.get('NODE_ENV') || 'production';
 const distDir = path.join(__dirname, `../../dist/${envVars.get('PFWP_DIST')}`);
@@ -20,6 +20,8 @@ const wordpressPublicPath = envVars.get('PFWP_WP_PUBLIC_PATH');
 const peanutThemePath = envVars.get('PFWP_THEME_PATH');
 const directoryEntrySrcPath = envVars.get('PFWP_DIR_ENT_SRC_PATH');
 const { node, hotRefreshEnabled, isWebTarget } = require('../../shared/definitions.js');
+
+const routeInfo = {};
 
 const { getRoutes, getEntries, getCacheGroups } = paths;
 
@@ -120,12 +122,13 @@ const getOutput = ({ buildType, srcType, exportType }) => {
 const { style: styleLoader, js: jsLoader, php: phpLoader } = webpackLoaders;
 
 const getModuleRules = ({ buildType, exportType, srcType, disableExtract }) => {
-  const rules = [jsLoader({ buildType, srcType, exportType })];
+  const rules = [
+    jsLoader({ buildType, srcType, exportType }),
+    styleLoader({ MiniCssExtractPlugin, buildType, srcType, exportType, disableExtract })
+  ];
 
   switch (buildType) {
     case 'elements': {
-      rules.push(styleLoader({ MiniCssExtractPlugin, exportType, disableExtract }));
-
       if (srcType !== 'whiteboard') {
         rules.push(phpLoader({ output: { peanutThemePath, wordpressRoot } }));
       }
@@ -158,36 +161,24 @@ const getPlugins = ({ buildType, srcType, routes, exportType, disableExtract = f
   const outputPath = srcType === 'whiteboard' ? staticDir : wordpressRoot;
   const filePath = srcType === 'whiteboard' ? `assets/${srcType}` : `.assets/${srcType}`;
 
-  if (!disableExtract && exportType !== 'web' && buildType !== 'server')
+  // TODO: add to definitions.js
+  if (!disableExtract && exportType !== 'web' && srcType !== 'whiteboard')
     plugins.push(extractCssPlugin({ MiniCssExtractPlugin, exportType, filePath }));
 
   if (srcType === 'blocks') {
     plugins.push(
-      blocksPlugin({
-        directory: `${wordpressRoot}${peanutThemePath}`,
-        routes,
-        outputPath
-      })
+      blocksPlugin({ directory: `${wordpressRoot}${peanutThemePath}`, routes, outputPath })
     );
   }
 
   if (srcType === 'components') {
     plugins.push(
-      componentsPlugin({
-        directory: `${wordpressRoot}${peanutThemePath}`,
-        routes,
-        outputPath
-      })
+      componentsPlugin({ directory: `${wordpressRoot}${peanutThemePath}`, routes, outputPath })
     );
   }
 
   if (['blocks', 'plugins', 'themes'].includes(srcType)) {
-    plugins.push(
-      wpDepExtractPlugin({
-        directory: `${wordpressRoot}${peanutThemePath}`,
-        srcType
-      })
-    );
+    plugins.push(wpDepExtractPlugin({ directory: `${wordpressRoot}${peanutThemePath}`, srcType }));
   }
 
   if (['themes', 'plugins'].includes(srcType)) {
@@ -205,7 +196,6 @@ const getPlugins = ({ buildType, srcType, routes, exportType, disableExtract = f
     plugins.push(
       hotModuleReplacementPlugin(),
       reactRefreshPlugin(),
-      // normalModuleReplacementPlugin({ rootDir })
       normalModuleReplacementPlugin(
         /react-refresh-webpack-plugin\/overlay\/containers\/RuntimeErrorContainer/,
         `${rootDir}/src/whiteboard/shared/runtime-error-container.js`
@@ -244,13 +234,7 @@ const getBaseConfig = ({ isWeb, buildType, srcType, exportType, disableExtract }
     },
 
     module: {
-      rules: getModuleRules({
-        isWeb,
-        buildType,
-        srcType,
-        exportType,
-        disableExtract
-      })
+      rules: getModuleRules({ isWeb, buildType, srcType, exportType, disableExtract })
     },
 
     optimization: {
@@ -295,34 +279,26 @@ const getConfig = ({
 
   const isWeb = isWebTarget({ buildType });
   const routes = getRoutes(routeArgs);
-  const base = getBaseConfig({
-    isWeb,
-    buildType,
-    srcType,
-    exportType,
-    disableExtract
-  });
+  const base = getBaseConfig({ isWeb, buildType, srcType, exportType, disableExtract });
+
+  routeInfo[`${srcType}_${buildType}`] = routes;
 
   return {
     ...base,
     ...{
       entry: getEntries({ buildType, srcType, exportType }),
-      plugins: getPlugins({
-        buildType,
-        srcType,
-        routes,
-        exportType,
-        disableExtract
-      })
+      plugins: getPlugins({ buildType, srcType, routes, exportType, disableExtract })
     }
   };
 };
 
 module.exports = {
   paths,
+  routeInfo,
   loaders: webpackLoaders,
   plugins: webpackPlugins,
   handler: webpackHandler,
   getConfig,
-  webpackPreProcess
+  webpackPreProcess,
+  webpackPostProcess
 };

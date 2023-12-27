@@ -1,6 +1,6 @@
 const srcDirectoryEntryMap = {
   'variations.json': {
-    flag: 'hasVars',
+    flag: 'hasVariations',
     entryKey: 'variations',
     excludeSrcTypes: ['themes', 'plugins'],
     buildConfig: {
@@ -18,8 +18,8 @@ const srcDirectoryEntryMap = {
   // TODO: for plugin/block client side styles will we need to adjust the library type?
   // TODO: add pattern match so that we can use "editor.s?css"
   'style.scss': {
-    flag: 'hasStyles',
-    entryKey: 'styles',
+    flag: 'hasStyle',
+    entryKey: 'style',
     buildConfig: {
       elements: {
         entry: {
@@ -123,8 +123,8 @@ const srcDirectoryEntryMap = {
   },
   // TODO: add pattern/alias match so that we can use "editor.s?css" and "index.s?css"
   'editor.scss': {
-    flag: 'hasEditorStyles',
-    entryKey: 'editor_styles',
+    flag: 'hasEditorStyle',
+    entryKey: 'editor_style',
     buildConfig: {
       elements: {
         entry: {
@@ -145,9 +145,9 @@ const srcDirectoryEntryMap = {
       }
     }
   },
-  // TODO: add alias "view.js"
   'view.js': {
-    flag: 'hasSrcClient',
+    flag: 'hasViewScript',
+    entryKey: 'view',
     buildConfig: {
       elements: {
         entry: {
@@ -193,6 +193,19 @@ const srcDirectoryEntryMap = {
   }
 };
 
+const entryMapFlagKeys = Object.keys(srcDirectoryEntryMap).reduce((flagKeys, key) => {
+  const { flag, entryKey } = srcDirectoryEntryMap[key];
+
+  flagKeys.push({
+    flag,
+    entryKey,
+    pattern: key
+  });
+
+  return flagKeys;
+}, []);
+
 module.exports = {
-  srcDirectoryEntryMap
+  srcDirectoryEntryMap,
+  entryMapFlagKeys
 };

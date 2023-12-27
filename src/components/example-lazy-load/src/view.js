@@ -41,7 +41,7 @@ const lazyLoad = async ({ instance, componentName, dataString = '' }) => {
 
     if (Array.isArray(keyAssets) && keyAssets.length) {
       pfwp.getComponentAssets(jsonAssetKey, keyAssets, () => {
-        const clientJs = window.peanutSrcClientJs?.[`components_${jsonAssetKey}`];
+        const clientJs = window.peanutSrcClientJs?.[`view_components_${jsonAssetKey}`];
 
         let componentJs;
 

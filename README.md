@@ -1,7 +1,3 @@
-<p>
-<img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fswplabs%2Fpeanut%2Fraw%2Fmain%2Fpackage.json&query=%24.engines.node&label=node%20version">
-</p>
-
 # Introducing "Peanut" for Wordpress
 
 Build your wordpress themes and blocks with component-like elements.
@@ -45,7 +41,7 @@ Update ./extend/config.json with your Wordpress settings (example shown below)
 
 #### Installing the minimum required version of Node.js
 
-The minimum version of Node.js required can be found in the package.json of this project under "engines > node" within the file and is listed below using a badge:
+The minimum version of Node.js required can be found in the package.json of this project and is also listed below:
 
 <p>
 <img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fswplabs%2Fpeanut%2Fraw%2Fmain%2Fpackage.json&query=%24.engines.node&label=node%20version">

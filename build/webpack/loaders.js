@@ -2,18 +2,25 @@ const path = require('path');
 const basePostCssConfig = require('./config.postcss.js');
 const babelConfig = require('./config.babel.js');
 
-const style = ({ MiniCssExtractPlugin, exportType, disableExtract = false }) => {
+const style = ({
+  MiniCssExtractPlugin,
+  exportType,
+  buildType,
+  srcType,
+  disableExtract = false
+}) => {
   return {
     test: /\.s?css$/i,
     use: [
-      !disableExtract && exportType !== 'web'
+      !disableExtract && exportType !== 'web' && srcType !== 'whiteboard'
         ? MiniCssExtractPlugin.loader
         : { loader: 'style-loader' },
       {
         loader: 'css-loader',
         options: {
           sourceMap: false,
-          importLoaders: 2
+          importLoaders: 2,
+          modules: srcType === 'whiteboard'
         }
       },
       {
@@ -51,22 +58,6 @@ const js = ({ buildType, srcType, exportType }) => {
   };
 };
 
-/*
-TODO: include option for enabling typescript
-const ts = ({ buildType, exportType }) => {
-  return {
-    test: /\.ts$/,
-    exclude: /node_modules|\.min\.js/,
-    use: [
-      {
-        loader: 'babel-loader',
-        options: babelConfig({ buildType, exportType, fileType: 'ts' })
-      }
-    ]
-  };
-};
-*/
-
 const php = ({ output }) => {
   return {
     test: /\.php$/,
@@ -84,7 +75,6 @@ const php = ({ output }) => {
 
 module.exports = {
   js,
-  // ts,
   style,
   php
 };

@@ -118,8 +118,8 @@ class PFWP_Components {
 			// JS Instance Initialization
 			self::$js_data->$key = (object) array();
 
-			if ( PFWP_Assets::has_asset( 'components', $key, 'styles' ) ) {
-				$style_assets = self::process_assets( PFWP_Assets::get_key_assets( 'components', $key, 'styles' ) );
+			if ( PFWP_Assets::has_asset( 'components', $key, 'style' ) ) {
+				$style_assets = self::process_assets( PFWP_Assets::get_key_assets( 'components', $key, 'style' ) );
 
 				if ( $pfwp_global_config->css_inject ) {
 					$assets->js = array_merge( $assets->js, $style_assets->js );
@@ -128,8 +128,8 @@ class PFWP_Components {
 				}
 			}
 
-			if ( PFWP_Assets::has_asset( 'components', $key, '' ) ) {
-				$client_assets = self::process_assets( PFWP_Assets::get_key_assets( 'components', $key, '' ) );
+			if ( PFWP_Assets::has_asset( 'components', $key, 'view' ) ) {
+				$client_assets = self::process_assets( PFWP_Assets::get_key_assets( 'components', $key, 'view' ) );
 				$assets->js    = array_merge( $assets->js, $client_assets->js );
 				$assets->css   = array_merge( $assets->css, $client_assets->css );
 			}
@@ -221,7 +221,7 @@ class PFWP_Components {
 		$js_trigger = <<<TRIGGER
       <script>
         Object.keys(window.pfwp_comp_instances).forEach((comp) => {
-          var compName = 'components_' + comp;
+          var compName = 'view_components_' + comp;
           if (window.peanutSrcClientJs) {
             var clientJs = window.peanutSrcClientJs[compName];
             if (clientJs) {

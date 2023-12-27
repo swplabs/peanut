@@ -13,7 +13,7 @@ class PFWP_REST {
     
     $component_file = PFWP_TEMPLATE_DIR . '/components/' . $comp_name . '/component.json';
 
-    if ( property_exists( $pfwp_global_config->metadata->components, $comp_name ) ) {
+    if ( property_exists( $pfwp_global_config->compilations->components_elements->metadata, $comp_name ) ) {
       PFWP_REST::$component_json = json_decode( @file_get_contents( PFWP_TEMPLATE_DIR . '/components/' . $comp_name . '/component.json' ), false );
     } else {
       PFWP_REST::$component_json = (object) [];
@@ -25,13 +25,13 @@ class PFWP_REST {
   public static function validate_use( $comp_name ) {
     global $pfwp_global_config;
 
-    return property_exists( $pfwp_global_config->metadata->components, $comp_name ) && $pfwp_global_config->metadata->components->{$comp_name}->showInRest === true;
+    return property_exists( $pfwp_global_config->compilations->components_elements->metadata, $comp_name ) && $pfwp_global_config->compilations->components_elements->metadata->{$comp_name}->showInRest === true;
   }
 
   public static function validate_name( $param ) {
     global $pfwp_global_config;
    
-    return !!preg_match( '/^([A-Za-z0-9\-\_]+)$/', $param ) && property_exists( $pfwp_global_config->chunk_groups->components_elements, 'php_index_components_' . $param ) && PFWP_REST::validate_use( $param );
+    return !!preg_match( '/^([A-Za-z0-9\-\_]+)$/', $param ) && property_exists( $pfwp_global_config->compilations->components_elements->entry_map, $param ) && property_exists( $pfwp_global_config->compilations->components_elements->entry_map->{$param}, 'php_index' ) && PFWP_REST::validate_use( $param );
   }
 
   public static function validate_data( $comp_name, $key, $param ) {
@@ -50,7 +50,7 @@ class PFWP_REST {
 
     PFWP_REST::$data = $data;
 
-    if ( $pfwp_global_config->metadata->components->{$comp_name}->hasSchema === true ) {
+    if ( $pfwp_global_config->compilations->components_elements->metadata->{$comp_name}->hasSchema === true ) {
       $component_json = PFWP_REST::get_json( $comp_name );
       return rest_validate_value_from_schema( $data, json_decode( json_encode( $component_json->data_schema ), true ), $key ) === true;
     }

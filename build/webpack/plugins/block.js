@@ -116,14 +116,15 @@ class BlocksPlugin {
       Object.keys(this.filesToEmit).forEach((key) => {
         const { filename, source } = this.filesToEmit[key];
 
-        compilation.emitAsset(filename, new RawSource(source), {
-          component: key
-        });
+        // TODO: figure out why it's not included in stats everytime and if we can cache somewhere
+        // TODO: might need to save it "stats" somewhere which would probably fix compilation hash todo as well
+        compilation.emitAsset(filename, new RawSource(source), { component: key });
 
         // TODO: update the compilation hash
       });
 
-      this.filesToEmit = {};
+      // TODO: commented this out so that it appears in stats everytime. Revisit
+      // this.filesToEmit = {};
     });
 
     compiler.hooks.done.tap('BlocksPlugin', (stats) => {

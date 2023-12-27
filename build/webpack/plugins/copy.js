@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const { srcDirectoryEntryMap } = require('../../../shared/src.dir.map.js');
+const { srcDirectoryEntryMap } = require('../../../shared/src.directory.entry.map.js');
 
 class CopyPlugin {
   constructor({ directory, srcType, routes, filter = /\.(js|jsx|scss)$/ }) {
