@@ -2,7 +2,7 @@ PROJECTDIR:=$(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
 MAKEFILEDIR:=$(PROJECTDIR)/makefiles
 
 ENV?=local
-PFWP_E_TYPE?=web
+PFWP_EXPORT_TYPE?=web
 HTTPS?=off
 PFWP_APP_SRC_PATH?=$(PROJECTDIR)/src
 PFWP_DIR_ENT_SRC_PATH?=/src
@@ -81,8 +81,8 @@ serve:
 
 .PHONY: export-component
 export-component: build-stack
-	@echo 'Exporting entries [$(PFWP_DIR_ENTS)]...'; \
-		$(DEV_ENV) $(AWS_ENV) PFWP_DIR_ENTS="$(PFWP_DIR_ENTS)" PFWP_E_TYPE="$(PFWP_E_TYPE)" node ./export.js
+	@echo 'Exporting entries [$(PFWP_DIRECTORY_ENTRIES)]...'; \
+		$(DEV_ENV) $(AWS_ENV) PFWP_DIRECTORY_ENTRIES="$(PFWP_DIRECTORY_ENTRIES)" PFWP_EXPORT_TYPE="$(PFWP_EXPORT_TYPE)" node ./export.js
 
 .PHONY: format
 format:

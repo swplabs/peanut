@@ -2,24 +2,16 @@ const path = require('path');
 const basePostCssConfig = require('./config.postcss.js');
 const babelConfig = require('./config.babel.js');
 
-const style = ({
-  MiniCssExtractPlugin,
-  exportType,
-  buildType,
-  srcType,
-  disableExtract = false
-}) => {
+const style = ({ MiniCssExtractPlugin, srcType, enableCssInJs = false }) => {
   return {
     test: /\.s?css$/i,
     use: [
-      !disableExtract && exportType !== 'web' && srcType !== 'whiteboard'
-        ? MiniCssExtractPlugin.loader
-        : { loader: 'style-loader' },
+      !enableCssInJs ? MiniCssExtractPlugin.loader : { loader: 'style-loader' },
       {
         loader: 'css-loader',
         options: {
           sourceMap: false,
-          importLoaders: 2,
+          importLoaders: 3,
           modules: srcType === 'whiteboard'
         }
       },

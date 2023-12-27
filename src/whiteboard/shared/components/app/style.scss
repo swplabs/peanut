@@ -1,3 +1,60 @@
-.schema {
-  padding: 40px;
+@import "./scss/vars.scss";
+@import "./scss/fonts.scss";
+
+:global {
+  html {
+    box-sizing: border-box;
+  }
+  
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+  
+  html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, strong, sub, sup, var, b, i, hr, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, figure, figcaption, hgroup, menu, footer, header, nav, section, summary, time, mark, audio, video, button, input, textarea {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    vertical-align: baseline;
+    font-size: 100%;
+    font-family: inherit;
+    font-weight: inherit;
+  }
+  
+  ul, li {
+    list-style: none;
+  }
+  
+  a,
+  a:hover {
+    text-decoration: none;
+    color: #6560f0;
+  }
+  
+   a:hover {
+    color: #2b2a3f;
+   }
+  
+  select {
+    background-position: right 0 center;
+    font-family: "Public Sans", system-ui, sans-serif;
+    display: block;
+    background-size: 16px 12px;
+    font-size: 14px;
+    padding: 0 20px 0 0;
+    border: 0;
+    cursor: pointer;
+    background-color: #fff;
+    appearance: none;
+    background-repeat: no-repeat;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3E%3C/svg%3E");
+  }
+  
+  body {
+    background-color: $color-grey-1;
+    color: $color-black-1;
+    font-family: "Public Sans", system-ui, sans-serif;
+    line-height: 1.5;
+  }
 }

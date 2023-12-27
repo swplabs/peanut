@@ -1,3 +1,48 @@
+const srcDirectories = {
+  blocks: {
+    buildTypes: ['elements'],
+    pattern: '',
+    webpack: {
+      configPresets: {},
+      plugins: {}
+    }
+  },
+  components: {
+    buildTypes: ['elements'],
+    pattern: '',
+    webpack: {
+      configPresets: {},
+      plugins: {}
+    }
+  },
+  plugins: {
+    buildTypes: ['elements'],
+    pattern: '',
+    webpack: {
+      configPresets: {},
+      plugins: {}
+    }
+  },
+  themes: {
+    buildTypes: ['elements'],
+    pattern: '',
+    webpack: {
+      configPresets: {},
+      plugins: {}
+    }
+  },
+  whiteboard: {
+    buildTypes: ['elements', 'server'],
+    pattern: null,
+    webpack: {
+      configPresets: {
+        enableCssInJs: true
+      },
+      plugins: {}
+    }
+  }
+};
+
 const srcDirectoryEntryMap = {
   'variations.json': {
     flag: 'hasVariations',
@@ -32,16 +77,6 @@ const srcDirectoryEntryMap = {
       }
     },
     exportConfig: {
-      web: {
-        entry: {
-          enabled: true,
-          library: {
-            type: 'window',
-            name: ['peanutComps', '[name]']
-          },
-          buildTypes: ['elements']
-        }
-      },
       wordpress: {
         port: {
           enabled: true
@@ -61,11 +96,6 @@ const srcDirectoryEntryMap = {
       }
     },
     exportConfig: {
-      web: {
-        port: {
-          enabled: true
-        }
-      },
       wordpress: {
         port: {
           enabled: true
@@ -85,11 +115,6 @@ const srcDirectoryEntryMap = {
       }
     },
     exportConfig: {
-      web: {
-        port: {
-          enabled: true
-        }
-      },
       wordpress: {
         port: {
           enabled: true
@@ -109,11 +134,6 @@ const srcDirectoryEntryMap = {
       }
     },
     exportConfig: {
-      web: {
-        port: {
-          enabled: true
-        }
-      },
       wordpress: {
         port: {
           enabled: true
@@ -133,11 +153,6 @@ const srcDirectoryEntryMap = {
       }
     },
     exportConfig: {
-      web: {
-        port: {
-          enabled: true
-        }
-      },
       wordpress: {
         port: {
           enabled: true
@@ -160,16 +175,6 @@ const srcDirectoryEntryMap = {
       }
     },
     exportConfig: {
-      web: {
-        entry: {
-          enabled: true,
-          library: {
-            type: 'window',
-            name: ['peanutComps', '[name]']
-          },
-          buildTypes: ['elements']
-        }
-      },
       wordpress: {
         port: {
           enabled: true
@@ -207,5 +212,6 @@ const entryMapFlagKeys = Object.keys(srcDirectoryEntryMap).reduce((flagKeys, key
 
 module.exports = {
   srcDirectoryEntryMap,
-  entryMapFlagKeys
+  entryMapFlagKeys,
+  srcDirectories
 };

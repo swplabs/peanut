@@ -21,13 +21,7 @@ const baseRoutes = {
 
 const baseEntries = {
   elements: {
-    export: {
-      /*
-      wordpress: {
-        import: `./src/whiteboard/base/exports/wordpress.js`
-      }
-      */
-    },
+    export: {},
     build: {}
   },
   server: {

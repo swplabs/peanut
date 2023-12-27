@@ -2,7 +2,7 @@ const fs = require('fs');
 const { extname } = require('path');
 const { srcDirectoryEntryMap, baseIdPrefix } = require('../../shared/src.dir.map.js');
 
-module.exports = ({ exportType, components, srcPath, distPath, disableExtract }) => {
+module.exports = ({ exportType, components, srcPath, distPath, enableCssInJs }) => {
   console.log('[build:export:pack] Creating NPM package component folders for:', exportType);
 
   const buildTypePaths = {
@@ -61,7 +61,7 @@ module.exports = ({ exportType, components, srcPath, distPath, disableExtract })
             fs.mkdirSync(`${packPath}/${type}`, { recursive: true });
             fs.copyFileSync(file, `${packPath}/${packFile}`);
 
-            if (css && !disableExtract && fs.existsSync(cssFile)) {
+            if (css && !enableCssInJs && fs.existsSync(cssFile)) {
               fs.copyFileSync(
                 cssFile,
                 `${packPath}/${packFile.replace(extname(packFile), '.css')}`
