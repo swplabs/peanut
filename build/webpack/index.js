@@ -22,7 +22,8 @@ const directoryEntrySrcPath = envVars.get('PFWP_DIR_ENT_SRC_PATH');
 const {
   node: nodeVersion,
   hotRefreshEnabled,
-  isWebTarget
+  isWebTarget,
+  version: appVersion
 } = require('../../shared/definitions.js');
 
 const routeInfo = {};
@@ -30,7 +31,7 @@ const routeInfo = {};
 const { getRoutes, getEntries, getCacheGroups } = paths;
 
 const webpackHandler =
-  ({ buildType: type, srcType, hashCheck, success, error }) =>
+  ({ buildType: type, compileType = 'develop', srcType, hashCheck, success, error }) =>
   (_err, stats) => {
     if (stats.hasErrors()) {
       if (typeof error === 'function') error();
@@ -39,7 +40,11 @@ const webpackHandler =
         if (hashCheck({ buildType: type, srcType, hash: stats.hash })) return;
       }
 
-      console.log(`\n[webpack:${type}:${srcType}] Compilation successful.\n`);
+      console.log(`\n[webpack:${compileType}] Compilation successful.\n`);
+
+      if (compileType === 'build') {
+        // TODO: show stats for build
+      }
 
       if (typeof success === 'function') success();
     }
@@ -167,7 +172,7 @@ const {
 } = webpackPlugins;
 
 const getPlugins = ({ buildType, srcType, routes, exportType, enableCssInJs = false }) => {
-  const plugins = [webpackDefinePlugin(routes), eslintPlugin({ buildType, srcType })];
+  const plugins = [webpackDefinePlugin({ routes, appVersion }), eslintPlugin({ buildType, srcType })];
 
   const outputPath = srcType === 'whiteboard' ? staticDir : wordpressRoot;
   const filePath = srcType === 'whiteboard' ? `assets/${srcType}` : `.assets/${srcType}`;

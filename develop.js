@@ -106,6 +106,7 @@ const webpackCallback = (err, stats) => {
   webpackHandler({
     buildType: 'stack',
     srcType: 'all',
+    compileType: 'develop',
     success: () => {
       wpHandlerSuccess({});
     },

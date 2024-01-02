@@ -31,6 +31,8 @@ const processAsset = (asset) => {
 
 module.exports = {
   webpackPreProcess: ({ srcDir }) => {
+    // TODO: add step to clean out assets folders
+    
     if (typeof extendHooks?.webpackPreProcess === 'function') {
       extendHooks?.webpackPreProcess({ srcDir });
     }

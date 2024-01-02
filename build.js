@@ -1,3 +1,4 @@
+const nodePath = require('path');
 const webpack = require('webpack');
 const envVars = require('./shared/envvars.js');
 const { srcDirectories } = require('./shared/src.directory.entry.map.js');
@@ -29,12 +30,15 @@ for (let [srcType, srcDirectory] of Object.entries(srcDirectories)) {
   });
 }
 
-webpackPreProcess({ srcDir: path.resolve(__dirname, './src/') });
+console.log(`[webpack:build] Starting compilation...`);
+
+webpackPreProcess({ srcDir: nodePath.resolve(__dirname, './src/') });
 
 webpack(config, (err, stats) => {
   webpackPostProcess({ stats, routeInfo });
   webpackHandler({
     buildType: 'stack',
-    srcType: 'all'
+    srcType: 'all',
+    compileType: 'build',
   })(err, stats);
 });

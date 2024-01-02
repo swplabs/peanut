@@ -10,7 +10,6 @@ const { PostProcessPlugin } = require('./plugins/post.process.js');
 const { ComponentsPlugin } = require('./plugins/component.js');
 const { CopyPlugin } = require('./plugins/copy.js');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const pkgData = require('../../package.json');
 const envVars = require('../../shared/envvars.js');
 const environment = envVars.get('ENVIRONMENT') || 'prod';
 const esLintConfig = require('./config.eslint.js');
@@ -76,9 +75,9 @@ const wpDepExtract = ({ directory, srcType }) => {
   });
 };
 
-const webpackDefine = (routes) => {
+const webpackDefine = ({ routes, appVersion }) => {
   return new DefinePlugin({
-    __APP_VERSION__: JSON.stringify(pkgData.version),
+    __APP_VERSION__: JSON.stringify(appVersion),
     __ROUTES__: JSON.stringify(routes),
     'process.env.NODE_ENV': JSON.stringify(envVars.get('NODE_ENV') || 'production'),
     __DEBUG__: JSON.stringify(envVars.getBoolean('PFWP_DEBUG') || false)

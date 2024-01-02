@@ -27,6 +27,7 @@ class CopyPlugin {
     });
   }
 
+  // TODO: can we use glob npm package here
   srcFiles(srcPath, filter, callback) {
     if (!fs.existsSync(srcPath)) return;
 
@@ -64,6 +65,7 @@ class CopyPlugin {
             fs.mkdirSync(relativeDir, { recursive: true });
           }
 
+          // TODO: Implement support for webpack define plugin for .php files
           fs.copyFileSync(filename, relativeFile);
         }
       });
