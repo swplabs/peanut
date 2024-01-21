@@ -22,7 +22,17 @@ const baseRoutes = {
 const baseEntries = {
   elements: {
     export: {},
-    build: {}
+    build: {
+      components: {
+        pfwp_sdk: {
+          import: './src/plugins/peanut/src/sdk.js',
+          library: {
+            type: 'window',
+            name: ['pfwpInitialize']
+          }
+        }
+      }
+    }
   },
   server: {
     build: {

@@ -3,6 +3,7 @@
 const ns = 'pfwp_';
 
 const head = document.getElementsByTagName('head')[0];
+let inlineJsContainer;
 
 const getElementId = (element) => {
   let id = '';
@@ -15,6 +16,8 @@ const getElementId = (element) => {
 
   return id;
 };
+
+let apiPath = '/wp-json/pfwp/v1/components/';
 
 window.pfwp = {
   state: {},
@@ -37,6 +40,7 @@ window.pfwp = {
       document.dispatchEvent(event);
     }
   },
+
   subscribe: (propertyName, callback, element) => {
     const eventName = `${ns}${propertyName}${getElementId(element)}`;
 
@@ -61,13 +65,18 @@ window.pfwp = {
     return new Promise((resolve, reject) => {
       try {
         const assetType = asset.endsWith('js') ? 'js' : 'css';
+        const id = `pfwp_${assetType}_${component}_${index}`;
 
-        // TODO: add check for existense of id on page
         if (assetType === 'js') {
+          if (inlineJsContainer && inlineJsContainer.querySelector(`#${id}`)) {
+            resolve();
+            return;
+          }
+
           const s = document.createElement('script');
           s.src = asset;
           s.async = 1;
-          s.id = `pfwp_${assetType}_${component}_${index}`;
+          s.id = id;
           s.onload = () => {
             resolve();
           };
@@ -75,10 +84,17 @@ window.pfwp = {
             reject(event);
           };
 
-          document.body.appendChild(s);
+          if (inlineJsContainer) {
+            inlineJsContainer.appendChild(s);
+          }
         } else {
+          if (head.querySelector(`#${id}`)) {
+            resolve();
+            return;
+          }
+
           const l = document.createElement('link');
-          l.id = `pfwp_${assetType}_${component}_${index}`;
+          l.id = id;
           l.rel = 'stylesheet';
           l.type = 'text/css';
           l.href = asset;
@@ -136,9 +152,68 @@ window.pfwp = {
     } else {
       if (hasCb) callback();
     }
+  },
+
+  setApiPath: (path) => {
+    apiPath = path;
+  },
+
+  getApiPath: () => apiPath,
+
+  getComponentJs: (component) => {
+    const clientJs = window.peanutSrcClientJs?.[`view_components_${component}`];
+
+    let componentJs;
+
+    if (typeof clientJs === 'function') {
+      componentJs = clientJs;
+    } else if (
+      clientJs &&
+      clientJs.hasOwnProperty('default') &&
+      typeof clientJs.default === 'function'
+    ) {
+      componentJs = clientJs.default;
+    }
+
+    return componentJs;
+  },
+
+  runComponentJs: (component, instances = {}) => {
+    const componentJs = pfwp.getComponentJs(component);
+
+    if (componentJs) {
+      Object.keys(instances).forEach((instance) => {
+        componentJs(document.getElementById(instance), instances[instance]);
+      });
+    }
   }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
   pfwp.dispatch('pageDomLoaded', {});
 });
+
+module.exports = (instance, data) => {
+  const {
+    components: { js: componentJs },
+    metadata: { js: metadataJs = {} }
+  } = data;
+
+  inlineJsContainer = instance;
+
+  // Trigger inlined components javascript
+  Object.keys(metadataJs).forEach((key) => {
+    if (metadataJs[key].inline) {
+      pfwp.runComponentJs(key, window.pfwp_comp_instances[key]);
+    }
+  });
+
+  // Load and trigger async components javascript
+  Object.keys(componentJs)
+    .filter((key) => metadataJs[key]?.inline !== true)
+    .forEach((key) => {
+      pfwp.getComponentAssets(key, componentJs[key], () => {
+        pfwp.runComponentJs(key, window.pfwp_comp_instances[key]);
+      });
+    });
+};

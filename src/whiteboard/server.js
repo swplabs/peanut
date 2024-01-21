@@ -8,6 +8,7 @@ const isLocal = environment === 'local';
 const minorSeconds = isLocal ? 0 : 60;
 const majorSeconds = isLocal ? 0 : 31536000;
 
+// TODO: Do we need this now that routes can be part of pfwp.json file?
 const routes = __ROUTES__;
 
 const cntrls = {

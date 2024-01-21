@@ -78,6 +78,7 @@ const wpDepExtract = ({ directory, srcType }) => {
 const webpackDefine = ({ routes, appVersion }) => {
   return new DefinePlugin({
     __APP_VERSION__: JSON.stringify(appVersion),
+    // TODO: Do we need this now that routes can be part of pfwp.json file?
     __ROUTES__: JSON.stringify(routes),
     'process.env.NODE_ENV': JSON.stringify(envVars.get('NODE_ENV') || 'production'),
     __DEBUG__: JSON.stringify(envVars.getBoolean('PFWP_DEBUG') || false)

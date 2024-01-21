@@ -11,8 +11,10 @@ const lazyLoadObserver = new IntersectionObserver((entries, observer) => {
   });
 });
 
+const apiPath = pfwp.getApiPath();
+
 const lazyLoad = async ({ instance, componentName, dataString = '' }) => {
-  const response = await fetch(`/wp-json/pfwp/v1/components/${componentName}/${dataString}`, {
+  const response = await fetch(`${apiPath}${componentName}/${dataString}`, {
     method: 'get'
   });
 
@@ -41,19 +43,7 @@ const lazyLoad = async ({ instance, componentName, dataString = '' }) => {
 
     if (Array.isArray(keyAssets) && keyAssets.length) {
       pfwp.getComponentAssets(jsonAssetKey, keyAssets, () => {
-        const clientJs = window.peanutSrcClientJs?.[`view_components_${jsonAssetKey}`];
-
-        let componentJs;
-
-        if (typeof clientJs === 'function') {
-          componentJs = clientJs;
-        } else if (
-          clientJs &&
-          clientJs.hasOwnProperty('default') &&
-          typeof clientJs.default === 'function'
-        ) {
-          componentJs = clientJs.default;
-        }
+        const componentJs = pfwp.getComponentJs(jsonAssetKey);
 
         if (componentJs) {
           let elements = [];
@@ -64,10 +54,9 @@ const lazyLoad = async ({ instance, componentName, dataString = '' }) => {
             elements = component.querySelectorAll(`[id^="${jsonAssetKey}"]`);
           }
 
-          elements.forEach((element) => {
-            const elementData = jsonData?.[jsonAssetKey]?.[element.id];
-            componentJs(element, elementData);
-          });
+          elements.forEach((element) =>
+            componentJs(element, jsonData?.[jsonAssetKey]?.[element.id])
+          );
         }
       });
     }

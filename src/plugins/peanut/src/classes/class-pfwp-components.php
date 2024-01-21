@@ -204,42 +204,50 @@ class PFWP_Components {
 	}
 
 	public static function inject_footer() {
-		// TODO: keep running list of files already injected
-		// TODO: ONLY cachegroup dependencies get loaded non-async
+		global $pfwp_global_config;
 
+		$metadata = $pfwp_global_config->compilations->components_elements->metadata;
+
+		echo '<script src="' . $pfwp_global_config->public_path . PFWP_Assets::get_assets( 'components' )->chunk_groups->pfwp_sdk->main_assets[0]->name . '" id="pfwp_js_sdk"></script>' . PHP_EOL;
+
+		$comp_js_data = (object) [];
+		$comp_js_metadata = (object) [];
+
+		// TODO: support component dependencies
+		echo '<div id="pfwp_inline_js">' . PHP_EOL;
 		foreach ( self::$components as $key => $value ) {
 			if ( property_exists( $value->assets, 'js' ) ) {
-				foreach ( $value->assets->js as $asset_key => $asset_value ) {
-					echo '<script src="' . $asset_value . '" id="pfwp_js_' . $key . '_' . $asset_key . '"></script>' . PHP_EOL;
+				if ( count( $value->assets->js ) ) {
+					$comp_js_data->{$key} = $value->assets->js;
+				}
+
+				$js_metadata = property_exists( $metadata, $key ) && property_exists( $metadata->{$key}, 'javascript' ) ? $metadata->{$key}->javascript : false;
+
+				if ( $js_metadata ) {
+					$comp_js_metadata->{$key} = $js_metadata;
+
+					if ( property_exists( $js_metadata, 'inline' ) && $js_metadata->inline ) {
+						foreach ( $value->assets->js as $asset_key => $asset_value ) {
+							echo '<script src="' . $asset_value . '" id="pfwp_js_' . $key . '_' . $asset_key . '"></script>' . PHP_EOL;
+						}
+					}
 				}
 			}
 		}
+		echo '</div>' . PHP_EOL;
 
-		// TODO: once we add back async, trigger these on each asset libraries load using <script onload=...
-		// TODO: add async await to clientJs function call
-		// TODO: Should this be moved to src/plugins/peanut/src/view.js file?
-		$js_trigger = <<<TRIGGER
-      <script>
-        Object.keys(window.pfwp_comp_instances).forEach((comp) => {
-          var compName = 'view_components_' + comp;
-          if (window.peanutSrcClientJs) {
-            var clientJs = window.peanutSrcClientJs[compName];
-            if (clientJs) {
-              Object.keys(window.pfwp_comp_instances[comp]).forEach((instance) => {
-                var element = document.getElementById(instance);
-                if (typeof clientJs === 'function') {
-                  clientJs(element, window.pfwp_comp_instances[comp][instance]);
-                } else if (clientJs.hasOwnProperty('default') && typeof clientJs.default === 'function') {
-                  clientJs.default(element, window.pfwp_comp_instances[comp][instance]);
-                }
-              });
-            }
-          }
-        });
-      </script>
-    TRIGGER;
+		$pfwp_js_data = (object) array(
+			'components' => array(
+				'js' => $comp_js_data
+			),
+			'metadata' => array(
+				'js' => $comp_js_metadata
+			)
+		);
 
-		echo $js_trigger;
+		echo '<script>' . PHP_EOL;
+		echo '  window.pfwpInitialize(document.getElementById(\'pfwp_inline_js\'), ' . json_encode( $pfwp_js_data ) . ');'. PHP_EOL;
+		echo '</script>' . PHP_EOL;
 	}
 
 	public static function capture_ob() {

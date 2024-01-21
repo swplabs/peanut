@@ -24,8 +24,16 @@ if ( ! defined( 'PFWP_PLUGIN_DIR' ) ) {
 	define( 'PFWP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 }
 
+if ( ! defined( 'PFWP_PLUGIN_URL' ) ) {
+	define( 'PFWP_PLUGIN_URL', plugins_url( '', __FILE__ ) );
+}
+
 if ( ! defined( 'PFWP_TEMPLATE_DIR' ) ) {
 	define( 'PFWP_TEMPLATE_DIR', get_template_directory() );
+}
+
+if ( ! defined( 'PFWP_SITE_URL' ) ) {
+	define( 'PFWP_SITE_URL', get_site_url() );
 }
 
 global $pfwp_global_config;
@@ -59,7 +67,7 @@ require PFWP_PLUGIN_DIR . '/classes/class-pfwp-assets.php';
 require PFWP_PLUGIN_DIR . '/classes/class-pfwp-components.php';
 
 // Plugin Engine
-// require PFWP_PLUGIN_DIR . '/classes/class-pfwp-plugin-engine.php';
+require PFWP_PLUGIN_DIR . '/classes/class-pfwp-plugins.php';
 
 // Block Engine
 require PFWP_PLUGIN_DIR . '/classes/class-pfwp-blocks.php';

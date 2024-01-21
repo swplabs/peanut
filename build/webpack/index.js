@@ -50,6 +50,7 @@ const webpackHandler =
     }
   };
 
+// TODO: Move getEntryInfo an setFilename to paths.js
 const getEntryInfo = (srcType, entryId) => {
   const entryFile = Object.keys(srcDirectoryEntryMap).find((key) =>
     entryId.startsWith(`${srcDirectoryEntryMap[key].entryKey}_${srcType}`)
@@ -77,9 +78,11 @@ const setFileName =
     if (entryId === `${srcType}_${buildType}_webpack_runtime`) {
       name = `wp-content/plugins/peanut/assets/[name].[chunkhash:20].js`;
     } else if (['plugins', 'themes'].includes(srcType)) {
-      const { pathName, entryFile } = getEntryInfo(srcType, entryId);
+      const { pathName } = getEntryInfo(srcType, entryId);
 
-      name = `wp-content/${srcType}/${pathName}/assets/${entryFile}.js`;
+      name = `wp-content/${srcType}/${pathName}/assets/${
+        environment === 'local' ? '[name].js' : '[name].[chunkhash:20].js'
+      }`;
     }
 
     return name;
@@ -91,6 +94,7 @@ const getOutput = ({ buildType, srcType, exportType }) => {
   const outputPath = srcType === 'whiteboard' ? staticDir : wordpressRoot;
   const filePath = srcType === 'whiteboard' ? `assets/${srcType}` : `.assets/${srcType}`;
 
+  // TODO into setFileName function
   const filename =
     environment === 'local' || exportType || srcType !== 'components'
       ? `${filePath}/[name].js`
@@ -172,7 +176,10 @@ const {
 } = webpackPlugins;
 
 const getPlugins = ({ buildType, srcType, routes, exportType, enableCssInJs = false }) => {
-  const plugins = [webpackDefinePlugin({ routes, appVersion }), eslintPlugin({ buildType, srcType })];
+  const plugins = [
+    webpackDefinePlugin({ routes, appVersion }),
+    eslintPlugin({ buildType, srcType })
+  ];
 
   const outputPath = srcType === 'whiteboard' ? staticDir : wordpressRoot;
   const filePath = srcType === 'whiteboard' ? `assets/${srcType}` : `.assets/${srcType}`;

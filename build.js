@@ -10,6 +10,8 @@ const {
   routeInfo
 } = require('./build/webpack/index.js');
 
+// TODO: clear out asset directories
+
 let srcTypeDirectoryEntries;
 
 const directoryEntryEnvVar = envVars.get('PFWP_DIRECTORY_ENTRIES');
@@ -39,6 +41,6 @@ webpack(config, (err, stats) => {
   webpackHandler({
     buildType: 'stack',
     srcType: 'all',
-    compileType: 'build',
+    compileType: 'build'
   })(err, stats);
 });

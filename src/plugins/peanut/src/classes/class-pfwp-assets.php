@@ -56,12 +56,20 @@ class PFWP_Assets {
 		return $content;
 	}
 
-	public static function get_key_assets( $group = 'components', $key = '', $entry_key = '' ) {
+	public static function get_asset_key( $group = 'components', $key = '', $entry_key = '' ) {
 		$entry_map = self::$assets->{$group}->entry_map->{$key};
 
 		if ( property_exists( $entry_map, $entry_key ) ) {
-			$asset_key = $entry_map->{$entry_key};
+			return $entry_map->{$entry_key};
+		}
 
+		return false;
+	}
+
+	public static function get_key_assets( $group = 'components', $key = '', $entry_key = '' ) {
+		$asset_key = self::get_asset_key( $group, $key, $entry_key );
+
+		if ( $asset_key ) {
 			$assets = self::$assets->{$group}->chunk_groups->{$asset_key}->main_assets;
 			$key_assets = (object) array();
 
@@ -80,6 +88,16 @@ class PFWP_Assets {
 		}
 
 		return (object) array();
+	}
+
+	public static function get_wp_deps( $group = 'components', $key = '', $entry_key = '' ) {
+		$asset_key = self::get_asset_key( $group, $key, $entry_key );
+
+		if ( $asset_key ) {
+			return self::$assets->{$group}->chunk_groups->{$asset_key}->wp_deps->name;
+		}
+
+		return false;
 	}
 
 

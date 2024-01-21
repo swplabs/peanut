@@ -102,14 +102,16 @@ class ComponentsPlugin {
       Object.keys(this.filesToEmit).forEach((key) => {
         const { filename, source, data } = this.filesToEmit[key];
 
-        const { show_in_rest = false, data_schema } = data;
+        const { show_in_rest = false, data_schema, javascript, css } = data;
 
         // TODO: figure out why it's not included in stats everytime and if we can cache somewhere
         // TODO: might need to save it "stats" somewhere which would probably fix compilation hash todo as well
         compilation.emitAsset(filename, new RawSource(source), {
           component: key,
           showInRest: show_in_rest,
-          hasSchema: typeof data_schema === 'object'
+          hasSchema: typeof data_schema === 'object',
+          javascript,
+          css
         });
 
         // TODO: update the compilation hash

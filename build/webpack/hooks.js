@@ -32,7 +32,7 @@ const processAsset = (asset) => {
 module.exports = {
   webpackPreProcess: ({ srcDir }) => {
     // TODO: add step to clean out assets folders
-    
+
     if (typeof extendHooks?.webpackPreProcess === 'function') {
       extendHooks?.webpackPreProcess({ srcDir });
     }
@@ -73,11 +73,16 @@ module.exports = {
 
           const mainAssets = [];
           const deps = [];
-          const assetRE = new RegExp(`${key}(\.[a-zA-Z0-9]{20})?\.(js|css)$`, 'i');
+          const mainAssetRegEx = new RegExp(`${key}(\.[a-zA-Z0-9]{20})?\.(js|css)$`, 'i');
+          const wpDepRegEx = new RegExp(`${key}(\.[a-zA-Z0-9]{20})?\.asset.php$`, 'i');
+
+          let wpDependencies;
 
           assets.forEach((asset) => {
-            if (assetRE.test(asset.name)) {
+            if (mainAssetRegEx.test(asset.name)) {
               mainAssets.push(processAsset(asset));
+            } else if (wpDepRegEx.test(asset.name)) {
+              wpDependencies = asset;
             } else {
               deps.push(processAsset(asset));
             }
@@ -87,6 +92,10 @@ module.exports = {
             main_assets: mainAssets,
             deps
           };
+
+          if (wpDependencies) {
+            acc[key].wp_deps = wpDependencies;
+          }
 
           return acc;
         }, {});

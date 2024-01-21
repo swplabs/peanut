@@ -10,5 +10,21 @@ if ( ! defined( 'PFWP_VERSION' ) ) {
  * Plugins
  */
 class PFWP_Plugins {
-	// TODO: create plugin helper functions
+	public static function register_asset( $handle, $key = '', $entry_key = '' ) {
+		global $pfwp_global_config;
+
+		$assets = PFWP_Assets::get_key_assets( 'plugins', $key, $entry_key );
+		$wp_deps_file = $pfwp_global_config->wp_root . '/' . PFWP_Assets::get_wp_deps( 'plugins', $key, $entry_key );
+	
+		$deps = require $wp_deps_file;
+	
+		array_push( $deps['dependencies'], 'plugins_elements_webpack_runtime' );
+
+		wp_register_script(
+			$handle,
+			PFWP_SITE_URL . '/' . $assets->js[0],
+			$deps['dependencies'],
+			$deps['version']
+		);
+	}
 }
