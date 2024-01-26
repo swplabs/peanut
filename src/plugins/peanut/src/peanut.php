@@ -52,9 +52,12 @@ if ( $pfwp_global_config->mode === 'development' ) {
 switch ( wp_get_environment_type() ) {
 	case 'local':
 	case 'development':
-		// TODO: open up rest routes to any data
+		require PFWP_PLUGIN_DIR . '/classes/class-pfwp-whiteboard.php';
 
-		// TODO: create custom permalink route for whiteboard
+		register_activation_hook( __FILE__, function () {
+			PFWP_WB::rewrite_rules();
+			flush_rewrite_rules();
+		} );
 	break;
 }
 

@@ -1,18 +1,33 @@
 import icons from '../app/scss/icons.scss';
 import style from './style.scss';
 
-const Nav = () => {
+const Nav = ({
+  pfwpConfig: {
+    wp_host,
+    compilations: {
+      components_elements: {
+        entry_map: entryMap
+        // TODO: use metadata for link params
+        // metadata
+      }
+    }
+  }
+}) => {
   return (
     <div className={style.container}>
       <div className={style.logo}>Whiteboard</div>
       <div className={style.menu}>
         <ul>
-          <li className={style.navItem}>
-            <a href="/">
-              <i className={`${style.icon} ${icons['icon-puzzle']}`}></i>
-              <span>Example</span>
-            </a>
-          </li>
+          {Object.keys(entryMap).map((key) => {
+            return (
+              <li className={style.navItem} key={key}>
+                <a href={`${wp_host}_pfwp_wb/components/${key}/`}>
+                  <i className={`${style.icon} ${icons['icon-puzzle']}`}></i>
+                  <span>{key}</span>
+                </a>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>
