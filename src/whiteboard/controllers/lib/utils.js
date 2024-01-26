@@ -12,6 +12,8 @@ const setConfig = (config) => {
   pfwpConfig = config;
 };
 
+const getConfig = () => pfwpConfig;
+
 // TODO: Add max limit to "cached" files
 const getServerFile = async (key) => {
   if (typeof serverImports[key] === 'undefined') {
@@ -129,7 +131,7 @@ const addParamsToData = (compData, { schema, params }) => {
   }
 };
 
-const htmlTemplate = ({ id, reactHtml, js, css }) => {
+const htmlTemplate = ({ id, reactHtml, js, css, config }) => {
   const html = `
     <html>
       <head>
@@ -150,7 +152,9 @@ const htmlTemplate = ({ id, reactHtml, js, css }) => {
           })
           .join('')}
         <script>
-          window.peanutSrcClientJs['view_${id}'].default({});
+          window.peanutSrcClientJs['view_${id}'].default({
+            config: ${JSON.stringify(config)}
+          });
         </script>
       </body>
     </html>
@@ -161,6 +165,7 @@ const htmlTemplate = ({ id, reactHtml, js, css }) => {
 
 module.exports = {
   setConfig,
+  getConfig,
   buildClientAssets,
   resetAssets,
   getServerFile,
