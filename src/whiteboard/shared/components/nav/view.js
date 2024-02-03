@@ -21,7 +21,7 @@ const Nav = ({
           {Object.keys(entryMap).map((key) => {
             return (
               <li className={style.navItem} key={key}>
-                <a href={`${wp_host}_pfwp_wb/components/${key}/`}>
+                <a href={`${wp_host}/_pfwp_wb/components/${key}/`}>
                   <i className={`${style.icon} ${icons['icon-puzzle']}`}></i>
                   <span>{key}</span>
                 </a>
