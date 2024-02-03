@@ -75,7 +75,6 @@ class PFWP_Components {
 		// TODO: add option to serve css from link src'd files OR style tags
 		if ( property_exists( $component_assets, 'css' ) ) {
 			foreach ( $component_assets->css as $key => $value ) {
-				// array_push( $assets->css, '<style>' . PFWP_Assets::get_content( $value ) . '</style>' . PHP_EOL );
 				array_push( $assets->css, $pfwp_global_config->public_path . $value );
 			}
 		}
@@ -214,7 +213,8 @@ class PFWP_Components {
 		$comp_js_metadata = (object) [];
 
 		// TODO: support component dependencies
-		echo '<div id="pfwp_inline_js">' . PHP_EOL;
+		echo '<div id="pfwp_footer_scripts">' . PHP_EOL;
+
 		foreach ( self::$components as $key => $value ) {
 			if ( property_exists( $value->assets, 'js' ) ) {
 				if ( count( $value->assets->js ) ) {
@@ -226,7 +226,7 @@ class PFWP_Components {
 				if ( $js_metadata ) {
 					$comp_js_metadata->{$key} = $js_metadata;
 
-					if ( property_exists( $js_metadata, 'inline' ) && $js_metadata->inline ) {
+					if ( property_exists( $js_metadata, 'async' ) && !$js_metadata->async ) {
 						foreach ( $value->assets->js as $asset_key => $asset_value ) {
 							echo '<script src="' . $asset_value . '" id="pfwp_js_' . $key . '_' . $asset_key . '"></script>' . PHP_EOL;
 						}
@@ -234,6 +234,7 @@ class PFWP_Components {
 				}
 			}
 		}
+
 		echo '</div>' . PHP_EOL;
 
 		$pfwp_js_data = (object) array(
@@ -246,7 +247,7 @@ class PFWP_Components {
 		);
 
 		echo '<script>' . PHP_EOL;
-		echo '  window.pfwpInitialize(document.getElementById(\'pfwp_inline_js\'), ' . json_encode( $pfwp_js_data ) . ');'. PHP_EOL;
+		echo '  window.pfwpInitialize(document.getElementById(\'pfwp_footer_scripts\'), ' . json_encode( $pfwp_js_data ) . ');'. PHP_EOL;
 		echo '</script>' . PHP_EOL;
 	}
 
@@ -255,12 +256,22 @@ class PFWP_Components {
 	}
 
 	public static function process_ob() {
+		global $pfwp_global_config;
+
+		$metadata = $pfwp_global_config->compilations->components_elements->metadata;
+
 		$styles = '';
 
 		foreach ( self::$components as $key => $value ) {
 			if ( property_exists( $value->assets, 'css' ) ) {
+				$external_css = property_exists( $metadata, $key ) && property_exists( $metadata->{$key}, 'css' ) && property_exists( $metadata->{$key}->css, 'external' ) ?  $metadata->{$key}->css->external : false;
+
 				foreach ( $value->assets->css as $asset_key => $asset_value ) {
-					$styles .= '<link rel="stylesheet" href="' . $asset_value . '" id="pfwp_css_' . $key . '_' . $asset_key . '"/>' . PHP_EOL;
+					if ( $external_css ) {
+						$styles .= '<link rel="stylesheet" href="' . $asset_value . '" id="pfwp_css_' . $key . '_' . $asset_key . '"/>' . PHP_EOL;
+					} else {
+						$styles .= '<style id="pfwp_css_' . $key . '_' . $asset_key . '">' . PFWP_Assets::get_content( $asset_value ) . '</style>' . PHP_EOL;
+					}
 				}
 			}
 		}

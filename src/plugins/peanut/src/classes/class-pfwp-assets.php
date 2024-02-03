@@ -101,10 +101,18 @@ class PFWP_Assets {
 	}
 
 
-	public static function get_content( $file_path, $minify = false ) {
+	public static function get_content( $file_path, $minify = false, $is_url = true ) {
 		global $pfwp_global_config;
 
-		$content = file_get_contents( $pfwp_global_config->wp_root . '/' . $file_path );
+		if ( $is_url ) {
+			$file_path = parse_url( $file_path)['path'];
+		}
+
+		if ( !str_starts_with( $file_path, '/' ) ) {
+			$file_path = '/' . $file_path;
+		}
+
+		$content = file_get_contents( $pfwp_global_config->wp_root . $file_path );
 		return $minify ? self::simple_minify( $content ) : $content;
 	}
 }

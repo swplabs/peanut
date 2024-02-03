@@ -203,14 +203,14 @@ module.exports = (instance, data) => {
 
   // Trigger inlined components javascript
   Object.keys(metadataJs).forEach((key) => {
-    if (metadataJs[key].inline) {
+    if (metadataJs[key].async === false) {
       pfwp.runComponentJs(key, window.pfwp_comp_instances[key]);
     }
   });
 
   // Load and trigger async components javascript
   Object.keys(componentJs)
-    .filter((key) => metadataJs[key]?.inline !== true)
+    .filter((key) => metadataJs[key]?.async !== false)
     .forEach((key) => {
       pfwp.getComponentAssets(key, componentJs[key], () => {
         pfwp.runComponentJs(key, window.pfwp_comp_instances[key]);
