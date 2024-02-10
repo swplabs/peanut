@@ -11,8 +11,14 @@ const Nav = ({
         // metadata
       }
     }
-  }
+  },
+  setScreenUrl
 }) => {
+  const updateScreen = (e, url) => {
+    e.preventDefault();
+    setScreenUrl(url);
+  };
+
   return (
     <div className={style.container}>
       <div className={style.logo}>Whiteboard</div>
@@ -21,7 +27,10 @@ const Nav = ({
           {Object.keys(entryMap).map((key) => {
             return (
               <li className={style.navItem} key={key}>
-                <a href={`${wp_host}/_pfwp_wb/components/${key}/`}>
+                <a
+                  href={`${wp_host}/_pfwp_wb/components/${key}/`}
+                  onClick={(e) => updateScreen(e, `${wp_host}/_pfwp_wb/components/${key}/`)}
+                >
                   <i className={`${style.icon} ${icons['icon-puzzle']}`}></i>
                   <span>{key}</span>
                 </a>

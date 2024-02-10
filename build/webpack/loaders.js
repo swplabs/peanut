@@ -2,7 +2,7 @@ const path = require('path');
 const basePostCssConfig = require('./config.postcss.js');
 const babelConfig = require('./config.babel.js');
 
-const style = ({ MiniCssExtractPlugin, srcType, enableCssInJs = false }) => {
+const style = ({ MiniCssExtractPlugin, srcType, enableCssInJs = false, environment }) => {
   return {
     test: /\.s?css$/i,
     use: [
@@ -12,7 +12,15 @@ const style = ({ MiniCssExtractPlugin, srcType, enableCssInJs = false }) => {
         options: {
           sourceMap: false,
           importLoaders: 3,
-          modules: srcType === 'whiteboard'
+          modules:
+            srcType === 'whiteboard'
+              ? {
+                  localIdentName:
+                    environment === 'local'
+                      ? '[folder]__[name]__[local]-[hash:base64:6]'
+                      : '[hash:base64]'
+                }
+              : false
         }
       },
       {

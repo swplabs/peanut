@@ -136,7 +136,14 @@ const { style: styleLoader, js: jsLoader, php: phpLoader } = webpackLoaders;
 const getModuleRules = ({ buildType, exportType, srcType, enableCssInJs }) => {
   const rules = [
     jsLoader({ buildType, srcType, exportType }),
-    styleLoader({ MiniCssExtractPlugin, buildType, srcType, exportType, enableCssInJs })
+    styleLoader({
+      MiniCssExtractPlugin,
+      buildType,
+      srcType,
+      exportType,
+      enableCssInJs,
+      environment
+    })
   ];
 
   switch (buildType) {
