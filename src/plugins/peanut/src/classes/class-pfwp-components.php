@@ -251,12 +251,8 @@ class PFWP_Components {
 		echo '</script>' . PHP_EOL;
 	}
 
-	public static function capture_ob() {
-		ob_start();
-	}
-
-	public static function process_ob() {
-		global $pfwp_global_config;
+	public static function add_head_style_var() {
+		global $pfwp_global_config, $pfwp_ob_replace_vars;
 
 		$metadata = $pfwp_global_config->compilations->components_elements->metadata;
 
@@ -276,12 +272,12 @@ class PFWP_Components {
 			}
 		}
 
-		$html = ob_get_clean();
-		echo str_replace( '<!-- PFWP:head:styles -->', $styles, $html );
+		array_push( $pfwp_ob_replace_vars['search'], '<!-- pfwp:head:styles -->' );
+		array_push( $pfwp_ob_replace_vars['replace'], $styles );
 	}
 
-	public static function mark_head() {
-		echo "\n<!-- PFWP:head:styles -->\n";
+	public static function mark_head_styles() {
+		echo "\n<!-- pfwp:head:styles -->\n";
 	}
 }
 
@@ -289,12 +285,13 @@ add_action( 'after_setup_theme', array( 'PFWP_Components', 'initialize' ), 2 );
 
 add_action( 'get_template_part', array( 'PFWP_Components', 'process_template_part' ), 10, 3 );
 
-add_action( 'template_redirect', array( 'PFWP_Components', 'capture_ob' ) );
+// add_action( 'template_redirect', array( 'PFWP_Components', 'capture_ob' ), 9 );
 
 add_action( 'wp_footer', array( 'PFWP_Components', 'inline_instance_js_data' ), 998 );
 
 add_action( 'wp_footer', array( 'PFWP_Components', 'inject_footer' ), 1000 );
 
-add_action( 'wp_footer', array( 'PFWP_Components', 'process_ob' ), 2000 );
+// TODO: create custom "pfwp_end_marker" action for this
+add_action( 'wp_footer', array( 'PFWP_Components', 'add_head_style_var' ), 2000 );
 
-add_action( 'wp_head', array( 'PFWP_Components', 'mark_head' ), 1000 );
+add_action( 'wp_head', array( 'PFWP_Components', 'mark_head_styles' ), 1000 );

@@ -8,6 +8,7 @@ if ( ! defined( 'PFWP_VERSION' ) ) {
 
 class PFWP_Assets {
 	private static $assets;
+	private static $preloads = [];
 
 	public static function initialize() {
 		global $pfwp_global_config;
@@ -115,8 +116,28 @@ class PFWP_Assets {
 		$content = file_get_contents( $pfwp_global_config->wp_root . $file_path );
 		return $minify ? self::simple_minify( $content ) : $content;
 	}
+
+	public static function add_preload( $tag ) {
+		array_push( self::$preloads, $tag . PHP_EOL );
+	}
+
+	public static function add_head_preload_tags() {
+		global $pfwp_ob_replace_vars;
+
+		array_push( $pfwp_ob_replace_vars['search'], '<!-- pfwp:head:preload -->' );
+		array_push( $pfwp_ob_replace_vars['replace'], count( self::$preloads ) > 0 ? implode( '', self::$preloads ) : '' );
+	}
+
+	public static function mark_head_preload() {
+		echo "\n<!-- pfwp:head:preload -->\n";
+	}
 }
 
 add_action( 'after_setup_theme', array( 'PFWP_Assets', 'initialize' ), 1 );
 
 add_action( 'init', array( 'PFWP_Assets', 'register_scripts' ), 2 );
+
+// TODO: create custom "pfwp_end_marker" action for this
+add_action( 'wp_footer', array( 'PFWP_Assets', 'add_head_preload_tags' ), 2000 );
+
+add_action( 'wp_head', array( 'PFWP_Assets', 'mark_head_preload' ), 1 );

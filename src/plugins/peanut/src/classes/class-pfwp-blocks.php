@@ -37,13 +37,17 @@ class PFWP_Blocks {
 	}
 
 	public static function register() {
+		global $pfwp_global_config;
+
 		foreach ( self::$blocks->entry_map as $key => $value ) {
 
 			if ( property_exists( $value, 'editor' ) ) {
 				$assets  = PFWP_Components::process_assets( PFWP_Assets::get_key_assets( 'blocks', $key, 'editor' ) );
 				$deps    = self::$deps[ '.assets/blocks/' . $value->editor . '.js' ];
 
-				array_push( $deps['dependencies'], 'blocks_elements_webpack_runtime' );
+				if ( isset( $pfwp_global_config->compilations->blocks_elements->runtime ) ) {
+					array_push( $deps['dependencies'], 'blocks_elements_webpack_runtime' );
+				}
 
 				// TODO: loop through assets object above so as to support webpack code split deps
 				$added = wp_register_script(

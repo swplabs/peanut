@@ -12,6 +12,7 @@ const { CopyPlugin } = require('./plugins/copy.js');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const envVars = require('../../shared/envvars.js');
 const environment = envVars.get('ENVIRONMENT') || 'prod';
+const nodeEnv = envVars.get('NODE_ENV') || 'production';
 const esLintConfig = require('./config.eslint.js');
 
 const blocks = ({ directory, routes, outputPath }) => {
@@ -80,7 +81,7 @@ const webpackDefine = ({ routes, appVersion }) => {
     __APP_VERSION__: JSON.stringify(appVersion),
     // TODO: Do we need this now that routes can be part of pfwp.json file?
     __ROUTES__: JSON.stringify(routes),
-    'process.env.NODE_ENV': JSON.stringify(envVars.get('NODE_ENV') || 'production'),
+    'process.env.NODE_ENV': JSON.stringify(nodeEnv),
     __DEBUG__: JSON.stringify(envVars.getBoolean('PFWP_DEBUG') || false)
   });
 };

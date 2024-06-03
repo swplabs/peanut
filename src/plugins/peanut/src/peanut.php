@@ -20,12 +20,16 @@ if ( ! defined( 'PFWP_VERSION' ) ) {
 	define( 'PFWP_VERSION', '0.1.0-alpha.1' );
 }
 
+if ( ! defined( 'PFWP_PLUGIN_FILE' ) ) {
+	define( 'PFWP_PLUGIN_FILE', __FILE__ );
+}
+
 if ( ! defined( 'PFWP_PLUGIN_DIR' ) ) {
-	define( 'PFWP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+	define( 'PFWP_PLUGIN_DIR', plugin_dir_path( PFWP_PLUGIN_FILE ) );
 }
 
 if ( ! defined( 'PFWP_PLUGIN_URL' ) ) {
-	define( 'PFWP_PLUGIN_URL', plugins_url( '', __FILE__ ) );
+	define( 'PFWP_PLUGIN_URL', plugins_url( '', PFWP_PLUGIN_FILE ) );
 }
 
 if ( ! defined( 'PFWP_TEMPLATE_DIR' ) ) {
@@ -36,30 +40,19 @@ if ( ! defined( 'PFWP_SITE_URL' ) ) {
 	define( 'PFWP_SITE_URL', get_site_url() );
 }
 
-global $pfwp_global_config;
+// Globals
+global $pfwp_global_config, $pfwp_ob_replace_vars;
+
+// TODO: add error log if file is not found
 $pfwp_global_config = json_decode( @file_get_contents( PFWP_TEMPLATE_DIR . '/pfwp.json' ), false );
 
-if ( $pfwp_global_config->mode === 'development' ) {
-	add_action( 'admin_notices', function () {
-		if  (!defined( 'SCRIPT_DEBUG' ) || !SCRIPT_DEBUG ) {
-			$class = 'notice notice-error';
-			$message = __( '<strong>Peanut For Wordpress</strong>: Script Debugging must be set to true when in development mode for Peanut editor scripts to function. See <a href="https://wordpress.org/documentation/article/debugging-in-wordpress/#script_debug" target="_blank">Wordpress debugging mode</a> for instructions.', 'pfwp' );
-				printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), $message );
-		}
-	});
-}
+$pfwp_ob_replace_vars = array(
+	'search' => array(),
+	'replace' => array()
+);
 
-switch ( wp_get_environment_type() ) {
-	case 'local':
-	case 'development':
-		require PFWP_PLUGIN_DIR . '/classes/class-pfwp-whiteboard.php';
-
-		register_activation_hook( __FILE__, function () {
-			PFWP_WB::rewrite_rules();
-			flush_rewrite_rules();
-		} );
-	break;
-}
+// Core
+require PFWP_PLUGIN_DIR . '/classes/class-pfwp-core.php';
 
 // TODO: define rest route constants (namespace, version, etc)
 

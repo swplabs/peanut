@@ -94,7 +94,7 @@ const getOutput = ({ buildType, srcType, exportType }) => {
   const outputPath = srcType === 'whiteboard' ? staticDir : wordpressRoot;
   const filePath = srcType === 'whiteboard' ? `assets/${srcType}` : `.assets/${srcType}`;
 
-  // TODO into setFileName function
+  // TODO: move into setFileName function
   const filename =
     environment === 'local' || exportType || srcType !== 'components'
       ? `${filePath}/[name].js`
