@@ -18,7 +18,9 @@ class PFWP_Plugins {
 	
 		$deps = require $wp_deps_file;
 	
-		array_push( $deps['dependencies'], 'plugins_elements_webpack_runtime' );
+		if ( isset( $pfwp_global_config->compilations->plugins_elements->runtime ) ) {
+			array_push( $deps['dependencies'], 'plugins_elements_webpack_runtime' );
+		}
 
 		wp_register_script(
 			$handle,

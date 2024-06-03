@@ -76,6 +76,7 @@ window.pfwp = {
           const s = document.createElement('script');
           s.src = asset;
           s.async = 1;
+          s.fetchPriority = 'low';
           s.id = id;
           s.onload = () => {
             resolve();
@@ -186,8 +187,20 @@ window.pfwp = {
         componentJs(document.getElementById(instance), instances[instance]);
       });
     }
-  }
+  },
+
+  lazyLoadObserver: new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry) => {
+      const { target, isIntersecting } = entry;
+      if (isIntersecting) {
+        observer.unobserve(target);
+  
+        pfwp.dispatch('onObserve', {}, target);
+      }
+    });
+  })
 };
+
 
 document.addEventListener('DOMContentLoaded', () => {
   pfwp.dispatch('pageDomLoaded', {});
@@ -208,12 +221,14 @@ module.exports = (instance, data) => {
     }
   });
 
-  // Load and trigger async components javascript
-  Object.keys(componentJs)
-    .filter((key) => metadataJs[key]?.async !== false)
-    .forEach((key) => {
-      pfwp.getComponentAssets(key, componentJs[key], () => {
-        pfwp.runComponentJs(key, window.pfwp_comp_instances[key]);
+  document.addEventListener('DOMContentLoaded', () => {
+    // Load and trigger async components javascript
+    Object.keys(componentJs)
+      .filter((key) => metadataJs[key]?.async !== false)
+      .forEach((key) => {
+        pfwp.getComponentAssets(key, componentJs[key], () => {
+          pfwp.runComponentJs(key, window.pfwp_comp_instances[key]);
+        });
       });
-    });
+  });
 };
