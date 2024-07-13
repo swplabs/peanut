@@ -15,6 +15,8 @@ const style = ({ MiniCssExtractPlugin, srcType, enableCssInJs = false, environme
           modules:
             srcType === 'whiteboard'
               ? {
+                  namedExport: false,
+                  exportLocalsConvention: 'as-is',
                   localIdentName:
                     environment === 'local'
                       ? '[folder]__[name]__[local]-[hash:base64:6]'
