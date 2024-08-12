@@ -1,21 +1,71 @@
+const nodePath = require('path');
 const envVars = require('./envvars.js');
-const nodeEnv = envVars.get('NODE_ENV') || 'production';
 const {
-  engines: { node },
-  devDependencies,
+  engines: { node: nodeVersion },
+  dependencies,
   version
 } = require('../package.json');
 
+const nodeEnv = envVars.get('NODE_ENV') || 'production';
+const rootDir = nodePath.resolve(__dirname, '../');
+const serverSideEventHost = `${envVars.get('PFWP_SSE_HOST')}:${envVars.get('PFWP_SSE_PORT')}`;
+const serverSideEventTimeout = 10000;
+const debugModeInterval = 2000;
+const appSrcPath = envVars.get('PFWP_APP_SRC_PATH');
+const directoryEntrySrcPath = envVars.get('PFWP_DIR_ENT_SRC_PATH');
+
+// TODO: define env vars for these
+const isDebugMode = () => false;
+const enableWhiteboard = () => true;
+const enableHMR = () => true;
+
 const hotRefreshEnabled = (srcType) =>
-  nodeEnv === 'development' && ['blocks', 'plugins'].includes(srcType);
+  enableHMR() && nodeEnv === 'development' && ['blocks', 'plugins'].includes(srcType);
 
 const isWebTarget = ({ buildType }) => !['server'].includes(buildType);
+
+const isHotRefreshEntry = ({ srcType, entryKey }) =>
+  enableHMR() &&
+  nodeEnv === 'development' &&
+  ['blocks', 'plugins'].includes(srcType) &&
+  ['editor'].includes(entryKey);
+
+const getHotMiddlewareEntry = ({ srcType, buildType }) =>
+  `webpack-hot-middleware/client?name=${srcType}_${buildType}&timeout=${serverSideEventTimeout}&path=${encodeURIComponent(
+    `${serverSideEventHost}/__webpack_hmr`
+  )}`;
+
+const getAppSrcPath = (srcType) => {
+  return srcType === 'whiteboard' ? `${rootDir}/src` : appSrcPath;
+};
+
+const getDirectoryEntrySrcPath = (srcType) =>
+  srcType === 'whiteboard' ? '' : directoryEntrySrcPath;
+
+const isCoreDev = () => envVars.getBoolean('PFWP_CORE_DEV') === true;
+
+const isCLI = () => envVars.getBoolean('PFWP_IS_CLI') === true;
 
 module.exports = {
   hotRefreshEnabled,
   isWebTarget,
-  corejs: parseFloat(devDependencies['core-js']),
-  node: `${parseFloat(node)}`,
+  isHotRefreshEntry,
+  getHotMiddlewareEntry,
+  getAppSrcPath,
+  getDirectoryEntrySrcPath,
+  isCoreDev,
+  isCLI,
+  isDebugMode,
+  enableWhiteboard,
+  enableHMR,
+  corejs: parseFloat(dependencies['core-js']),
+  node: process.version
+    ? `${parseFloat(process.version.replace('v', ''))}`
+    : parseFloat(nodeVersion.replace(/[\=\>\<]/g, '')),
   browsers: ['last 2 versions, not dead'],
-  version
+  version,
+  appSrcPath,
+  directoryEntrySrcPath,
+  rootDir,
+  debugModeInterval
 };

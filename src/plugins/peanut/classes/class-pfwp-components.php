@@ -12,6 +12,8 @@ if ( ! defined( 'PFWP_VERSION' ) ) {
 class PFWP_Components {
 	public static $components;
 	public static $js_data;
+	public static $comp_css_data;
+ 	public static $comp_css_metadata;
 
 	private static function get_key( $slug, $name ) {
 		$matches = self::match_file_name( $slug );
@@ -31,7 +33,7 @@ class PFWP_Components {
 
 	public static function initialize() {
 		self::$components = (object) array();
-		self::$js_data    = (object) array();
+		self::$js_data = (object) array();
 	}
 
 	// TODO: can we define defaults for a components parse_args in JSON metadata schema and use here if available?
@@ -46,6 +48,8 @@ class PFWP_Components {
 			}
 		}
 
+		PFWP_Core::sort_assoc_array( $merged );
+		
 		return $merged;
 	}
 
@@ -206,8 +210,17 @@ class PFWP_Components {
 		global $pfwp_global_config;
 
 		$metadata = $pfwp_global_config->compilations->components_elements->metadata;
-
-		echo '<script src="' . $pfwp_global_config->public_path . PFWP_Assets::get_assets( 'components' )->chunk_groups->pfwp_sdk->main_assets[0]->name . '" id="pfwp_js_sdk"></script>' . PHP_EOL;
+		$component_chunks = PFWP_Assets::get_assets( 'components' )->chunk_groups;
+		
+		if ( property_exists( $component_chunks, 'pfwp_sdk' ) ) {
+			echo '<script src="' . $pfwp_global_config->public_path . PFWP_Assets::get_assets( 'components' )->chunk_groups->pfwp_sdk->main_assets[0]->name . '" id="pfwp_js_sdk"></script>' . PHP_EOL;
+		} else if ( $sdk_files = glob(PFWP_PLUGIN_DIR . '\/assets\/pfwp_sdk.*') ) {
+			// TODO: save this file name somewhere so we don't have to use glob everytime
+			$sdk_js = PFWP_PLUGIN_URL . '/assets/' . basename( $sdk_files[0] );
+			echo '<script src="' . $sdk_js . '" id="pfwp_js_sdk"></script>' . PHP_EOL;
+		} else {
+			echo '<script>console.error(\'Peanut For Wordpress SDK missing\')</script>' . PHP_EOL;
+		}
 
 		$comp_js_data = (object) [];
 		$comp_js_metadata = (object) [];
@@ -239,7 +252,8 @@ class PFWP_Components {
 
 		$pfwp_js_data = (object) array(
 			'components' => array(
-				'js' => $comp_js_data
+				'js' => $comp_js_data,
+				'css' => self::$comp_css_data
 			),
 			'metadata' => array(
 				'js' => $comp_js_metadata
@@ -257,9 +271,14 @@ class PFWP_Components {
 		$metadata = $pfwp_global_config->compilations->components_elements->metadata;
 
 		$styles = '';
+		self::$comp_css_data = (object) [];
 
 		foreach ( self::$components as $key => $value ) {
 			if ( property_exists( $value->assets, 'css' ) ) {
+				if ( count( $value->assets->css ) ) {
+					self::$comp_css_data->{$key} = $value->assets->css;
+				}
+
 				$external_css = property_exists( $metadata, $key ) && property_exists( $metadata->{$key}, 'css' ) && property_exists( $metadata->{$key}->css, 'external' ) ?  $metadata->{$key}->css->external : false;
 
 				foreach ( $value->assets->css as $asset_key => $asset_value ) {
@@ -292,6 +311,6 @@ add_action( 'wp_footer', array( 'PFWP_Components', 'inline_instance_js_data' ), 
 add_action( 'wp_footer', array( 'PFWP_Components', 'inject_footer' ), 1000 );
 
 // TODO: create custom "pfwp_end_marker" action for this
-add_action( 'wp_footer', array( 'PFWP_Components', 'add_head_style_var' ), 2000 );
+add_action( 'wp_footer', array( 'PFWP_Components', 'add_head_style_var' ), 997 );
 
 add_action( 'wp_head', array( 'PFWP_Components', 'mark_head_styles' ), 1000 );

@@ -37,7 +37,6 @@ class PFWP_Core {
     ob_start();
   }
 
-  // TODO: add global variables to use with process_ob function that handles replaces <!-- pfwp --> comments
   public static function process_ob() {
     global $pfwp_ob_replace_vars;
 
@@ -49,7 +48,21 @@ class PFWP_Core {
     }
 
     echo $html;
-  } 
+  }
+
+  public static function sort_assoc_array(&$a) {
+    if (!is_array($a)) {
+      return false;
+    }
+
+    ksort($a);
+
+    foreach ($a as $k=>$v) {
+      self::sort_assoc_array($a[$k]);
+    }
+
+    return true;
+  }
 }
 
 // Initialize Core

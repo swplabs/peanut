@@ -1,8 +1,12 @@
+const envVars = require('../../shared/envvars.js');
+const { appSrcPath } = require('../../shared/definitions.js');
+const { requireConfigFile } = require('../../shared/utils.js');
+
 let extendEsLint;
 
-try {
-  extendEsLint = require('../../extend/webpack/eslint.js');
-} catch (e) {}
+if (envVars.get('PFWP_CONFIG_ESLINT')) {
+  extendEsLint = requireConfigFile(`${appSrcPath}/${envVars.get('PFWP_CONFIG_ESLINT')}`);
+}
 
 const babelConfig = require('./config.babel.js');
 
@@ -33,7 +37,6 @@ module.exports = ({ buildType, srcType }) => {
         ...babelConfig({ buildType, srcType })
       }
     },
-    plugins: ['import'],
     extends: ['components', 'whiteboard'].includes(srcType)
       ? []
       : ['plugin:@wordpress/eslint-plugin/react'],

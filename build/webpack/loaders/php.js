@@ -1,5 +1,6 @@
 const { validate } = require('schema-utils');
 const crypto = require('crypto');
+const { appSrcPath, directoryEntrySrcPath } = require('../../../shared/definitions.js');
 
 const schema = {
   type: 'object',
@@ -18,12 +19,13 @@ const schema = {
   }
 };
 
+const srcInfoRegEx = new RegExp(
+  `${appSrcPath}/(?<srcType>blocks|components|themes)/(?<srcElement>[^/]+)${directoryEntrySrcPath}/(?<srcFileName>[^./]+).php$`
+);
+
 // TODO: use resourceInfo.compiler for this
 const getSrcInfo = (path) => {
-  const { groups = {} } =
-    /src\/(?<srcType>blocks|components|plugins|themes)\/(?<srcElement>[^/]+)\/src\/(?<srcFileName>[^./]+)\.php$/.exec(
-      path
-    ) || {};
+  const { groups = {} } = srcInfoRegEx.exec(path) || {};
   return groups;
 };
 
@@ -41,13 +43,15 @@ module.exports = function (content) {
 
   const { srcType, srcElement, srcFileName } = getSrcInfo(this.resourcePath);
 
-  const securityCheck = `<?php
-    if ( ! defined( 'PFWP_VERSION' ) ) {
-      header( 'Status: 403 Forbidden' );
-      header( 'HTTP/1.1 403 Forbidden' );
-      exit();
-    }
-  ?>`;
+  const securityCheck = `
+<?php
+if ( ! defined( 'PFWP_VERSION' ) ) {
+  header( 'Status: 403 Forbidden' );
+  header( 'HTTP/1.1 403 Forbidden' );
+  exit();
+}
+?>
+`;
 
   const childComponents = new Set();
 

@@ -3,19 +3,19 @@ const fs = require('fs');
 const { toCamelCase, debug: log } = require('../../src/whiteboard/shared/utils.js');
 const { srcDirectoryEntryMap } = require('../../shared/src.directory.entry.map.js');
 const { baseRoutes, baseEntries } = require('../../shared/base.paths.js');
-const envVars = require('../../shared/envvars.js');
-const appSrcPath = envVars.get('PFWP_APP_SRC_PATH');
-const nodeEnv = envVars.get('NODE_ENV') || 'production';
-const serverSideEventHost = `${envVars.get('PFWP_SSE_HOST')}:${envVars.get('PFWP_SSE_PORT')}`;
-const serverSideEventTimeout = 10000;
+const {
+  getHotMiddlewareEntry,
+  isHotRefreshEntry,
+  getAppSrcPath
+} = require('../../shared/definitions.js');
 
 let entries = {};
 let routes;
 
 const getBaseEntries = ({ buildType, srcType, exportType }) =>
   exportType
-    ? { ...baseEntries[buildType].export[exportType] }
-    : { ...baseEntries[buildType].build[srcType] };
+    ? { ...baseEntries[buildType]?.export[exportType] }
+    : { ...baseEntries[buildType]?.build[srcType] };
 
 const getCacheGroups = ({ buildType }) => {
   let cacheGroupsCfg = {};
@@ -62,24 +62,26 @@ const findRoutes = ({
   srcType,
   srcTypeSubDirectory = '',
   buildType,
-  directoryEntrySrcPath = '/src'
+  directoryEntrySrcPath = ''
 }) => {
   let srcTypePaths;
-  const srcTypeDirectory = `${appSrcPath}/${srcType}/${srcTypeSubDirectory}`;
+  const srcTypeDirectory = `${getAppSrcPath(srcType)}/${srcType}/${srcTypeSubDirectory}`;
 
   try {
-    srcTypePaths = fs.readdirSync(srcTypeDirectory, {});
+    srcTypePaths = fs.readdirSync(srcTypeDirectory, { withFileTypes: true });
   } catch (e) {
     log('[build:webpack:paths] error:', e?.message);
     srcTypePaths = [];
   }
 
   return srcTypePaths.reduce(
-    (srcRoutes, srcTypePath) => {
+    (srcRoutes, srcTypePathDirEnt) => {
       try {
+        const { name: srcTypePath } = srcTypePathDirEnt;
+
         const srcPath = srcTypeDirectory + srcTypePath + directoryEntrySrcPath;
 
-        if (fs.existsSync(srcPath)) {
+        if (srcTypePathDirEnt.isDirectory() && fs.existsSync(srcPath)) {
           const compDirEnts = fs.readdirSync(srcPath, {
             withFileTypes: true
           });
@@ -155,11 +157,6 @@ const getRoutes = ({
   return routes;
 };
 
-const getHotMiddlewareEntry = ({ srcType, buildType }) =>
-  `webpack-hot-middleware/client?name=${srcType}_${buildType}&timeout=${serverSideEventTimeout}&path=${encodeURIComponent(
-    `${serverSideEventHost}/__webpack_hmr`
-  )}`;
-
 const addSrcDirectoryEntry = (
   newEntries,
   { buildType, srcType, srcPath, id, entryKey, file, library }
@@ -168,12 +165,7 @@ const addSrcDirectoryEntry = (
 
   const entries = [`${srcPath}/${file}`];
 
-  // TODO: create shared function for this clause
-  if (
-    nodeEnv === 'development' &&
-    ['blocks', 'plugins'].includes(srcType) &&
-    ['editor'].includes(entryKey)
-  ) {
+  if (isHotRefreshEntry({ srcType, entryKey })) {
     entries.push(getHotMiddlewareEntry({ srcType, buildType }));
   }
 

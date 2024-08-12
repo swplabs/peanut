@@ -17,6 +17,13 @@ const getElementId = (element) => {
   return id;
 };
 
+const normalizeAsset = (asset) => {
+  const assetRegEx = new RegExp('/[a-zA-Z0-9-_]*(?<hash>.[a-zA-Z0-9]{20})?.(js|css)$');
+  const { groups } = assetRegEx.exec(asset) || {};
+
+  return groups?.hash ? asset.replace(groups.hash, '') : asset;
+};
+
 let apiPath = '/wp-json/pfwp/v1/components/';
 
 window.pfwp = {
@@ -24,6 +31,9 @@ window.pfwp = {
 
   eventStates: {},
 
+  loadedAssets: {},
+
+  // TODO: allow either single or queue (ie. multiple stored waiting for subscribe) state for data passed via additional param
   dispatch: (propertyName, data, element) => {
     const eventName = `${ns}${propertyName}${getElementId(element)}`;
 
@@ -41,6 +51,7 @@ window.pfwp = {
     }
   },
 
+  // TODO: add flag to not get initial state passed to listener (ie. only receive events triggered after adding)
   subscribe: (propertyName, callback, element) => {
     const eventName = `${ns}${propertyName}${getElementId(element)}`;
 
@@ -66,13 +77,14 @@ window.pfwp = {
       try {
         const assetType = asset.endsWith('js') ? 'js' : 'css';
         const id = `pfwp_${assetType}_${component}_${index}`;
+        const normalizedAsset = normalizeAsset(asset);
+
+        if (pfwp.loadedAssets[normalizedAsset]) {
+          resolve();
+          return;
+        }
 
         if (assetType === 'js') {
-          if (inlineJsContainer && inlineJsContainer.querySelector(`#${id}`)) {
-            resolve();
-            return;
-          }
-
           const s = document.createElement('script');
           s.src = asset;
           s.async = 1;
@@ -81,27 +93,30 @@ window.pfwp = {
           s.onload = () => {
             resolve();
           };
-          s.onerror = (event) => {
-            reject(event);
+          s.onerror = (e) => {
+            reject(e);
           };
 
           if (inlineJsContainer) {
             inlineJsContainer.appendChild(s);
+            pfwp.loadedAssets[normalizedAsset] = true;
           }
         } else {
-          if (head.querySelector(`#${id}`)) {
-            resolve();
-            return;
-          }
-
           const l = document.createElement('link');
           l.id = id;
           l.rel = 'stylesheet';
           l.type = 'text/css';
           l.href = asset;
           l.media = 'all';
+          l.onload = () => {
+            resolve();
+          };
+          l.onerror = (e) => {
+            reject(e);
+          };
+
           head.appendChild(l);
-          resolve();
+          pfwp.loadedAssets[normalizedAsset] = true;
         }
       } catch (e) {
         reject(e);
@@ -142,11 +157,11 @@ window.pfwp = {
 
         await Promise.all(waitList);
 
-        pfwp.assetStates[component] = 'loaded';
-
         if (execAsset) {
           window.peanutSrcClientJs[`view_components_${component}`].default('', {});
         }
+
+        pfwp.assetStates[component] = 'loaded';
 
         pfwp.dispatch(eventName, {});
       }
@@ -194,13 +209,105 @@ window.pfwp = {
       const { target, isIntersecting } = entry;
       if (isIntersecting) {
         observer.unobserve(target);
-  
+
         pfwp.dispatch('onObserve', {}, target);
       }
     });
-  })
-};
+  }),
 
+  asyncComponentLoad: async ({
+    instance,
+    fetch_priority: priority = 'low',
+    componentName,
+    component_data
+  }) => {
+    let dataString = '';
+
+    if (component_data && typeof component_data === 'object' && !Array.isArray(component_data)) {
+      dataString = `?data=${encodeURIComponent(
+        window.btoa(
+          JSON.stringify({
+            attributes: component_data
+          })
+        )
+      )}`;
+    }
+
+    const response = await fetch(`${apiPath}${componentName}/${dataString}`, {
+      method: 'get',
+      priority
+    });
+
+    const json = await response.json();
+
+    if (!json) return;
+
+    const { html, assets: jsonAssets = {}, data: jsonData } = json;
+
+    if (typeof html !== 'string' || html.length <= 0) {
+      console.log(`asyncComponentLoad: ${componentName} returned no html`);
+      return;
+    }
+
+    let container = document.createElement('div');
+    container.innerHTML = html;
+    const component = container.removeChild(container.firstChild);
+    component.classList.add('lazy-load-loading');
+    container = null;
+
+    instance.replaceWith(component);
+
+    // TODO: Maintain order of assets using array in wp-json response?
+    const waitList = [];
+
+    Object.keys(jsonAssets).forEach((jsonAssetKey) => {
+      const assets = jsonAssets[jsonAssetKey]?.assets;
+      const keyAssets =
+        assets &&
+        Object.keys(assets).reduce((accumulator, assetKey) => {
+          accumulator.push(...assets[assetKey]);
+          return accumulator;
+        }, []);
+
+      if (Array.isArray(keyAssets) && keyAssets.length) {
+        waitList.push(
+          (async () => {
+            await pfwp.getComponentAssets(jsonAssetKey, keyAssets, () => {
+              const componentJs = pfwp.getComponentJs(jsonAssetKey);
+
+              if (componentJs) {
+                let elements = [];
+
+                if (jsonAssetKey === componentName) {
+                  elements = [component];
+                } else {
+                  elements = component.querySelectorAll(`[id^="${jsonAssetKey}"]`);
+                }
+
+                if (elements.length <= 0) {
+                  // TODO: Only log in debug mode
+                  /*
+                  console.log(
+                    `asyncComponentLoad: ${componentName} retrieved unused js - ${jsonAssetKey}`
+                  );
+                  */
+                } else {
+                  elements.forEach((element) =>
+                    componentJs(element, jsonData?.[jsonAssetKey]?.[element.id])
+                  );
+                }
+              }
+            });
+          })()
+        );
+      }
+    });
+
+    await Promise.all(waitList);
+
+    component.classList.remove('lazy-load-loading');
+  }
+};
 
 document.addEventListener('DOMContentLoaded', () => {
   pfwp.dispatch('pageDomLoaded', {});
@@ -208,18 +315,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
 module.exports = (instance, data) => {
   const {
-    components: { js: componentJs },
+    components: { js: componentJs, css: componentCss },
     metadata: { js: metadataJs = {} }
   } = data;
 
   inlineJsContainer = instance;
 
-  // Trigger inlined components javascript
+  // Store loaded component css
+  Object.keys(componentCss)
+    .filter((key) => Array.isArray(componentCss[key]))
+    .forEach((key) => {
+      componentCss[key].forEach((asset) => {
+        pfwp.loadedAssets[normalizeAsset(asset)] = true;
+      });
+    });
+
+  // Store and trigger inlined components javascript
   Object.keys(metadataJs).forEach((key) => {
     if (metadataJs[key].async === false) {
+      componentJs[key].forEach((asset) => {
+        pfwp.loadedAssets[normalizeAsset(asset)] = true;
+      });
+
       pfwp.runComponentJs(key, window.pfwp_comp_instances[key]);
     }
   });
+
+  // TODO: update pfwp.assetStates for already loaded components to be 'loaded'
 
   document.addEventListener('DOMContentLoaded', () => {
     // Load and trigger async components javascript

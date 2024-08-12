@@ -59,6 +59,7 @@ class PFWP_REST {
   }
 
 	public static function register() {
+    // TODO: add additional route that uses url path value instead of data query string
     register_rest_route(
       'pfwp/v1',
       '/components/(?P<name>[A-Za-z0-9\-\_]+)',

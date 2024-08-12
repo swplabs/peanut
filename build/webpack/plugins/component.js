@@ -32,7 +32,7 @@ class ComponentsPlugin {
         data
       };
     } catch (e) {
-      console.log('[build:webpack:plugins:componentsplugin] error', e?.message);
+      console.log('[build:webpack:plugins:components] error', e?.message);
     }
   }
 
@@ -57,7 +57,7 @@ class ComponentsPlugin {
               fs.mkdirSync(dir, { recursive: true });
             }
           } catch (e) {
-            console.log('[build:webpack:plugins:componentsplugin] error', e?.message);
+            console.log('[build:webpack:plugins:components] error', e?.message);
           }
 
           const { srcPath } = routes.find(({ path }) => path === srcElement);

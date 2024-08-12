@@ -1,17 +1,24 @@
+// Validate Config
+require('./shared/utils.js').validateEnvVarConfig(require('./shared/envvars.js'));
+
 const { spawn } = require('child_process');
 const webpack = require('webpack');
 const chokidar = require('chokidar');
-const path = require('path');
-const { srcDirectories } = require('./shared/src.directory.entry.map.js');
 const {
-  getConfig,
   handler: webpackHandler,
   webpackPreProcess,
   webpackPostProcess,
   plugins: { postprocess: postProcessPlugin },
-  routeInfo
+  routeInfo,
+  getConfigs
 } = require('./build/webpack/index.js');
 const { serverStart } = require('./build/server/index.js');
+const {
+  appSrcPath,
+  directoryEntrySrcPath,
+  rootDir,
+  enableWhiteboard
+} = require('./shared/definitions.js');
 
 let webpackCompiler;
 let restartBuildTimeout;
@@ -28,9 +35,11 @@ let whiteBoardProcess;
 
 // start whiteboard node process
 const startWhiteBoardServer = () => {
+  if (!enableWhiteboard()) return;
+
   console.log('[develop] Starting Whiteboard server...');
 
-  whiteBoardProcess = spawn('node', ['./whiteboard.js']);
+  whiteBoardProcess = spawn('node', [`${rootDir}/whiteboard.js`]);
 
   whiteBoardProcess.on('spawn', () => {
     console.log('[develop] Whiteboard server started.', '\n');
@@ -133,28 +142,16 @@ const webpackCallback = (err, stats) => {
 const startWebPack = async () => {
   console.log('[develop] Starting elements and server compilation and watch...');
 
-  webpackPreProcess({ srcDir: path.resolve(__dirname, './src/') });
+  webpackPreProcess({ srcDir: appSrcPath });
 
-  const config = [];
-
-  for (let [srcType, srcDirectory] of Object.entries(srcDirectories)) {
-    const {
-      buildTypes,
-      webpack: { configPresets }
-    } = srcDirectory;
-
-    buildTypes.forEach((buildType) => {
-      config.push(getConfig({ buildType, srcType, ...configPresets }));
-    });
-  }
-
-  webpackCompiler = webpack(config);
+  webpackCompiler = webpack(getConfigs());
 
   postProcessPlugin(({ stats }) => {
     webpackPostProcess({ stats, routeInfo });
     webpackCallback(null, stats);
   }).apply(webpackCompiler);
 
+  // TODO: if enableHMR() is false, use regular on webpack compilation instead of server
   await sseHttpServer?.destroy();
   await sseHttpsServer?.destroy();
 
@@ -171,19 +168,27 @@ const startWebPack = async () => {
 // Monitor development configuration changes
 // TODO: Create regex using component cfg file object?
 const compsBlocksFileRegEx = new RegExp(
-  '^src/(components|blocks)/[a-zA-Z0-9-_]+/src/((variations|metadata).json|(ssr.)?(view|editor).(jsx|js)|(index|render).php|style.s?css)',
+  `^${appSrcPath}/(components|blocks)/[a-zA-Z0-9-_]+${directoryEntrySrcPath}/((variations|metadata).json|(ssr.)?(view|editor).(jsx|js)|(index|render).php|style.s?css)`,
   'i'
 );
 
 const themesPluginsFileRegEx = new RegExp(
-  '^src/(themes|plugins)/[a-zA-Z0-9-_]+/src/((view|editor).(jsx|js)|style.s?css)',
+  `^${appSrcPath}/(themes|plugins)/[a-zA-Z0-9-_]+${directoryEntrySrcPath}/((view|editor).(jsx|js)|style.s?css)`,
   'i'
 );
 
-const commonDirRegEx = new RegExp('src/(components|blocks|plugins|themes)/[a-zA-Z0-9-_]+$', 'i');
+const commonDirRegEx = new RegExp(
+  `^${appSrcPath}/(components|blocks|plugins|themes)/[a-zA-Z0-9-_]+$`,
+  'i'
+);
 
 const devMonitor = chokidar
-  .watch(['./src/components', './src/themes', './src/blocks', './src/plugins'])
+  .watch([
+    `${appSrcPath}/components`,
+    `${appSrcPath}/themes`,
+    `${appSrcPath}/blocks`,
+    `${appSrcPath}/plugins`
+  ])
   .on('all', (fsEvent, fsPath) => {
     if (!chokidarReady || restartDev) return;
 

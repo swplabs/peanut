@@ -1,5 +1,6 @@
 const nconf = require('nconf');
-const path = require('path');
+const cwd = process.cwd();
+const fs = require('fs');
 
 // Pull in ENV vars
 nconf.env([
@@ -28,15 +29,30 @@ nconf.env([
   'PFWP_SSE_ENABLE_HTTPS',
   'PFWP_SSE_HTTPS_PORT',
   'PFWP_WB_HEAD_COMPONENTS',
-  'PFWP_WB_FOOTER_COMPONENTS'
+  'PFWP_WB_FOOTER_COMPONENTS',
+  'PFWP_CORE_DEV',
+  'PFWP_IS_CLI',
+  'PFWP_CONFIG_HOOKS',
+  'PFWP_CONFIG_ESLINT',
+  'PFWP_CONFIG_WEBPACK'
 ]);
 
 let config = {};
 
 try {
-  config = require('../extend/config.json');
+  const configFile = fs.readFileSync(
+    `${nconf.get('PFWP_APP_SRC_PATH') || cwd}/peanut.config.json`,
+    'utf8'
+  );
+  config = JSON.parse(configFile);
 } catch (e) {
-  console.log('No user config json file available');
+  if (e?.code === 'ENOENT') {
+    throw new Error(
+      `A peanut.config.json file was not found.${e?.message ? `\nError Message: ${e?.message}` : ''}`
+    );
+  } else {
+    throw e;
+  }
 }
 
 const defaultConfig = {
@@ -45,8 +61,8 @@ const defaultConfig = {
   PFWP_BUILD: 'stack',
   PFWP_DIST: 'develop',
   PFWP_CSS_IN_JS: 'false',
-  PFWP_APP_SRC_PATH: path.resolve(__dirname, '../src/'),
-  PFWP_DIR_ENT_SRC_PATH: '/src',
+  PFWP_APP_SRC_PATH: cwd,
+  PFWP_DIR_ENT_SRC_PATH: '',
   PFWP_WP_PUBLIC_PATH: '/',
   PFWP_COMP_ALLOW_LIST: [],
   PFWP_CORE_BLOCK_FILTERS: {},
@@ -59,6 +75,8 @@ const defaultConfig = {
   PFWP_SSE_HTTPS_PORT: 9090,
   PFWP_WB_HEAD_COMPONENTS: [],
   PFWP_WB_FOOTER_COMPONENTS: [],
+  PFWP_CORE_DEV: '',
+  PFWP_IS_CLI: '',
   ...config
 };
 

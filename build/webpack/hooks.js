@@ -2,6 +2,8 @@ const fs = require('fs');
 const { extname } = require('path');
 const envVars = require('../../shared/envvars.js');
 const { entryMapFlagKeys } = require('../../shared/src.directory.entry.map.js');
+const { appSrcPath } = require('../../shared/definitions.js');
+const { requireConfigFile } = require('../../shared/utils.js');
 const pfwpThemePath = envVars.get('PFWP_THEME_PATH');
 const pfwpWpRoot = envVars.get('PFWP_WP_ROOT');
 
@@ -23,9 +25,9 @@ const pfwpConfig = {
 
 let extendHooks;
 
-try {
-  extendHooks = require('../../extend/webpack/hooks.js');
-} catch (e) {}
+if (envVars.get('PFWP_CONFIG_HOOKS')) {
+  extendHooks = requireConfigFile(`${appSrcPath}/${envVars.get('PFWP_CONFIG_HOOKS')}`);
+}
 
 const processAsset = (asset) => {
   const { name } = asset;
