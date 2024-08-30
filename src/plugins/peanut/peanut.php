@@ -43,7 +43,7 @@ if ( ! defined( 'PFWP_SITE_URL' ) ) {
 // Globals
 global $pfwp_global_config, $pfwp_ob_replace_vars;
 
-// TODO: add error log if file is not found
+// TODO: add error log and admin_notice message if file is not found
 $pfwp_global_config = json_decode( @file_get_contents( PFWP_TEMPLATE_DIR . '/pfwp.json' ), false );
 
 $pfwp_ob_replace_vars = array(

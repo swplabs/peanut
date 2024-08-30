@@ -130,6 +130,7 @@ module.exports = {
       });
     }
 
+    // TODO: add hash of app src directory value to pfwp.json filename IF secondary env var OR if primary and indicates there are secondary
     try {
       fs.writeFileSync(`${pfwpWpRoot}${pfwpThemePath}/pfwp.json`, JSON.stringify(pfwpConfig));
     } catch (e) {

@@ -14,10 +14,11 @@ const debugModeInterval = 2000;
 const appSrcPath = envVars.get('PFWP_APP_SRC_PATH');
 const directoryEntrySrcPath = envVars.get('PFWP_DIR_ENT_SRC_PATH');
 
-// TODO: define env vars for these
+// TODO: define env var for this
 const isDebugMode = () => false;
-const enableWhiteboard = () => true;
-const enableHMR = () => true;
+
+const enableWhiteboard = () => envVars.getBoolean('PFWP_ENABLE_WB') === true;
+const enableHMR = () => envVars.getBoolean('PFWP_ENABLE_HMR') === true;
 
 const hotRefreshEnabled = (srcType) =>
   enableHMR() && nodeEnv === 'development' && ['blocks', 'plugins'].includes(srcType);

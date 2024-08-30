@@ -1,35 +1,63 @@
 #!/usr/bin/env node
 
-const { isDebugMode, debugModeInterval } = require('./shared/definitions.js');
-
-const args = process.argv.slice(2);
-
 process.env.PFWP_IS_CLI = 'true';
 
-if (isDebugMode()) {
-  setInterval(() => {
-    console.log(`\nDebug Memory Usage:\n${JSON.stringify(process.memoryUsage())}`);
-    console.log(
-      `Currently using ${Math.floor(process.memoryUsage().heapUsed / 1024 / 1024)} MB of memory.\n`
-    );
-  }, debugModeInterval);
-}
+const {
+  version
+} = require('./package.json');
+const { program } = require('commander');
 
-switch (args[0]) {
-  case 'build': {
-    require('./build.js');
-    break;
+
+program
+  .name('peanut')
+  .description('Peanut for Wordpress. Build your themes and blocks with components.')
+  .version(version);
+  
+program
+  .option('-s, --source <path>', 'path to application source folder')
+  .option('--disable-hmr', 'disable Hot Module Reloading')
+  .option('-w, --enable-whiteboard', 'enable Whiteboard server/appication')
+  .option('-d, --enable-core-dev', 'enable core development');
+
+program.on('option:enable-core-dev', () => {
+  process.env.PFWP_CORE_DEV = 'true';
+});
+
+program.on('option:enable-whiteboard', () => {
+  process.env.PFWP_ENABLE_WB = 'true';
+});
+
+program.on('option:disable-hmr', () => {
+  process.env.PFWP_ENABLE_HMR = 'false';
+});
+
+program.on('option:source', () => {
+  const source = program.opts().source;
+  
+  if (typeof source === 'string') {
+    process.env.PFWP_APP_SRC_PATH = source;
   }
-  case 'lint': {
-    require('./lint.js');
-    break;
-  }
-  case 'export': {
-    require('./export.js');
-    break;
-  }
-  case 'develop':
-  default: {
+});
+
+program
+  .command('develop', { isDefault: true })
+  .description('Compile source(s) in development mode and watch for changes')
+  .action(() => {
     require('./develop.js');
-  }
-}
+  });
+
+program
+  .command('build')
+  .description('Build application source')
+  .action(() => {
+    require('./build.js');
+  });
+
+program
+  .command('lint')
+  .description('Lint your source code')
+  .action(() => {
+    require('./lint.js');
+  });
+
+program.parse(process.argv);

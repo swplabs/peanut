@@ -34,7 +34,9 @@ nconf.env([
   'PFWP_IS_CLI',
   'PFWP_CONFIG_HOOKS',
   'PFWP_CONFIG_ESLINT',
-  'PFWP_CONFIG_WEBPACK'
+  'PFWP_CONFIG_WEBPACK',
+  'PFWP_ENABLE_HMR',
+  'PFWP_ENABLE_WB'
 ]);
 
 let config = {};
@@ -66,16 +68,18 @@ const defaultConfig = {
   PFWP_WP_PUBLIC_PATH: '/',
   PFWP_COMP_ALLOW_LIST: [],
   PFWP_CORE_BLOCK_FILTERS: {},
+  PFWP_ENABLE_WB: false,
   PFWP_WB_PORT: 5000,
   PFWP_WB_HTTPS_PORT: 9000,
   PFWP_WB_ENABLE_HTTPS: false,
+  PFWP_ENABLE_HMR: true,
   PFWP_SSE_HOST: 'http://localhost',
   PFWP_SSE_PORT: 5050,
   PFWP_SSE_ENABLE_HTTPS: false,
   PFWP_SSE_HTTPS_PORT: 9090,
   PFWP_WB_HEAD_COMPONENTS: [],
   PFWP_WB_FOOTER_COMPONENTS: [],
-  PFWP_CORE_DEV: '',
+  PFWP_CORE_DEV: false,
   PFWP_IS_CLI: '',
   ...config
 };

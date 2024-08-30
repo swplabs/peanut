@@ -28,7 +28,8 @@ const {
   rootDir,
   isCoreDev,
   getAppSrcPath,
-  getDirectoryEntrySrcPath
+  getDirectoryEntrySrcPath,
+  isDebugMode
 } = require('../../shared/definitions.js');
 
 const routeInfo = {};
@@ -36,10 +37,18 @@ const routeInfo = {};
 const { getRoutes, getEntries, getCacheGroups } = paths;
 
 const webpackHandler =
-  ({ buildType: type, compileType = 'develop', srcType, hashCheck, success, error }) =>
-  (_err, stats) => {
+  ({
+    buildType: type,
+    compileType = 'develop',
+    srcType,
+    hashCheck,
+    success,
+    error,
+    showStats = false
+  }) =>
+  (compileError, stats) => {
     if (stats.hasErrors()) {
-      if (typeof error === 'function') error();
+      if (typeof error === 'function') error({ stats, compileError });
     } else {
       if (typeof hashCheck === 'function') {
         if (hashCheck({ buildType: type, srcType, hash: stats.hash })) return;
@@ -47,8 +56,14 @@ const webpackHandler =
 
       console.log(`\n[webpack:${compileType}] Compilation successful.\n`);
 
-      if (compileType === 'build') {
-        // TODO: show stats for build
+      if (showStats) {
+        console.log(
+          stats.toString({
+            chunks: false,
+            modules: false,
+            colors: true
+          })
+        );
       }
 
       if (typeof success === 'function') success();
@@ -302,9 +317,11 @@ const getConfig = ({
   const configSrcPath = `${getAppSrcPath(srcType)}/${srcType}`;
 
   if (!fs.existsSync(configSrcPath)) {
-    console.log(
-      `\nWarning: /${srcType} does not exist in your source folder: ${getAppSrcPath(srcType)}\n`
-    );
+    if (isDebugMode()) {
+      console.log(
+        `\nWarning: /${srcType} does not exist in your source folder: ${getAppSrcPath(srcType)}\n`
+      );
+    }
     return null;
   }
 

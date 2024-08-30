@@ -24,6 +24,7 @@ webpack(getConfigs(), (err, stats) => {
   webpackHandler({
     buildType: 'stack',
     srcType: 'all',
-    compileType: 'build'
+    compileType: 'build',
+    showStats: true
   })(err, stats);
 });
