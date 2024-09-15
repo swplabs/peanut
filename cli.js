@@ -2,17 +2,14 @@
 
 process.env.PFWP_IS_CLI = 'true';
 
-const {
-  version
-} = require('./package.json');
+const { version } = require('./package.json');
 const { program } = require('commander');
-
 
 program
   .name('peanut')
   .description('Peanut for Wordpress. Build your themes and blocks with components.')
   .version(version);
-  
+
 program
   .option('-s, --source <path>', 'path to application source folder')
   .option('--disable-hmr', 'disable Hot Module Reloading')
@@ -33,7 +30,7 @@ program.on('option:disable-hmr', () => {
 
 program.on('option:source', () => {
   const source = program.opts().source;
-  
+
   if (typeof source === 'string') {
     process.env.PFWP_APP_SRC_PATH = source;
   }

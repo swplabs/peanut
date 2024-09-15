@@ -222,10 +222,8 @@ window.pfwp = {
     componentName,
     component_data
   }) => {
-    const {
-      data_mode = 'path'
-    } = globalConfig;
-    
+    const { data_mode = 'path' } = globalConfig;
+
     let dataString = '';
 
     if (component_data && typeof component_data === 'object' && !Array.isArray(component_data)) {
@@ -234,8 +232,9 @@ window.pfwp = {
           attributes: component_data
         })
       );
-            
-      dataString = data_mode !== 'path' ? `?data=${encodeURIComponent(base64Data)}` : `${base64Data}/`;
+
+      dataString =
+        data_mode !== 'path' ? `?data=${encodeURIComponent(base64Data)}` : `${base64Data}/`;
     }
 
     const response = await fetch(`${apiPath}${componentName}/${dataString}`, {
@@ -325,7 +324,7 @@ module.exports = (instance, data) => {
   } = data;
 
   globalConfig = window.pfwp_global_config;
-  
+
   inlineJsContainer = instance;
 
   // Store loaded component css

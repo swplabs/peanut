@@ -58,7 +58,7 @@ const startWhiteBoardServer = () => {
       restartDev = false;
     }
   };
-  
+
   if (!enableWhiteboard()) {
     setStatus();
     return;
@@ -207,7 +207,7 @@ const watchPaths = Object.keys(srcDirectories)
 
     return paths;
   }, []);
-  
+
 if (watchPaths.length <= 0) {
   throw new Error('No element source folders could be found.');
 }
@@ -227,12 +227,11 @@ const commonDirRegEx = new RegExp(
   'i'
 );
 
-
 const devMonitor = chokidar
   .watch(watchPaths)
   .on('all', (fsEvent, fsPath) => {
     if (!chokidarReady || restartDev) return;
-    
+
     switch (fsEvent) {
       case 'add':
       case 'unlink': {
