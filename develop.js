@@ -50,7 +50,19 @@ let whiteBoardProcess;
 
 // start whiteboard node process
 const startWhiteBoardServer = () => {
-  if (!enableWhiteboard()) return;
+  const setStatus = () => {
+    buildStatus['process'] = true;
+
+    if (checkBuildStatus()) {
+      chokidarReady = true;
+      restartDev = false;
+    }
+  };
+  
+  if (!enableWhiteboard()) {
+    setStatus();
+    return;
+  }
 
   console.log('[develop] Starting Whiteboard server...');
 
@@ -59,12 +71,7 @@ const startWhiteBoardServer = () => {
   whiteBoardProcess.on('spawn', () => {
     console.log('[develop] Whiteboard server started.', '\n');
 
-    buildStatus['process'] = true;
-
-    if (checkBuildStatus()) {
-      chokidarReady = true;
-      restartDev = false;
-    }
+    setStatus();
   });
 
   whiteBoardProcess.stdout.on('data', (data) => {
@@ -200,6 +207,10 @@ const watchPaths = Object.keys(srcDirectories)
 
     return paths;
   }, []);
+  
+if (watchPaths.length <= 0) {
+  throw new Error('No element source folders could be found.');
+}
 
 const compsBlocksFileRegEx = new RegExp(
   `^${appSrcPath}/(components|blocks)/[a-zA-Z0-9-_]+${directoryEntrySrcPath}/((variations|metadata).json|(ssr.)?(view|editor).(jsx|js)|(index|render).php|style.s?css)`,
@@ -216,11 +227,12 @@ const commonDirRegEx = new RegExp(
   'i'
 );
 
+
 const devMonitor = chokidar
   .watch(watchPaths)
   .on('all', (fsEvent, fsPath) => {
     if (!chokidarReady || restartDev) return;
-
+    
     switch (fsEvent) {
       case 'add':
       case 'unlink': {

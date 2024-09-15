@@ -9,6 +9,7 @@ const pfwpWpRoot = envVars.get('PFWP_WP_ROOT');
 
 const pfwpConfig = {
   mode: envVars.get('NODE_ENV') || 'production',
+  data_mode: envVars.get('PFWP_DATA_MODE') || 'path',
   core_block_filters: envVars.get('PFWP_CORE_BLOCK_FILTERS'),
   wp_root: pfwpWpRoot,
   wp_host: envVars.get('PFWP_WP_HOST'),

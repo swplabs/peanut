@@ -212,6 +212,14 @@ class PFWP_Components {
 		$metadata = $pfwp_global_config->compilations->components_elements->metadata;
 		$component_chunks = PFWP_Assets::get_assets( 'components' )->chunk_groups;
 		
+		$config_data = (object) array(
+			'data_mode' => $pfwp_global_config->data_mode
+		);		
+		
+		echo '<script>' . PHP_EOL;
+		echo '  window.pfwp_global_config = ' . json_encode( $config_data ) . ';' . PHP_EOL;
+		echo '</script>' . PHP_EOL;
+		
 		if ( property_exists( $component_chunks, 'pfwp_sdk' ) ) {
 			echo '<script src="' . $pfwp_global_config->public_path . PFWP_Assets::get_assets( 'components' )->chunk_groups->pfwp_sdk->main_assets[0]->name . '" id="pfwp_js_sdk"></script>' . PHP_EOL;
 		} else if ( $sdk_files = glob(PFWP_PLUGIN_DIR . '\/assets\/pfwp_sdk.*') ) {

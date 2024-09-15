@@ -25,6 +25,7 @@ const normalizeAsset = (asset) => {
 };
 
 let apiPath = '/wp-json/pfwp/v1/components/';
+let globalConfig = {};
 
 window.pfwp = {
   state: {},
@@ -221,16 +222,20 @@ window.pfwp = {
     componentName,
     component_data
   }) => {
+    const {
+      data_mode = 'path'
+    } = globalConfig;
+    
     let dataString = '';
 
     if (component_data && typeof component_data === 'object' && !Array.isArray(component_data)) {
-      dataString = `?data=${encodeURIComponent(
-        window.btoa(
-          JSON.stringify({
-            attributes: component_data
-          })
-        )
-      )}`;
+      const base64Data = window.btoa(
+        JSON.stringify({
+          attributes: component_data
+        })
+      );
+            
+      dataString = data_mode !== 'path' ? `?data=${encodeURIComponent(base64Data)}` : `${base64Data}/`;
     }
 
     const response = await fetch(`${apiPath}${componentName}/${dataString}`, {
@@ -319,6 +324,8 @@ module.exports = (instance, data) => {
     metadata: { js: metadataJs = {} }
   } = data;
 
+  globalConfig = window.pfwp_global_config;
+  
   inlineJsContainer = instance;
 
   // Store loaded component css

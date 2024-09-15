@@ -42,8 +42,12 @@ class PFWP_REST {
       return false;
     }
 
-    $data = json_decode( base64_decode( rawurldecode( $param ) ), true );
-
+    if ( $pfwp_global_config->data_mode === 'path' ) {
+      $data = json_decode( base64_decode( $param ), true );
+    } else {
+      $data = json_decode( base64_decode( rawurldecode( $param ) ), true );
+    }
+    
     if ( !is_array( $data ) ) {
       return false;
     }
@@ -59,10 +63,9 @@ class PFWP_REST {
   }
 
 	public static function register() {
-    // TODO: add additional route that uses url path value instead of data query string
     register_rest_route(
       'pfwp/v1',
-      '/components/(?P<name>[A-Za-z0-9\-\_]+)',
+      '/components/(?P<name>[A-Za-z0-9\-\_]+)(?:/(?P<data>[\w\=]+))?',
       array(
         'methods'  => WP_REST_Server::READABLE,
         'callback' => array( 'PFWP_REST', 'get_component' ),

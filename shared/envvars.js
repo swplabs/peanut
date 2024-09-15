@@ -32,6 +32,7 @@ nconf.env([
   'PFWP_WB_FOOTER_COMPONENTS',
   'PFWP_CORE_DEV',
   'PFWP_IS_CLI',
+  'PFWP_DATA_MODE',
   'PFWP_CONFIG_HOOKS',
   'PFWP_CONFIG_ESLINT',
   'PFWP_CONFIG_WEBPACK',
@@ -42,6 +43,7 @@ nconf.env([
 let config = {};
 
 try {
+  // TODO: add method so that if "fileConfData" passed in to require statement in "parent" file, skip this
   const configFile = fs.readFileSync(
     `${nconf.get('PFWP_APP_SRC_PATH') || cwd}/peanut.config.json`,
     'utf8'
@@ -64,6 +66,7 @@ const defaultConfig = {
   PFWP_DIST: 'develop',
   PFWP_CSS_IN_JS: 'false',
   PFWP_APP_SRC_PATH: cwd,
+  PFWP_DATA_MODE: 'path',
   PFWP_DIR_ENT_SRC_PATH: '',
   PFWP_WP_PUBLIC_PATH: '/',
   PFWP_COMP_ALLOW_LIST: [],
