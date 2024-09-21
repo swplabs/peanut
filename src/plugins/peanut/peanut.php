@@ -43,8 +43,20 @@ if ( ! defined( 'PFWP_SITE_URL' ) ) {
 // Globals
 global $pfwp_global_config, $pfwp_ob_replace_vars;
 
-// TODO: add error log and admin_notice message if file is not found
+// Utils
+require PFWP_PLUGIN_DIR . '/classes/class-pfwp-utils.php';
+		
+// TODO: add error log and admin_notice message if primary file is not found
 $pfwp_global_config = json_decode( @file_get_contents( PFWP_TEMPLATE_DIR . '/pfwp.json' ), false );
+
+if ( property_exists( $pfwp_global_config, 'primary' ) ) {
+	$secondary_config_files = glob(PFWP_TEMPLATE_DIR . '\/pfwp.*.json');
+	
+	foreach( $secondary_config_files as  $secondary_config_file) {
+		$secondary_config = json_decode( @file_get_contents( $secondary_config_file ), false );
+		$pfwp_global_config->compilations = PFWP_Utils::merge_objects( $pfwp_global_config->compilations, $secondary_config->compilations, array( 'runtime' => array(1) ) );
+	}
+}
 
 $pfwp_ob_replace_vars = array(
 	'search' => array(),

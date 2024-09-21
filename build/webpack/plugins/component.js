@@ -3,7 +3,7 @@ const fs = require('fs');
 const phpIndexKeyRegex = /^php_index_components_(?<srcElement>.+)$/i;
 
 class ComponentsPlugin {
-  constructor({ directory, routes, outputPath }) {
+  constructor({ directory, routes, outputPath, emptyDirectoryOnStart = false }) {
     this.routes = routes;
     this.directory = directory;
     this.outputPath = outputPath;
@@ -11,7 +11,7 @@ class ComponentsPlugin {
     this.filesToEmit = {};
 
     const destDir = `${this.directory}/components`;
-    if (fs.existsSync(destDir)) {
+    if (emptyDirectoryOnStart && fs.existsSync(destDir)) {
       fs.rmSync(destDir, { recursive: true });
     }
   }

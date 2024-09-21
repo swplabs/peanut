@@ -13,7 +13,7 @@ const {
 } = require('./build/webpack/index.js');
 const { appSrcPath } = require('./shared/definitions.js');
 
-// TODO: clear out asset directories
+// TODO: Create "merge PFWP.json files" functionality use with production deployments
 
 console.log(`[webpack:build] Starting compilation...`);
 

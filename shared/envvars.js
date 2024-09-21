@@ -37,7 +37,9 @@ nconf.env([
   'PFWP_CONFIG_ESLINT',
   'PFWP_CONFIG_WEBPACK',
   'PFWP_ENABLE_HMR',
-  'PFWP_ENABLE_WB'
+  'PFWP_ENABLE_WB',
+  'PFWP_PRIMARY',
+  'PFWP_SECONDARY'
 ]);
 
 let config = {};

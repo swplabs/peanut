@@ -18,7 +18,8 @@ const directoryEntrySrcPath = envVars.get('PFWP_DIR_ENT_SRC_PATH');
 const isDebugMode = () => false;
 
 const enableWhiteboard = () => envVars.getBoolean('PFWP_ENABLE_WB') === true;
-const enableHMR = () => envVars.getBoolean('PFWP_ENABLE_HMR') === true;
+const enableHMR = () =>
+  envVars.getBoolean('PFWP_ENABLE_HMR') === true && envVars.getBoolean('PFWP_SECONDARY') !== true;
 
 const hotRefreshEnabled = (srcType) =>
   enableHMR() && nodeEnv === 'development' && ['blocks', 'plugins'].includes(srcType);

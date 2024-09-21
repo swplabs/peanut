@@ -1,5 +1,6 @@
 const fs = require('fs');
 const { extname } = require('path');
+const { createHash } = require('crypto');
 const envVars = require('../../shared/envvars.js');
 const { entryMapFlagKeys } = require('../../shared/src.directory.entry.map.js');
 const { appSrcPath } = require('../../shared/definitions.js');
@@ -7,8 +8,11 @@ const { requireConfigFile } = require('../../shared/utils.js');
 const pfwpThemePath = envVars.get('PFWP_THEME_PATH');
 const pfwpWpRoot = envVars.get('PFWP_WP_ROOT');
 
+const srcHash = createHash('md5').update(appSrcPath, 'utf8').digest('hex');
+
 const pfwpConfig = {
   mode: envVars.get('NODE_ENV') || 'production',
+  srcHash,
   data_mode: envVars.get('PFWP_DATA_MODE') || 'path',
   core_block_filters: envVars.get('PFWP_CORE_BLOCK_FILTERS'),
   wp_root: pfwpWpRoot,
@@ -23,6 +27,12 @@ const pfwpConfig = {
     }
   }
 };
+
+if (envVars.getBoolean('PFWP_PRIMARY')) {
+  pfwpConfig.primary = true;
+} else if (envVars.getBoolean('PFWP_SECONDARY')) {
+  pfwpConfig.secondary = true;
+}
 
 let extendHooks;
 
@@ -52,9 +62,15 @@ module.exports = {
   webpackPostProcess: ({ stats, routeInfo }) => {
     if (Array.isArray(stats?.stats)) {
       stats.stats.forEach((stat) => {
-        if (!stat) return;
+        if (!stat) {
+          return;
+        }
 
         const { name: compilationName, namedChunkGroups, assets = [] } = stat.toJson();
+
+        if (pfwpConfig.secondary && compilationName.startsWith('whiteboard_')) {
+          return;
+        }
 
         const namedConfig = {
           entry_map: {},
@@ -131,9 +147,17 @@ module.exports = {
       });
     }
 
-    // TODO: add hash of app src directory value to pfwp.json filename IF secondary env var OR if primary and indicates there are secondary
+    let configFilename = 'pfwp.json';
+
+    if (pfwpConfig.secondary) {
+      configFilename = `pfwp.${srcHash}.json`;
+    }
+
     try {
-      fs.writeFileSync(`${pfwpWpRoot}${pfwpThemePath}/pfwp.json`, JSON.stringify(pfwpConfig));
+      fs.writeFileSync(
+        `${pfwpWpRoot}${pfwpThemePath}/${configFilename}`,
+        JSON.stringify(pfwpConfig)
+      );
     } catch (e) {
       console.log(e?.message);
     }
