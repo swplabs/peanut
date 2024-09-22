@@ -68,7 +68,11 @@ const findRoutes = ({
   const srcTypeDirectory = `${getAppSrcPath(srcType)}/${srcType}/${srcTypeSubDirectory}`;
 
   try {
-    srcTypePaths = fs.readdirSync(srcTypeDirectory, { withFileTypes: true });
+    if (fs.existsSync(srcTypeDirectory)) {
+      srcTypePaths = fs.readdirSync(srcTypeDirectory, { withFileTypes: true });
+    } else {
+      srcTypePaths = [];
+    }
   } catch (e) {
     log('[build:webpack:paths] error:', e?.message);
     srcTypePaths = [];

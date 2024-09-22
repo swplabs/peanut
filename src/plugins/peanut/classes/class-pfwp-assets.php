@@ -14,9 +14,9 @@ class PFWP_Assets {
 		global $pfwp_global_config;
 
 		self::$assets = (object) array(
-			'blocks' => $pfwp_global_config->compilations->blocks_elements,
-			'components' => $pfwp_global_config->compilations->components_elements,
-			'plugins' => $pfwp_global_config->compilations->plugins_elements,
+			'blocks' => property_exists( $pfwp_global_config->compilations, 'blocks_elements' ) ? $pfwp_global_config->compilations->blocks_elements : (object) array(),
+			'components' => property_exists( $pfwp_global_config->compilations, 'components_elements' ) ? $pfwp_global_config->compilations->components_elements : (object) array(),
+			'plugins' => property_exists( $pfwp_global_config->compilations, 'plugins_elements' ) ? $pfwp_global_config->compilations->plugins_elements : (object) array(),
 		);
 	}
 
