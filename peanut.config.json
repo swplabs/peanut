@@ -1,7 +1,0 @@
-{
-  "PFWP_WP_ROOT": "/var/www/html",
-  "PFWP_THEME_PATH": "/wp-content/themes/example-theme",
-  "PFWP_WP_HOST": "http://localhost.yourdomain.com",
-  "PFWP_SSE_HOST": "http://localhost.yourdomain.com",
-  "PFWP_WB_HEAD_COMPONENTS": ["example-head"]
-}
