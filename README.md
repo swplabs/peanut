@@ -2,10 +2,6 @@
 
 Build your wordpress themes and blocks with component-like elements.
 
-## Alpha Release
-
-Alpha release coming soon.
-
 ## Requirements
 
 Peanut For Wordpress requires an environment running both [Node.js](https://nodejs.org/en/about) and, of course, [Wordpress](https://wordpress.org/about/).

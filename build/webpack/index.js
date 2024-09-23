@@ -6,7 +6,7 @@ const { webpackPreProcess, webpackPostProcess } = require('./hooks.js');
 const webpackLoaders = require('./loaders.js');
 const webpackPlugins = require('./plugins.js');
 const envVars = require('../../shared/envvars.js');
-const { requireConfigFile } = require('../../shared/utils.js');
+const requireConfigFile = require('../../shared/require.config.js');
 const { srcDirectoryEntryMap, srcDirectories } = require('../../shared/src.directory.entry.map.js');
 const environment = envVars.get('ENVIRONMENT') || 'prod';
 const nodeEnv = envVars.get('NODE_ENV') || 'production';
@@ -248,7 +248,7 @@ const getPlugins = ({ buildType, srcType, routes, exportType, enableCssInJs = fa
       reactRefreshPlugin(),
       normalModuleReplacementPlugin(
         /react-refresh-webpack-plugin\/overlay\/containers\/RuntimeErrorContainer/,
-        `${rootDir}/src/whiteboard/shared/runtime-error-container.js`
+        `${rootDir}/shared/runtime-error-container.js`
       )
     );
   }

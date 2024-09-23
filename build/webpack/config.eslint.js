@@ -1,6 +1,6 @@
 const envVars = require('../../shared/envvars.js');
 const { appSrcPath } = require('../../shared/definitions.js');
-const { requireConfigFile } = require('../../shared/utils.js');
+const requireConfigFile = require('../../shared/require.config.js');
 
 let extendEsLint;
 

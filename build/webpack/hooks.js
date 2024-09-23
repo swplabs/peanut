@@ -4,7 +4,7 @@ const { createHash } = require('crypto');
 const envVars = require('../../shared/envvars.js');
 const { entryMapFlagKeys } = require('../../shared/src.directory.entry.map.js');
 const { appSrcPath } = require('../../shared/definitions.js');
-const { requireConfigFile } = require('../../shared/utils.js');
+const requireConfigFile = require('../../shared/require.config.js');
 const pfwpThemePath = envVars.get('PFWP_THEME_PATH');
 const pfwpWpRoot = envVars.get('PFWP_WP_ROOT');
 

@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const { toCamelCase, debug: log } = require('../../src/whiteboard/shared/utils.js');
+const { toCamelCase, debug: log } = require('../../shared/utils.js');
 const { srcDirectoryEntryMap } = require('../../shared/src.directory.entry.map.js');
 const { baseRoutes, baseEntries } = require('../../shared/base.paths.js');
 const {

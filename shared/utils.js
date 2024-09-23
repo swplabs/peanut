@@ -28,20 +28,6 @@ const toCamelCase = (str = '') => {
     .join('');
 };
 
-const requireConfigFile = (path) => {
-  let config;
-
-  try {
-    config = require(`${path}`);
-  } catch (e) {
-    if (e.code !== 'MODULE_NOT_FOUND') {
-      console.log(e);
-    }
-  }
-
-  return config;
-};
-
 const validateEnvVarConfig = (envVars) => {
   const config = {
     PFWP_WP_ROOT: envVars.get('PFWP_WP_ROOT'),
@@ -73,6 +59,5 @@ const validateEnvVarConfig = (envVars) => {
 module.exports = {
   debug,
   toCamelCase,
-  requireConfigFile,
   validateEnvVarConfig
 };
