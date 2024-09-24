@@ -18,7 +18,7 @@ class PFWP_Blocks {
 	public static function initialize() {
 		global $pfwp_global_config;
 		self::$blocks = PFWP_Assets::get_assets( 'blocks' );
-		self::$deps   = require get_template_directory() . '/blocks/deps.php';
+		self::$deps = file_exists( get_template_directory() . '/blocks/deps.php' ) ? require get_template_directory() . '/blocks/deps.php' : array();
 
 		// Register block index files
 		foreach ( self::$blocks->entry_map as $key => $value ) {
@@ -43,19 +43,22 @@ class PFWP_Blocks {
 
 			if ( property_exists( $value, 'editor' ) ) {
 				$assets  = PFWP_Components::process_assets( PFWP_Assets::get_key_assets( 'blocks', $key, 'editor' ) );
-				$deps    = self::$deps[ '.assets/blocks/' . $value->editor . '.js' ];
 
-				if ( isset( $pfwp_global_config->compilations->blocks_elements->runtime ) ) {
-					array_push( $deps['dependencies'], 'blocks_elements_webpack_runtime' );
+				if ( array_key_exists( '.assets/blocks/' . $value->editor . '.js', self::$deps ) ) {
+					$deps = self::$deps[ '.assets/blocks/' . $value->editor . '.js' ];
+
+					if ( isset( $pfwp_global_config->compilations->blocks_elements->runtime ) ) {
+						array_push( $deps['dependencies'], 'blocks_elements_webpack_runtime' );
+					}
+
+					// TODO: loop through assets object above so as to support webpack code split deps
+					$added = wp_register_script(
+						$value->editor,
+						$assets->js[0],
+						$deps['dependencies'],
+						$deps['version']
+					);
 				}
-
-				// TODO: loop through assets object above so as to support webpack code split deps
-				$added = wp_register_script(
-					$value->editor,
-					$assets->js[0],
-					$deps['dependencies'],
-					$deps['version']
-				);
 
 				$blockFile = get_template_directory() . '/blocks/' . $key . '/block.json';
 
