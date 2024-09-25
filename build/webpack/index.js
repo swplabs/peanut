@@ -316,7 +316,7 @@ const getConfig = ({
   // Check for existence of srcType directory before adding
   const configSrcPath = `${getAppSrcPath(srcType)}/${srcType}`;
 
-  if (!(isCoreDev() && srcType === 'plugins') && !fs.existsSync(configSrcPath)) {
+  if (!isCoreDev() && !fs.existsSync(configSrcPath)) {
     if (isDebugMode()) {
       console.log(
         `\nWarning: /${srcType} does not exist in your source folder: ${getAppSrcPath(srcType)}\n`

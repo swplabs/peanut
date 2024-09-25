@@ -1,9 +1,9 @@
 const fs = require('fs');
-const { extname } = require('path');
+const { extname, basename } = require('path');
 const { createHash } = require('crypto');
 const envVars = require('../../shared/envvars.js');
 const { entryMapFlagKeys } = require('../../shared/src.directory.entry.map.js');
-const { appSrcPath } = require('../../shared/definitions.js');
+const { appSrcPath, version } = require('../../shared/definitions.js');
 const requireConfigFile = require('../../shared/require.config.js');
 const pfwpThemePath = envVars.get('PFWP_THEME_PATH');
 const pfwpWpRoot = envVars.get('PFWP_WP_ROOT');
@@ -160,6 +160,31 @@ module.exports = {
       );
     } catch (e) {
       console.log(e?.message);
+    }
+
+    // Replace PFWP Strings
+    // TODO: only rewrite if values change
+    const pfwpSdkAssets =
+      pfwpConfig.compilations.components_elements?.chunk_groups?.pfwp_sdk?.main_assets;
+
+    if (pfwpSdkAssets) {
+      const pfwpComponentClassFile = `${pfwpWpRoot}/wp-content/plugins/peanut/classes/class-pfwp-components.php`;
+
+      if (fs.existsSync(pfwpComponentClassFile)) {
+        const contents = fs.readFileSync(pfwpComponentClassFile, 'utf-8');
+        fs.writeFileSync(
+          pfwpComponentClassFile,
+          contents.replace(/__PFWP_SDK_FILENAME__/g, basename(pfwpSdkAssets[0].name)),
+          'utf-8'
+        );
+      }
+
+      const pfwpPluginFile = `${pfwpWpRoot}/wp-content/plugins/peanut/peanut.php`;
+
+      if (fs.existsSync(pfwpPluginFile)) {
+        const contents = fs.readFileSync(pfwpPluginFile, 'utf-8');
+        fs.writeFileSync(pfwpPluginFile, contents.replace(/__APP_VERSION__/g, version), 'utf-8');
+      }
     }
   }
 };

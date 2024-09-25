@@ -222,12 +222,9 @@ class PFWP_Components {
 		
 		if ( property_exists( $component_chunks, 'pfwp_sdk' ) ) {
 			echo '<script src="' . $pfwp_global_config->public_path . PFWP_Assets::get_assets( 'components' )->chunk_groups->pfwp_sdk->main_assets[0]->name . '" id="pfwp_js_sdk"></script>' . PHP_EOL;
-		} else if ( $sdk_files = glob(PFWP_PLUGIN_DIR . '\/assets\/pfwp_sdk.*') ) {
-			// TODO: save this file name somewhere so we don't have to use glob everytime
-			$sdk_js = PFWP_PLUGIN_URL . '/assets/' . basename( $sdk_files[0] );
-			echo '<script src="' . $sdk_js . '" id="pfwp_js_sdk"></script>' . PHP_EOL;
 		} else {
-			echo '<script>console.error(\'Peanut For Wordpress SDK missing\')</script>' . PHP_EOL;
+			$sdk_js = PFWP_PLUGIN_URL . '/assets/__PFWP_SDK_FILENAME__';
+			echo '<script src="' . $sdk_js . '" id="pfwp_js_sdk"></script>' . PHP_EOL;
 		}
 
 		$comp_js_data = (object) [];

@@ -14,7 +14,7 @@ class CopyPlugin {
     this.srcType = srcType;
     this.directory = directory;
     this.routes = routes;
-    this.elements = [];
+    this.elements = {};
     this.filter = filter;
     this.preCompiledFilter = Object.keys(srcDirectoryEntryMap).filter((key) => {
       const excludes = srcDirectoryEntryMap[key].excludeSrcTypes;
