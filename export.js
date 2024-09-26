@@ -1,5 +1,4 @@
 const path = require('path');
-const { bundle } = require('./build/export/index.js');
 const envVars = require('./shared/envvars.js');
 const srcPath = path.resolve(__dirname, './src');
 const distPath = path.resolve(__dirname, `./dist/${envVars.get('PFWP_DIST')}`);
@@ -23,8 +22,8 @@ if (Array.isArray(components)) {
   };
 
   switch (exportType) {
-    case 'web': {
-      bundle(args);
+    case 'port': {
+      // port(args);
       break;
     }
   }

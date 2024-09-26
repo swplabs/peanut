@@ -1,6 +1,6 @@
 {
   "name": "@swplabs/peanutforwp",
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0-alpha.3",
   "description": "Peanut for Wordpress. Build your themes and blocks with components.",
   "scripts": {
     "start": "npm run develop",

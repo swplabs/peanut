@@ -11,8 +11,8 @@ module.exports = ({ exportType, components, srcPath, wpPath }) => {
   console.log(`[build:export:port] Porting components to ${exportType}:`, components);
 
   components.map((component) => {
-    const portPath = `${wpPath}/app/components/${component}`;
-    const compSrcDir = `${srcPath}/components/${component}/src`;
+    const portPath = `${wpPath}/components/${component}`;
+    const compSrcDir = `${srcPath}/components/${component}`;
 
     try {
       fs.mkdirSync(portPath, { recursive: true });

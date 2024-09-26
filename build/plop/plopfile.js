@@ -8,32 +8,23 @@ module.exports = function (plop) {
         message: 'Component name:'
       }
     ],
-    actions: (answers) => {
+    actions: (_answers) => {
       let actions = [];
 
-      const { name } = answers;
-
-      let clientSrc = 'src/view.js.hbs';
+      // const { name } = answers;
 
       actions = actions.concat([
         {
           type: 'add',
-          path: '{{dashCase name}}/package.json',
-          templateFile: './component/package.json.hbs'
+          path: '{{dashCase name}}/view.js',
+          templateFile: `./component/src/view.js.hbs`
         },
         {
           type: 'add',
-          path: '{{dashCase name}}/README.md',
-          templateFile: './component/README.md.hbs'
+          path: '{{dashCase name}}/style.scss',
+          templateFile: './component/style.scss.hbs'
         }
       ]);
-
-      // Add Client JS
-      actions.push({
-        type: 'add',
-        path: '{{dashCase name}}/src/view.js',
-        templateFile: `./component/${clientSrc}`
-      });
 
       return actions;
     }

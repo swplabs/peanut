@@ -4,7 +4,7 @@ const { createHash } = require('crypto');
 const envVars = require('../../shared/envvars.js');
 const { entryMapFlagKeys } = require('../../shared/src.directory.entry.map.js');
 const { appSrcPath, version } = require('../../shared/definitions.js');
-const requireConfigFile = require('../../shared/require.config.js');
+const requireConfigFile = require('../lib/require.config.js');
 const pfwpThemePath = envVars.get('PFWP_THEME_PATH');
 const pfwpWpRoot = envVars.get('PFWP_WP_ROOT');
 
@@ -15,7 +15,6 @@ const pfwpConfig = {
   srcHash,
   data_mode: envVars.get('PFWP_DATA_MODE') || 'path',
   core_block_filters: envVars.get('PFWP_CORE_BLOCK_FILTERS'),
-  wp_root: pfwpWpRoot,
   wp_host: envVars.get('PFWP_WP_HOST'),
   css_inject: envVars.getBoolean('PFWP_CSS_IN_JS') === true,
   public_path: envVars.get('PFWP_WP_PUBLIC_PATH'),
@@ -50,11 +49,9 @@ const processAsset = (asset) => {
 };
 
 module.exports = {
-  webpackPreProcess: ({ srcDir }) => {
-    // TODO: add step to clean out assets folders
-
+  webpackPreProcess: async ({ srcDir }) => {
     if (typeof extendHooks?.webpackPreProcess === 'function') {
-      extendHooks?.webpackPreProcess({ srcDir });
+      await extendHooks?.webpackPreProcess({ srcDir });
     }
 
     return true;
