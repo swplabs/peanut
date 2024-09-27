@@ -43,35 +43,19 @@ module.exports = function (content) {
 
   const { srcType, srcElement, srcFileName } = getSrcInfo(this.resourcePath);
 
-  const securityCheck = `
+  const coreCheck = `
 <?php
-if ( ! defined( 'PFWP_VERSION' ) ) {
-  header( 'Status: 403 Forbidden' );
-  header( 'HTTP/1.1 403 Forbidden' );
-  exit();
+if ( !class_exists( 'PFWP_Core' ) ) {
+  echo 'Warning: PFWP Core configuration missing<br/>';
+  return;
 }
 ?>
 `;
 
-  const childComponents = new Set();
-
-  const pattern = /pfwp\s*::\s*comp\s*::\s*(?<component>[\w-\s]+)\(/g;
-
-  while (null !== (match = pattern.exec(content))) {
-    childComponents.add(match.groups.component);
-    content = content.replace(
-      match[0],
-      `PFWP_Components::get_template_part( 'components/${match.groups.component}/index', null, `
-    );
-  }
-
-  // TODO: Is there a way to store this is the compile/compilation object so that we can process later in the build?
-  // TODO: Perhaps by updating compilation assets
-
   let contentHash = '';
 
   if (srcType && srcElement && srcFileName) {
-    const source = securityCheck + '\n' + content;
+    const source = coreCheck + '\n' + content;
 
     this.emitFile(`${peanutThemePath}/${srcType}/${srcElement}/${srcFileName}.php`, source);
 

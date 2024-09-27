@@ -190,7 +190,6 @@ const getModuleRules = ({ buildType, exportType, srcType, enableCssInJs }) => {
 };
 
 const {
-  eslint: eslintPlugin,
   webpackDefine: webpackDefinePlugin,
   extractCss: extractCssPlugin,
   blocks: blocksPlugin,
@@ -204,8 +203,7 @@ const {
 
 const getPlugins = ({ buildType, srcType, routes, exportType, enableCssInJs = false }) => {
   const plugins = [
-    webpackDefinePlugin({ routes, appVersion }),
-    eslintPlugin({ buildType, srcType })
+    webpackDefinePlugin({ routes, appVersion })
   ];
 
   const outputPath = srcType === 'whiteboard' ? staticDir : wordpressRoot;
@@ -279,7 +277,7 @@ const getBaseConfig = ({ isWeb, buildType, srcType, exportType, enableCssInJs })
       alias: {
         src: `${getAppSrcPath(srcType)}/${srcType}`
       },
-      modules: [`${rootDir}/node_modules`, `${appSrcPath}/node_modules`, 'node_modules'],
+      // modules: [`${rootDir}/node_modules`, `${appSrcPath}/node_modules`, 'node_modules'],
       extensions: ['...'],
       mainFields: isWeb ? ['browser', 'module', 'main'] : ['module', 'main']
     },

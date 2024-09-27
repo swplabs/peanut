@@ -6,9 +6,9 @@ const style = ({ MiniCssExtractPlugin, srcType, enableCssInJs = false, environme
   return {
     test: /\.s?css$/i,
     use: [
-      !enableCssInJs ? MiniCssExtractPlugin.loader : { loader: 'style-loader' },
+      !enableCssInJs ? MiniCssExtractPlugin.loader : { loader: require.resolve('style-loader') },
       {
-        loader: 'css-loader',
+        loader: require.resolve('css-loader'),
         options: {
           sourceMap: false,
           importLoaders: 3,
@@ -26,19 +26,19 @@ const style = ({ MiniCssExtractPlugin, srcType, enableCssInJs = false, environme
         }
       },
       {
-        loader: 'postcss-loader',
+        loader: require.resolve('postcss-loader'),
         options: {
           postcssOptions: basePostCssConfig
         }
       },
       {
-        loader: 'resolve-url-loader',
+        loader: require.resolve('resolve-url-loader'),
         options: {
           sourceMap: false
         }
       },
       {
-        loader: 'sass-loader',
+        loader: require.resolve('sass-loader'),
         options: {
           sourceMap: true
         }
@@ -53,7 +53,7 @@ const js = ({ buildType, srcType, exportType }) => {
     exclude: /node_modules|\.min\.js/,
     use: (resourceInfo) => [
       {
-        loader: 'babel-loader',
+        loader: require.resolve('babel-loader'),
         options: babelConfig({ buildType, srcType, exportType, resourceInfo })
       }
     ]

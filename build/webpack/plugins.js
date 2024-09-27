@@ -1,4 +1,3 @@
-const ESLintPlugin = require('eslint-webpack-plugin');
 const WPDepExtractionPlugin = require('@wordpress/dependency-extraction-webpack-plugin');
 const {
   DefinePlugin,
@@ -13,7 +12,6 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 const envVars = require('../../shared/envvars.js');
 const environment = envVars.get('ENVIRONMENT') || 'prod';
 const nodeEnv = envVars.get('NODE_ENV') || 'production';
-const esLintConfig = require('./config.eslint.js');
 
 const blocks = ({ directory, routes, outputPath }) => {
   return new BlocksPlugin({
@@ -42,18 +40,6 @@ const copy = ({ directory, srcType, routes }) => {
     directory,
     srcType,
     routes
-  });
-};
-
-const eslint = ({ buildType, srcType }) => {
-  return new ESLintPlugin({
-    extensions: ['js'],
-    exclude: ['node_modules'],
-    failOnError: true,
-    failOnWarning: false,
-    emitError: true,
-    emitWarning: true,
-    overrideConfig: esLintConfig({ buildType, srcType })
   });
 };
 
@@ -93,8 +79,8 @@ const hotModuleReplacement = () => {
 const reactRefresh = () => {
   return new ReactRefreshWebpackPlugin({
     overlay: {
-      entry: '@pmmmwh/react-refresh-webpack-plugin/client/ErrorOverlayEntry',
-      module: '@pmmmwh/react-refresh-webpack-plugin/overlay',
+      entry: require.resolve('@pmmmwh/react-refresh-webpack-plugin/client/ErrorOverlayEntry'),
+      module: require.resolve('@pmmmwh/react-refresh-webpack-plugin/overlay'),
       sockIntegration: 'wds'
     }
   });
@@ -114,7 +100,6 @@ const extractCss = ({ MiniCssExtractPlugin, exportType, filePath }) => {
 };
 
 module.exports = {
-  eslint,
   wpDepExtract,
   webpackDefine,
   extractCss,

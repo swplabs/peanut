@@ -18,10 +18,11 @@ const customReactRules = {
 
 module.exports = ({ buildType, srcType }) => {
   const lintConfig = {
+    root: true,
     globals: {
       System: true
     },
-    parser: '@babel/eslint-parser',
+    parser: require.resolve('@babel/eslint-parser'),
     parserOptions: {
       ecmaVersion: 6,
       requireConfigFile: false,

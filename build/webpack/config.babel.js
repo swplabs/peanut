@@ -8,10 +8,9 @@ module.exports = ({
   enableReactPreset = false
 }) => {
   const resource = resourceInfo.realResource || '';
-
   const presets = [
     [
-      '@babel/preset-env',
+      require.resolve('@babel/preset-env'),
       {
         modules,
         useBuiltIns: 'entry',
@@ -34,17 +33,18 @@ module.exports = ({
     (srcType === 'whiteboard' &&
       resource.match(/peanut\/src\/whiteboard\/shared\/(routes|components)/))
   ) {
-    presets.push('@wordpress/babel-preset-default');
+    presets.push(require.resolve('@wordpress/babel-preset-default') );
   }
 
   const plugins = [];
 
   // TODO: add whiteboard to add react refresh support
   if (hotRefreshEnabled(srcType)) {
-    plugins.push('react-refresh/babel');
+    // plugins.push(require.resolve('react-refresh/babel'));
   }
 
   return {
-    presets
+    presets,
+    plugins
   };
 };
