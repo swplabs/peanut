@@ -2,7 +2,7 @@
 
 process.env.PFWP_IS_CLI = 'true';
 
-const { version } = require('./package.json');
+const { version, config: { published = false } } = require('./package.json');
 const { program } = require('commander');
 
 program
@@ -12,9 +12,12 @@ program
 
 program
   .option('-s, --source <path>', 'path to application source folder')
-  .option('--disable-hmr', 'disable Hot Module Reloading')
-  .option('-w, --enable-whiteboard', 'enable Whiteboard server/appication')
-  .option('-d, --enable-core-dev', 'enable core development');
+  .option('--disable-hmr', 'disable Hot Module Reloading');
+  
+if (!published) {
+  program.option('-w, --enable-whiteboard', 'enable Whiteboard server/appication')
+    .option('-d, --enable-core-dev', 'enable core development');
+}
 
 program.on('option:enable-core-dev', () => {
   process.env.PFWP_CORE_DEV = 'true';
@@ -31,6 +34,7 @@ program.on('option:disable-hmr', () => {
 program.on('option:source', () => {
   const source = program.opts().source;
 
+  // TODO: remove trailing slash if present
   if (typeof source === 'string') {
     process.env.PFWP_APP_SRC_PATH = source;
   }
