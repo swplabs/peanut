@@ -26,7 +26,7 @@ module.exports = ({
     ]
   ];
 
-  // TODO: add condition to constants.js
+  // TODO: add condition to definitions.js
   if (
     enableReactPreset ||
     !['whiteboard', 'components'].includes(srcType) ||

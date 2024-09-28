@@ -14,7 +14,7 @@ program
   .option('-s, --source <path>', 'path to application source folder')
   .option('--disable-hmr', 'disable Hot Module Reloading');
   
-if (!published) {
+if (published !== true) {
   program.option('-w, --enable-whiteboard', 'enable Whiteboard server/appication')
     .option('-d, --enable-core-dev', 'enable core development');
 }

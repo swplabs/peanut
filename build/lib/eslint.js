@@ -1,14 +1,4 @@
-const envVars = require('./shared/envvars.js');
-const { appSrcPath } = require('./shared/definitions.js');
-const requireConfigFile = require('./build/lib/require.config.js');
-
-let extendEsLint;
-
-if (envVars.get('PFWP_CONFIG_ESLINT')) {
-  extendEsLint = requireConfigFile(`${appSrcPath}/${envVars.get('PFWP_CONFIG_ESLINT')}`);
-}
-
-const babelConfig = require('./build/webpack/config.babel.js');
+const babelConfig = require('../webpack/config.babel.js');
 
 const customReactRules = {
   'react/jsx-indent': 'off',
@@ -16,7 +6,7 @@ const customReactRules = {
   'react/jsx-curly-spacing': 'off'
 };
 
-module.exports = ({ buildType, srcType }) => {
+const generateConfig = ({ buildType, srcType }) => {
   const lintConfig = {
     root: true,
     globals: {
@@ -73,5 +63,9 @@ module.exports = ({ buildType, srcType }) => {
         : []
   };
 
-  return typeof extendEsLint === 'function' ? extendEsLint(lintConfig) : lintConfig;
+  return lintConfig;
+};
+
+module.exports = {
+  generateConfig
 };
