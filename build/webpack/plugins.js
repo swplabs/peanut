@@ -49,16 +49,7 @@ const wpDepExtract = ({ directory, srcType }) => {
     combineAssets: !['themes', 'plugins'].includes(srcType),
     combinedOutputFile: !['themes', 'plugins'].includes(srcType)
       ? `${directory}/${srcType}/deps.php`
-      : null,
-    // TODO: enable this to be read from /extend/ config file/option
-    requestToExternal: (request) => {
-      if (
-        request ===
-        '@wordpress/block-library/build-module/query/edit/inspector-controls/taxonomy-controls'
-      ) {
-        return false;
-      }
-    }
+      : null
   });
 };
 
@@ -109,5 +100,12 @@ module.exports = {
   postprocess,
   components,
   normalModuleReplacement,
-  copy
+  copy,
+  plugins: {
+    WPDepExtractionPlugin,
+    ReactRefreshWebpackPlugin,
+    DefinePlugin,
+    HotModuleReplacementPlugin,
+    NormalModuleReplacementPlugin
+  }
 };

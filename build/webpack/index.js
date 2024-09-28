@@ -198,13 +198,12 @@ const {
   wpDepExtract: wpDepExtractPlugin,
   hotModuleReplacement: hotModuleReplacementPlugin,
   reactRefresh: reactRefreshPlugin,
-  normalModuleReplacement: normalModuleReplacementPlugin
+  normalModuleReplacement: normalModuleReplacementPlugin,
+  plugins: pluginModules
 } = webpackPlugins;
 
 const getPlugins = ({ buildType, srcType, routes, exportType, enableCssInJs = false }) => {
-  const plugins = [
-    webpackDefinePlugin({ routes, appVersion })
-  ];
+  const plugins = [webpackDefinePlugin({ routes, appVersion })];
 
   const outputPath = srcType === 'whiteboard' ? staticDir : wordpressRoot;
   const filePath = srcType === 'whiteboard' ? `assets/${srcType}` : `.assets/${srcType}`;
@@ -386,7 +385,9 @@ const getConfigs = () => {
     extendWebpack = requireConfigFile(`${appSrcPath}/${envVars.get('PFWP_CONFIG_WEBPACK')}`);
   }
 
-  return typeof extendWebpack === 'function' ? extendWebpack(config) : config;
+  return typeof extendWebpack === 'function'
+    ? extendWebpack({ config, plugins: pluginModules })
+    : config;
 };
 
 module.exports = {

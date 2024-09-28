@@ -33,7 +33,7 @@ module.exports = ({
     (srcType === 'whiteboard' &&
       resource.match(/peanut\/src\/whiteboard\/shared\/(routes|components)/))
   ) {
-    presets.push(require.resolve('@wordpress/babel-preset-default') );
+    presets.push(require.resolve('@wordpress/babel-preset-default'));
   }
 
   const plugins = [];

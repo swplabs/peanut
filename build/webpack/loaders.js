@@ -78,5 +78,7 @@ const php = ({ output }) => {
 module.exports = {
   js,
   style,
-  php
+  php,
+  // TODO: add loader modules
+  loaders: {}
 };
