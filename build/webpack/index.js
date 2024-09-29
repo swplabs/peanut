@@ -202,7 +202,7 @@ const {
   plugins: pluginModules
 } = webpackPlugins;
 
-const getPlugins = ({ buildType, srcType, routes, exportType, enableCssInJs = false }) => {
+const getPlugins = ({ srcType, routes, exportType, enableCssInJs = false }) => {
   const plugins = [webpackDefinePlugin({ routes, appVersion })];
 
   const outputPath = srcType === 'whiteboard' ? staticDir : wordpressRoot;

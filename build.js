@@ -1,3 +1,5 @@
+process.env.PFWP_CMD = 'build';
+
 const envVars = require('./shared/envvars.js');
 
 // Validate Config

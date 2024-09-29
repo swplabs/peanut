@@ -39,7 +39,8 @@ nconf.env([
   'PFWP_ENABLE_HMR',
   'PFWP_ENABLE_WB',
   'PFWP_PRIMARY',
-  'PFWP_SECONDARY'
+  'PFWP_SECONDARY',
+  'PFWP_CMD'
 ]);
 
 let config = {};
@@ -66,6 +67,8 @@ const defaultConfig = {
   NODE_ENV: 'development',
   PFWP_BUILD: 'stack',
   PFWP_DIST: 'develop',
+  PFWP_CMD: 'develop',
+  PFWP_DEBUG: 'false',
   PFWP_CSS_IN_JS: 'false',
   PFWP_APP_SRC_PATH: cwd,
   PFWP_DATA_MODE: 'path',

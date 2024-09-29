@@ -126,10 +126,6 @@ class BlocksPlugin {
       // TODO: commented this out so that it appears in stats everytime. Revisit
       // this.filesToEmit = {};
     });
-
-    compiler.hooks.done.tap('BlocksPlugin', (stats) => {
-      // console.log(stats.toJson().assets.filter(({name}) => name.includes('json')));
-    });
   }
 }
 

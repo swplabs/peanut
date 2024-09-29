@@ -9,9 +9,7 @@ const { PostProcessPlugin } = require('./plugins/post.process.js');
 const { ComponentsPlugin } = require('./plugins/component.js');
 const { CopyPlugin } = require('./plugins/copy.js');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const envVars = require('../../shared/envvars.js');
-const environment = envVars.get('ENVIRONMENT') || 'prod';
-const nodeEnv = envVars.get('NODE_ENV') || 'production';
+const { getEnv, getCLICommand, getNodeEnv, isDebugMode } = require('../../shared/definitions.js');
 
 const blocks = ({ directory, routes, outputPath }) => {
   return new BlocksPlugin({
@@ -36,11 +34,17 @@ const components = ({ directory, routes, outputPath }) => {
 };
 
 const copy = ({ directory, srcType, routes }) => {
-  return new CopyPlugin({
+  const options = {
     directory,
     srcType,
     routes
-  });
+  };
+
+  if (!['build', 'develop'].includes(getCLICommand())) {
+    options.emptyDirectoryOnStart = false;
+  }
+
+  return new CopyPlugin(options);
 };
 
 const wpDepExtract = ({ directory, srcType }) => {
@@ -58,8 +62,8 @@ const webpackDefine = ({ routes, appVersion }) => {
     __APP_VERSION__: JSON.stringify(appVersion),
     // TODO: Do we need this now that routes can be part of pfwp.json file?
     __ROUTES__: JSON.stringify(routes),
-    'process.env.NODE_ENV': JSON.stringify(nodeEnv),
-    __DEBUG__: JSON.stringify(envVars.getBoolean('PFWP_DEBUG') || false)
+    'process.env.NODE_ENV': JSON.stringify(getNodeEnv()),
+    __DEBUG__: JSON.stringify(isDebugMode())
   });
 };
 
@@ -84,7 +88,7 @@ const normalModuleReplacement = (...args) => {
 const extractCss = ({ MiniCssExtractPlugin, exportType, filePath }) => {
   return new MiniCssExtractPlugin({
     filename:
-      environment === 'local' || exportType
+      getEnv() === 'local' || exportType
         ? `${filePath}/[name].css`
         : `${filePath}/[name].[chunkhash:20].css`
   });

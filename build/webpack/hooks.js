@@ -126,7 +126,7 @@ module.exports = {
         assets.forEach((asset) => {
           const {
             name,
-            info: { component, size, ...metadata }
+            info: { component, ...metadata }
           } = asset;
 
           if (component && name.endsWith('/component.json')) {

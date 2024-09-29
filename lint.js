@@ -1,3 +1,5 @@
+process.env.PFWP_CMD = 'lint';
+
 const envVars = require('./shared/envvars.js');
 
 // Validate Config
@@ -7,7 +9,7 @@ const { ESLint } = require('eslint');
 
 const { generateConfig } = require('./build/lib/eslint.js');
 const { getConfigs } = require('./build/webpack/index.js');
-const { appSrcPath, rootDir } = require('./shared/definitions.js');
+const { appSrcPath, rootDir, isCoreDev } = require('./shared/definitions.js');
 const requireConfigFile = require('./build/lib/require.config.js');
 
 let extendConfig;
@@ -16,13 +18,22 @@ if (envVars.get('PFWP_CONFIG_ESLINT')) {
   extendConfig = requireConfigFile(`${appSrcPath}/${envVars.get('PFWP_CONFIG_ESLINT')}`);
 }
 
-const lint = async ({ files = [], buildType = '', srcType = '' }) => {
+const lint = async ({ files = [], buildType = '', srcType = '', ignorePatterns = null }) => {
   const eslintConfig = {
     useEslintrc: false,
     resolvePluginsRelativeTo: rootDir,
     errorOnUnmatchedPattern: false,
     overrideConfig: generateConfig({ buildType, srcType })
   };
+
+  if (ignorePatterns) {
+    eslintConfig.overrideConfig.ignorePatterns ??= [];
+
+    eslintConfig.overrideConfig.ignorePatterns = [
+      ...eslintConfig.overrideConfig.ignorePatterns,
+      ...ignorePatterns
+    ];
+  }
 
   const eslint = new ESLint(
     typeof extendConfig === 'function'
@@ -38,26 +49,31 @@ const lint = async ({ files = [], buildType = '', srcType = '' }) => {
   if (resultText) {
     console.log(resultText);
   }
-
-  console.log('[lint] completed:', `${srcType}_${buildType}`);
 };
 
 const configs = getConfigs();
 
 if (Array.isArray(configs)) {
-  // TODO: make synchronous
-  // TODO: add root files on isCoreDev
-  configs.forEach(async (config = {}) => {
+  console.log('[lint] linting files...');
+
+  if (isCoreDev()) {
+    lint({
+      files: [`${rootDir}/**/*.js`],
+      ignorePatterns: [`dist/**`, `node_modules/**`]
+    });
+  }
+
+  configs.forEach((config = {}) => {
     const { name = '' } = config;
 
     const [srcType = '', buildType = ''] = name.split('_');
 
     try {
-      // TODO: handle if isCoreDev (i.e. add src files)
-      await lint({
+      lint({
         buildType,
         srcType,
-        files: [`${appSrcPath}/${srcType}/**/*.js`]
+        files: [`${appSrcPath}/${srcType}/**/*.js`],
+        ignorePatterns: [`${appSrcPath}/${srcType}/node_modules/**`, 'node_modules/**']
       });
     } catch (error) {
       console.error(error);

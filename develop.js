@@ -1,3 +1,5 @@
+process.env.PFWP_CMD = 'develop';
+
 // Validate Config
 require('./shared/utils.js').validateEnvVarConfig(require('./shared/envvars.js'));
 

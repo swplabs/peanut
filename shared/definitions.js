@@ -15,7 +15,7 @@ const appSrcPath = envVars.get('PFWP_APP_SRC_PATH');
 const directoryEntrySrcPath = envVars.get('PFWP_DIR_ENT_SRC_PATH');
 
 // TODO: define env var for this
-const isDebugMode = () => false;
+const isDebugMode = () => envVars.getBoolean('PFWP_DEBUG') === true;
 
 const enableWhiteboard = () => envVars.getBoolean('PFWP_ENABLE_WB') === true;
 const enableHMR = () =>
@@ -48,6 +48,12 @@ const isCoreDev = () => envVars.getBoolean('PFWP_CORE_DEV') === true;
 
 const isCLI = () => envVars.getBoolean('PFWP_IS_CLI') === true;
 
+const getCLICommand = () => envVars.get('PFWP_CMD') || 'develop';
+
+const getEnv = () => envVars.get('ENVIRONMENT') || 'prod';
+
+const getNodeEnv = () => envVars.get('NODE_ENV') || 'production';
+
 module.exports = {
   hotRefreshEnabled,
   isWebTarget,
@@ -60,6 +66,9 @@ module.exports = {
   isDebugMode,
   enableWhiteboard,
   enableHMR,
+  getCLICommand,
+  getEnv,
+  getNodeEnv,
   corejs: parseFloat(dependencies['core-js']),
   node: process.version
     ? `${parseFloat(process.version.replace('v', ''))}`

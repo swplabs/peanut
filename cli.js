@@ -65,4 +65,11 @@ program
     require('./lint.js');
   });
 
+program
+  .command('format')
+  .description('Format your source code')
+  .action(() => {
+    require('./format.js');
+  });
+
 program.parse(process.argv);

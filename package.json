@@ -1,6 +1,6 @@
 {
   "name": "@swplabs/peanutforwp",
-  "version": "0.1.0-alpha.3",
+  "version": "0.1.0-alpha.4",
   "description": "Peanut for Wordpress. Build your themes and blocks with components.",
   "scripts": {
     "start": "npm run develop",
@@ -10,7 +10,6 @@
     "clean": "npx rimraf ./dist ./package-lock.json ./node_modules",
     "clean-dist": "PFWP_DIST=${PFWP_DIST:=develop} && npx rimraf ./dist/${PFWP_DIST}/*",
     "make-dist": "PFWP_DIST=${PFWP_DIST:=develop} && npx mkdirp ./dist/${PFWP_DIST}",
-    "format": "npx prettier --write \"**/*.+(js|json|md)\"",
     "generate-component": "npx plop --plopfile=./build/plop/plopfile.js --dest=./src/components/",
     "whiteboard": "PFWP_DIST=${PFWP_DIST:=develop} node ./whiteboard.js",
     "install-app": "NODE_ENV=development npm install",
@@ -55,6 +54,7 @@
     "core-js": "3.37.1",
     "css-loader": "7.1.2",
     "eslint": "8.57.0",
+    "glob": "11.0.0",
     "mini-css-extract-plugin": "2.9.0",
     "mkdirp": "3.0.1",
     "nconf": "0.12.1",

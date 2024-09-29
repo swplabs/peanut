@@ -1,6 +1,7 @@
 /* global __ROUTES__ */
 
 const hashUtils = require('./hash.js');
+const { toCamelCase } = require('../../../../../../shared/utils.js');
 
 const routes = __ROUTES__;
 const appNav = document.createElement('ul');

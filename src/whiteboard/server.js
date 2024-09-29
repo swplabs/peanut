@@ -68,7 +68,7 @@ const serverStart = (config) => {
         minorSeconds,
         majorSeconds
       };
-      useMiddleware(req, res);
+      useMiddleware(req, res); // eslint-disable-line react-hooks/rules-of-hooks
     }
   });
 };
