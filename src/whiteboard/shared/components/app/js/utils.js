@@ -3,6 +3,7 @@
 const hashUtils = require('./hash.js');
 const { toCamelCase } = require('../../../../../../shared/utils.js');
 
+// TODO: can this be window.routes?
 const routes = __ROUTES__;
 const appNav = document.createElement('ul');
 const iframeComponents = document.getElementById('iframe_components');

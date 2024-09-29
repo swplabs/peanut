@@ -51,7 +51,7 @@ if (Array.isArray(configs)) {
   if (isCoreDev()) {
     format({
       files: [`${rootDir}/**/*.+(js|json|md)`],
-      ignore: [`node_modules/**`, `dist/**`, `certs/**`]
+      ignore: [`${rootDir}/node_modules/**`, `${rootDir}/dist/**`, `${rootDir}/certs/**`]
     });
   }
 

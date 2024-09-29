@@ -59,7 +59,7 @@ if (Array.isArray(configs)) {
   if (isCoreDev()) {
     lint({
       files: [`${rootDir}/**/*.js`],
-      ignorePatterns: [`dist/**`, `node_modules/**`]
+      ignorePatterns: [`**/dist/**`, `**/node_modules/**`]
     });
   }
 

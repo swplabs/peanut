@@ -386,7 +386,7 @@ const getConfigs = () => {
   }
 
   return typeof extendWebpack === 'function'
-    ? extendWebpack({ config, plugins: pluginModules })
+    ? extendWebpack({ config, plugins: { MiniCssExtractPlugin, ...pluginModules } })
     : config;
 };
 
