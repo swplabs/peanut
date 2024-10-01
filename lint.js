@@ -35,19 +35,23 @@ const lint = async ({ files = [], buildType = '', srcType = '', ignorePatterns =
     ];
   }
 
-  const eslint = new ESLint(
-    typeof extendConfig === 'function'
-      ? extendConfig({ eslintConfig, buildType, srcType })
-      : eslintConfig
-  );
+  try {
+    const eslint = new ESLint(
+      typeof extendConfig === 'function'
+        ? extendConfig({ eslintConfig, buildType, srcType })
+        : eslintConfig
+    );
 
-  const results = await eslint.lintFiles(files);
+    const results = await eslint.lintFiles(files);
 
-  const formatter = await eslint.loadFormatter('stylish');
-  const resultText = formatter.format(results);
+    const formatter = await eslint.loadFormatter('stylish');
+    const resultText = formatter.format(results);
 
-  if (resultText) {
-    console.log(resultText);
+    if (resultText) {
+      console.log(resultText);
+    }
+  } catch (error) {
+    console.error(error);
   }
 };
 
@@ -68,15 +72,11 @@ if (Array.isArray(configs)) {
 
     const [srcType = '', buildType = ''] = name.split('_');
 
-    try {
-      lint({
-        buildType,
-        srcType,
-        files: [`${appSrcPath}/${srcType}/**/*.js`],
-        ignorePatterns: [`${appSrcPath}/${srcType}/node_modules/**`, 'node_modules/**']
-      });
-    } catch (error) {
-      console.error(error);
-    }
+    lint({
+      buildType,
+      srcType,
+      files: [`${appSrcPath}/${srcType}/**/*.js`],
+      ignorePatterns: [`${appSrcPath}/${srcType}/node_modules/**`, 'node_modules/**']
+    });
   });
 }

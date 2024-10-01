@@ -5,7 +5,6 @@ const fs = require('fs');
 // Pull in ENV vars
 nconf.env([
   'ENVIRONMENT',
-  'PORT',
   'NODE_ENV',
   'PFWP_DEBUG',
   'PFWP_COMPONENTS',
