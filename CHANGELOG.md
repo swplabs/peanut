@@ -1,7 +1,7 @@
 # Changelog
 
-## [0.1.0-alpha.3] - XXXX-XX-XX
+## [0.1.0-alpha.4] - 2024-09-30
 
 _First release._
 
-TBD
+Welcome to the jungle!
