@@ -1,4 +1,4 @@
-const { debug: log } = require('../../shared/utils.js');
+const { debug: log } = require('../../../../shared/utils.js');
 const envVars = require('../../../../shared/envvars.js');
 const wbPublicPath = envVars.get('PFWP_WB_PUBLIC_PATH') || '/';
 const wordpressPublicPath = envVars.get('PFWP_WP_PUBLIC_PATH');

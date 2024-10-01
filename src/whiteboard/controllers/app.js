@@ -1,4 +1,4 @@
-const { debug: log } = require('../shared/utils.js');
+const { debug: log } = require('../../../shared/utils.js');
 const {
   buildClientAssets,
   getServerFile,

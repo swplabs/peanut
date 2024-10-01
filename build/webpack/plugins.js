@@ -1,4 +1,3 @@
-const ESLintPlugin = require('eslint-webpack-plugin');
 const WPDepExtractionPlugin = require('@wordpress/dependency-extraction-webpack-plugin');
 const {
   DefinePlugin,
@@ -10,10 +9,7 @@ const { PostProcessPlugin } = require('./plugins/post.process.js');
 const { ComponentsPlugin } = require('./plugins/component.js');
 const { CopyPlugin } = require('./plugins/copy.js');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const envVars = require('../../shared/envvars.js');
-const environment = envVars.get('ENVIRONMENT') || 'prod';
-const nodeEnv = envVars.get('NODE_ENV') || 'production';
-const esLintConfig = require('./config.eslint.js');
+const { getEnv, getCLICommand, getNodeEnv, isDebugMode } = require('../../shared/definitions.js');
 
 const blocks = ({ directory, routes, outputPath }) => {
   return new BlocksPlugin({
@@ -38,23 +34,17 @@ const components = ({ directory, routes, outputPath }) => {
 };
 
 const copy = ({ directory, srcType, routes }) => {
-  return new CopyPlugin({
+  const options = {
     directory,
     srcType,
     routes
-  });
-};
+  };
 
-const eslint = ({ buildType, srcType }) => {
-  return new ESLintPlugin({
-    extensions: ['js'],
-    exclude: ['node_modules'],
-    failOnError: true,
-    failOnWarning: false,
-    emitError: true,
-    emitWarning: true,
-    overrideConfig: esLintConfig({ buildType, srcType })
-  });
+  if (!['build', 'develop'].includes(getCLICommand())) {
+    options.emptyDirectoryOnStart = false;
+  }
+
+  return new CopyPlugin(options);
 };
 
 const wpDepExtract = ({ directory, srcType }) => {
@@ -63,16 +53,7 @@ const wpDepExtract = ({ directory, srcType }) => {
     combineAssets: !['themes', 'plugins'].includes(srcType),
     combinedOutputFile: !['themes', 'plugins'].includes(srcType)
       ? `${directory}/${srcType}/deps.php`
-      : null,
-    // TODO: enable this to be read from /extend/ config file/option
-    requestToExternal: (request) => {
-      if (
-        request ===
-        '@wordpress/block-library/build-module/query/edit/inspector-controls/taxonomy-controls'
-      ) {
-        return false;
-      }
-    }
+      : null
   });
 };
 
@@ -81,8 +62,8 @@ const webpackDefine = ({ routes, appVersion }) => {
     __APP_VERSION__: JSON.stringify(appVersion),
     // TODO: Do we need this now that routes can be part of pfwp.json file?
     __ROUTES__: JSON.stringify(routes),
-    'process.env.NODE_ENV': JSON.stringify(nodeEnv),
-    __DEBUG__: JSON.stringify(envVars.getBoolean('PFWP_DEBUG') || false)
+    'process.env.NODE_ENV': JSON.stringify(getNodeEnv()),
+    __DEBUG__: JSON.stringify(isDebugMode())
   });
 };
 
@@ -93,8 +74,8 @@ const hotModuleReplacement = () => {
 const reactRefresh = () => {
   return new ReactRefreshWebpackPlugin({
     overlay: {
-      entry: '@pmmmwh/react-refresh-webpack-plugin/client/ErrorOverlayEntry',
-      module: '@pmmmwh/react-refresh-webpack-plugin/overlay',
+      entry: require.resolve('@pmmmwh/react-refresh-webpack-plugin/client/ErrorOverlayEntry'),
+      module: require.resolve('@pmmmwh/react-refresh-webpack-plugin/overlay'),
       sockIntegration: 'wds'
     }
   });
@@ -107,14 +88,13 @@ const normalModuleReplacement = (...args) => {
 const extractCss = ({ MiniCssExtractPlugin, exportType, filePath }) => {
   return new MiniCssExtractPlugin({
     filename:
-      environment === 'local' || exportType
+      getEnv() === 'local' || exportType
         ? `${filePath}/[name].css`
         : `${filePath}/[name].[chunkhash:20].css`
   });
 };
 
 module.exports = {
-  eslint,
   wpDepExtract,
   webpackDefine,
   extractCss,
@@ -124,5 +104,12 @@ module.exports = {
   postprocess,
   components,
   normalModuleReplacement,
-  copy
+  copy,
+  plugins: {
+    WPDepExtractionPlugin,
+    ReactRefreshWebpackPlugin,
+    DefinePlugin,
+    HotModuleReplacementPlugin,
+    NormalModuleReplacementPlugin
+  }
 };

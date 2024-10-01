@@ -1,7 +1,7 @@
 /*
 Adapted from: https://raw.githubusercontent.com/creationix/node-router/master/lib/node-router.js
 */
-const { debug: log } = require('../../../src/whiteboard/shared/utils.js');
+const { debug: log } = require('../../../shared/utils.js');
 const parseUrl = require('./parse-url.js');
 
 let routes = [];

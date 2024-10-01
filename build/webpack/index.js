@@ -1,29 +1,35 @@
 const nodePath = require('path');
+const fs = require('fs');
 const nodeExternals = require('webpack-node-externals');
 const paths = require('./paths.js');
 const { webpackPreProcess, webpackPostProcess } = require('./hooks.js');
 const webpackLoaders = require('./loaders.js');
 const webpackPlugins = require('./plugins.js');
 const envVars = require('../../shared/envvars.js');
-const { srcDirectoryEntryMap } = require('../../shared/src.directory.entry.map.js');
+const requireConfigFile = require('../lib/require.config.js');
+const { srcDirectoryEntryMap, srcDirectories } = require('../../shared/src.directory.entry.map.js');
 const environment = envVars.get('ENVIRONMENT') || 'prod';
 const nodeEnv = envVars.get('NODE_ENV') || 'production';
 const distDir = nodePath.join(__dirname, `../../dist/${envVars.get('PFWP_DIST')}`);
 const staticDir = distDir + '/static';
 const wbPublicPath = envVars.get('PFWP_WB_PUBLIC_PATH') || '/';
-const rootDir = nodePath.resolve(__dirname, '../../');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const appSrcPath = envVars.get('PFWP_APP_SRC_PATH');
 const directoryEntryAllowList = envVars.get('PFWP_DIR_ENT_ALLOW_LIST');
 const wordpressRoot = envVars.get('PFWP_WP_ROOT');
 const wordpressPublicPath = envVars.get('PFWP_WP_PUBLIC_PATH');
 const peanutThemePath = envVars.get('PFWP_THEME_PATH');
-const directoryEntrySrcPath = envVars.get('PFWP_DIR_ENT_SRC_PATH');
+
 const {
   node: nodeVersion,
   hotRefreshEnabled,
   isWebTarget,
-  version: appVersion
+  version: appVersion,
+  appSrcPath,
+  rootDir,
+  isCoreDev,
+  getAppSrcPath,
+  getDirectoryEntrySrcPath,
+  isDebugMode
 } = require('../../shared/definitions.js');
 
 const routeInfo = {};
@@ -31,10 +37,18 @@ const routeInfo = {};
 const { getRoutes, getEntries, getCacheGroups } = paths;
 
 const webpackHandler =
-  ({ buildType: type, compileType = 'develop', srcType, hashCheck, success, error }) =>
-  (_err, stats) => {
+  ({
+    buildType: type,
+    compileType = 'develop',
+    srcType,
+    hashCheck,
+    success,
+    error,
+    showStats = false
+  }) =>
+  (compileError, stats) => {
     if (stats.hasErrors()) {
-      if (typeof error === 'function') error();
+      if (typeof error === 'function') error({ stats, compileError });
     } else {
       if (typeof hashCheck === 'function') {
         if (hashCheck({ buildType: type, srcType, hash: stats.hash })) return;
@@ -42,8 +56,14 @@ const webpackHandler =
 
       console.log(`\n[webpack:${compileType}] Compilation successful.\n`);
 
-      if (compileType === 'build') {
-        // TODO: show stats for build
+      if (showStats) {
+        console.log(
+          stats.toString({
+            chunks: false,
+            modules: false,
+            colors: true
+          })
+        );
       }
 
       if (typeof success === 'function') success();
@@ -75,7 +95,7 @@ const setFileName =
 
     let name = `${fileName}`;
 
-    if (entryId === `${srcType}_${buildType}_webpack_runtime`) {
+    if ([`${srcType}_${buildType}_webpack_runtime`, 'pfwp_sdk'].includes(entryId)) {
       name = `wp-content/plugins/peanut/assets/[name].[chunkhash:20].js`;
     } else if (['plugins', 'themes'].includes(srcType)) {
       const { pathName } = getEntryInfo(srcType, entryId);
@@ -148,7 +168,7 @@ const getModuleRules = ({ buildType, exportType, srcType, enableCssInJs }) => {
 
   switch (buildType) {
     case 'elements': {
-      if (srcType !== 'whiteboard') {
+      if (!['whiteboard', 'plugins'].includes(srcType)) {
         rules.push(phpLoader({ output: { peanutThemePath, wordpressRoot } }));
       }
       break;
@@ -170,7 +190,6 @@ const getModuleRules = ({ buildType, exportType, srcType, enableCssInJs }) => {
 };
 
 const {
-  eslint: eslintPlugin,
   webpackDefine: webpackDefinePlugin,
   extractCss: extractCssPlugin,
   blocks: blocksPlugin,
@@ -179,14 +198,12 @@ const {
   wpDepExtract: wpDepExtractPlugin,
   hotModuleReplacement: hotModuleReplacementPlugin,
   reactRefresh: reactRefreshPlugin,
-  normalModuleReplacement: normalModuleReplacementPlugin
+  normalModuleReplacement: normalModuleReplacementPlugin,
+  plugins: pluginModules
 } = webpackPlugins;
 
-const getPlugins = ({ buildType, srcType, routes, exportType, enableCssInJs = false }) => {
-  const plugins = [
-    webpackDefinePlugin({ routes, appVersion }),
-    eslintPlugin({ buildType, srcType })
-  ];
+const getPlugins = ({ srcType, routes, exportType, enableCssInJs = false }) => {
+  const plugins = [webpackDefinePlugin({ routes, appVersion })];
 
   const outputPath = srcType === 'whiteboard' ? staticDir : wordpressRoot;
   const filePath = srcType === 'whiteboard' ? `assets/${srcType}` : `.assets/${srcType}`;
@@ -228,7 +245,7 @@ const getPlugins = ({ buildType, srcType, routes, exportType, enableCssInJs = fa
       reactRefreshPlugin(),
       normalModuleReplacementPlugin(
         /react-refresh-webpack-plugin\/overlay\/containers\/RuntimeErrorContainer/,
-        `${rootDir}/src/whiteboard/shared/runtime-error-container.js`
+        `${rootDir}/shared/runtime-error-container.js`
       )
     );
   }
@@ -257,8 +274,9 @@ const getBaseConfig = ({ isWeb, buildType, srcType, exportType, enableCssInJs })
 
     resolve: {
       alias: {
-        src: `${appSrcPath}/${srcType}`
+        src: `${getAppSrcPath(srcType)}/${srcType}`
       },
+      // modules: [`${rootDir}/node_modules`, `${appSrcPath}/node_modules`, 'node_modules'],
       extensions: ['...'],
       mainFields: isWeb ? ['browser', 'module', 'main'] : ['module', 'main']
     },
@@ -292,6 +310,18 @@ const getConfig = ({
   exportType: exportTypeArg,
   enableCssInJs: enableCssInJsArg
 }) => {
+  // Check for existence of srcType directory before adding
+  const configSrcPath = `${getAppSrcPath(srcType)}/${srcType}`;
+
+  if (!isCoreDev() && !fs.existsSync(configSrcPath)) {
+    if (isDebugMode()) {
+      console.log(
+        `\nWarning: /${srcType} does not exist in your source folder: ${getAppSrcPath(srcType)}\n`
+      );
+    }
+    return null;
+  }
+
   const exportType = exportTypeArg || envVars.get('PFWP_EXPORT_TYPE');
   const enableCssInJs = enableCssInJsArg || envVars.getBoolean('PFWP_CSS_IN_JS') === true;
 
@@ -304,7 +334,7 @@ const getConfig = ({
         ? directoryEntryAllowList
         : srcTypeDirectoryEntries,
     forceBase: directoryEntryAllowList?.length > 0,
-    directoryEntrySrcPath: srcType === 'whiteboard' ? '' : directoryEntrySrcPath
+    directoryEntrySrcPath: getDirectoryEntrySrcPath(srcType)
   };
 
   const isWeb = isWebTarget({ buildType });
@@ -322,6 +352,44 @@ const getConfig = ({
   };
 };
 
+const getConfigs = () => {
+  const config = [];
+
+  for (let [srcType, srcDirectory] of Object.entries(srcDirectories)) {
+    if (!isCoreDev() && srcType === 'whiteboard') {
+      continue;
+    }
+
+    const {
+      buildTypes,
+      webpack: { configPresets }
+    } = srcDirectory;
+
+    buildTypes.forEach((buildType) => {
+      const buildConfig = getConfig({ buildType, srcType, ...configPresets });
+      if (buildConfig) {
+        config.push(buildConfig);
+      }
+    });
+  }
+
+  // Validate at least one config exists
+  if (config.filter(({ name }) => !name.startsWith('whiteboard')).length <= 0) {
+    throw new Error('No element source folders could be found.');
+  }
+
+  // Allow modification of config
+  let extendWebpack;
+
+  if (envVars.get('PFWP_CONFIG_WEBPACK')) {
+    extendWebpack = requireConfigFile(`${appSrcPath}/${envVars.get('PFWP_CONFIG_WEBPACK')}`);
+  }
+
+  return typeof extendWebpack === 'function'
+    ? extendWebpack({ config, plugins: { MiniCssExtractPlugin, ...pluginModules } })
+    : config;
+};
+
 module.exports = {
   paths,
   routeInfo,
@@ -329,6 +397,7 @@ module.exports = {
   plugins: webpackPlugins,
   handler: webpackHandler,
   getConfig,
+  getConfigs,
   webpackPreProcess,
   webpackPostProcess
 };

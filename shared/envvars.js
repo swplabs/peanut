@@ -1,10 +1,10 @@
 const nconf = require('nconf');
-const path = require('path');
+const cwd = process.cwd();
+const fs = require('fs');
 
 // Pull in ENV vars
 nconf.env([
   'ENVIRONMENT',
-  'PORT',
   'NODE_ENV',
   'PFWP_DEBUG',
   'PFWP_COMPONENTS',
@@ -28,15 +28,37 @@ nconf.env([
   'PFWP_SSE_ENABLE_HTTPS',
   'PFWP_SSE_HTTPS_PORT',
   'PFWP_WB_HEAD_COMPONENTS',
-  'PFWP_WB_FOOTER_COMPONENTS'
+  'PFWP_WB_FOOTER_COMPONENTS',
+  'PFWP_CORE_DEV',
+  'PFWP_IS_CLI',
+  'PFWP_DATA_MODE',
+  'PFWP_CONFIG_HOOKS',
+  'PFWP_CONFIG_ESLINT',
+  'PFWP_CONFIG_WEBPACK',
+  'PFWP_ENABLE_HMR',
+  'PFWP_ENABLE_WB',
+  'PFWP_PRIMARY',
+  'PFWP_SECONDARY',
+  'PFWP_CMD'
 ]);
 
 let config = {};
 
 try {
-  config = require('../extend/config.json');
+  // TODO: add method so that if "fileConfData" passed in to require statement in "parent" file, skip this
+  const configFile = fs.readFileSync(
+    `${nconf.get('PFWP_APP_SRC_PATH') || cwd}/peanut.config.json`,
+    'utf8'
+  );
+  config = JSON.parse(configFile);
 } catch (e) {
-  console.log('No user config json file available');
+  if (e?.code === 'ENOENT') {
+    throw new Error(
+      `A peanut.config.json file was not found.${e?.message ? `\nError Message: ${e?.message}` : ''}`
+    );
+  } else {
+    throw e;
+  }
 }
 
 const defaultConfig = {
@@ -44,21 +66,29 @@ const defaultConfig = {
   NODE_ENV: 'development',
   PFWP_BUILD: 'stack',
   PFWP_DIST: 'develop',
+  PFWP_CMD: 'develop',
+  PFWP_DEBUG: 'false',
   PFWP_CSS_IN_JS: 'false',
-  PFWP_APP_SRC_PATH: path.resolve(__dirname, '../src/'),
-  PFWP_DIR_ENT_SRC_PATH: '/src',
+  PFWP_APP_SRC_PATH: cwd,
+  PFWP_DATA_MODE: 'path',
+  PFWP_DIR_ENT_SRC_PATH: '',
   PFWP_WP_PUBLIC_PATH: '/',
   PFWP_COMP_ALLOW_LIST: [],
   PFWP_CORE_BLOCK_FILTERS: {},
+  PFWP_ENABLE_WB: false,
   PFWP_WB_PORT: 5000,
   PFWP_WB_HTTPS_PORT: 9000,
   PFWP_WB_ENABLE_HTTPS: false,
-  PFWP_SSE_HOST: 'http://localhost',
+  PFWP_ENABLE_HMR: true,
+  PFWP_WP_HOST: 'http://localhost',
+  PFWP_SSE_HOST: nconf.get('PFWP_WP_HOST') || config.PFWP_WP_HOST || 'http://localhost',
   PFWP_SSE_PORT: 5050,
   PFWP_SSE_ENABLE_HTTPS: false,
   PFWP_SSE_HTTPS_PORT: 9090,
   PFWP_WB_HEAD_COMPONENTS: [],
   PFWP_WB_FOOTER_COMPONENTS: [],
+  PFWP_CORE_DEV: false,
+  PFWP_IS_CLI: '',
   ...config
 };
 

@@ -1,19 +1,43 @@
+process.env.PFWP_CMD = 'develop';
+
+// Validate Config
+require('./shared/utils.js').validateEnvVarConfig(require('./shared/envvars.js'));
+
 const { spawn } = require('child_process');
+const fs = require('fs');
 const webpack = require('webpack');
 const chokidar = require('chokidar');
-const path = require('path');
-const { srcDirectories } = require('./shared/src.directory.entry.map.js');
 const {
-  getConfig,
   handler: webpackHandler,
   webpackPreProcess,
   webpackPostProcess,
   plugins: { postprocess: postProcessPlugin },
-  routeInfo
+  routeInfo,
+  getConfigs
 } = require('./build/webpack/index.js');
 const { serverStart } = require('./build/server/index.js');
+const {
+  appSrcPath,
+  directoryEntrySrcPath,
+  rootDir,
+  enableWhiteboard,
+  enableHMR,
+  isDebugMode,
+  debugModeInterval
+} = require('./shared/definitions.js');
+const { srcDirectories } = require('./shared/src.directory.entry.map.js');
+
+if (isDebugMode()) {
+  setInterval(() => {
+    console.log(`\nDebug Memory Usage:\n${JSON.stringify(process.memoryUsage())}`);
+    console.log(
+      `Currently using ${Math.floor(process.memoryUsage().heapUsed / 1024 / 1024)} MB of memory.\n`
+    );
+  }, debugModeInterval);
+}
 
 let webpackCompiler;
+let webpackWatch;
 let restartBuildTimeout;
 let chokidarReady = false;
 let devMiddlewareInstance;
@@ -28,19 +52,28 @@ let whiteBoardProcess;
 
 // start whiteboard node process
 const startWhiteBoardServer = () => {
-  console.log('[develop] Starting Whiteboard server...');
-
-  whiteBoardProcess = spawn('node', ['./whiteboard.js']);
-
-  whiteBoardProcess.on('spawn', () => {
-    console.log('[develop] Whiteboard server started.', '\n');
-
+  const setStatus = () => {
     buildStatus['process'] = true;
 
     if (checkBuildStatus()) {
       chokidarReady = true;
       restartDev = false;
     }
+  };
+
+  if (!enableWhiteboard()) {
+    setStatus();
+    return;
+  }
+
+  console.log('[develop] Starting Whiteboard server...');
+
+  whiteBoardProcess = spawn('node', [`${rootDir}/whiteboard.js`]);
+
+  whiteBoardProcess.on('spawn', () => {
+    console.log('[develop] Whiteboard server started.', '\n');
+
+    setStatus();
   });
 
   whiteBoardProcess.stdout.on('data', (data) => {
@@ -59,7 +92,7 @@ const startWhiteBoardServer = () => {
 const restartBuild = () => {
   buildHashes = {};
 
-  devMiddlewareInstance?.close(async () => {
+  const onWebpackClose = async () => {
     whiteBoardProcess?.kill();
 
     console.log('[chokidar] Development configuration updated. Restarting build process..');
@@ -68,8 +101,14 @@ const restartBuild = () => {
       resetBuildStatus();
 
       await startWebPack();
-    }, 500);
-  });
+    }, 1000);
+  };
+
+  if (devMiddlewareInstance) {
+    devMiddlewareInstance.close(onWebpackClose);
+  } else if (webpackWatch) {
+    webpackWatch.close(onWebpackClose);
+  }
 };
 
 const resetBuildStatus = () => {
@@ -125,7 +164,8 @@ const webpackCallback = (err, stats) => {
 
       buildHashes[hashKey] = hash + '';
       return false;
-    }
+    },
+    showStats: !enableHMR()
   })(err, stats);
 };
 
@@ -133,57 +173,64 @@ const webpackCallback = (err, stats) => {
 const startWebPack = async () => {
   console.log('[develop] Starting elements and server compilation and watch...');
 
-  webpackPreProcess({ srcDir: path.resolve(__dirname, './src/') });
+  webpackPreProcess({ srcDir: appSrcPath });
 
-  const config = [];
-
-  for (let [srcType, srcDirectory] of Object.entries(srcDirectories)) {
-    const {
-      buildTypes,
-      webpack: { configPresets }
-    } = srcDirectory;
-
-    buildTypes.forEach((buildType) => {
-      config.push(getConfig({ buildType, srcType, ...configPresets }));
-    });
-  }
-
-  webpackCompiler = webpack(config);
+  webpackCompiler = webpack(getConfigs());
 
   postProcessPlugin(({ stats }) => {
     webpackPostProcess({ stats, routeInfo });
     webpackCallback(null, stats);
   }).apply(webpackCompiler);
 
-  await sseHttpServer?.destroy();
-  await sseHttpsServer?.destroy();
+  if (enableHMR()) {
+    await sseHttpServer?.destroy();
+    await sseHttpsServer?.destroy();
 
-  console.log(`\n[develop] Starting development SSE server...`);
+    console.log(`\n[develop] Starting development SSE server...`);
 
-  const { httpServer, httpsServer, webpackDevMiddleware } = serverStart(webpackCompiler);
+    const { httpServer, httpsServer, webpackDevMiddleware } = serverStart(webpackCompiler);
 
-  devMiddlewareInstance = webpackDevMiddleware;
+    devMiddlewareInstance = webpackDevMiddleware;
 
-  sseHttpServer = httpServer;
-  sseHttpsServer = httpsServer;
+    sseHttpServer = httpServer;
+    sseHttpsServer = httpsServer;
+  } else {
+    webpackWatch = webpackCompiler.watch({}, () => {});
+  }
 };
 
 // Monitor development configuration changes
 // TODO: Create regex using component cfg file object?
+// TODO: add peanut folder paths if core development is enabled
+const watchPaths = Object.keys(srcDirectories)
+  .filter((key) => fs.existsSync(`${appSrcPath}/${key}`))
+  .reduce((paths, currentKey) => {
+    paths.push(`${appSrcPath}/${currentKey}`);
+
+    return paths;
+  }, []);
+
+if (watchPaths.length <= 0) {
+  throw new Error('No element source folders could be found.');
+}
+
 const compsBlocksFileRegEx = new RegExp(
-  '^src/(components|blocks)/[a-zA-Z0-9-_]+/src/((variations|metadata).json|(ssr.)?(view|editor).(jsx|js)|(index|render).php|style.s?css)',
+  `^${appSrcPath}/(components|blocks)/[a-zA-Z0-9-_]+${directoryEntrySrcPath}/((variations|metadata).json|(ssr.)?(view|editor).(jsx|js)|(index|render).php|style.s?css)`,
   'i'
 );
 
 const themesPluginsFileRegEx = new RegExp(
-  '^src/(themes|plugins)/[a-zA-Z0-9-_]+/src/((view|editor).(jsx|js)|style.s?css)',
+  `^${appSrcPath}/(themes|plugins)/[a-zA-Z0-9-_]+${directoryEntrySrcPath}/((view|editor).(jsx|js)|style.s?css)`,
   'i'
 );
 
-const commonDirRegEx = new RegExp('src/(components|blocks|plugins|themes)/[a-zA-Z0-9-_]+$', 'i');
+const commonDirRegEx = new RegExp(
+  `^${appSrcPath}/(components|blocks|plugins|themes)/[a-zA-Z0-9-_]+$`,
+  'i'
+);
 
 const devMonitor = chokidar
-  .watch(['./src/components', './src/themes', './src/blocks', './src/plugins'])
+  .watch(watchPaths)
   .on('all', (fsEvent, fsPath) => {
     if (!chokidarReady || restartDev) return;
 
@@ -215,22 +262,27 @@ const devMonitor = chokidar
 
 // Handle termination of process
 process.on('SIGINT', async () => {
-  console.log('');
-  console.log('[develop] Cleaning up before interrupt signal...');
-
-  await sseHttpServer?.destroy();
-  await sseHttpsServer?.destroy();
+  console.log(`\n[develop] Cleaning up before interrupt signal...`);
 
   if (restartBuildTimeout) clearTimeout(restartBuildTimeout);
 
   if (whiteBoardProcess?.kill()) console.log('[develop] App server process terminated');
 
-  devMiddlewareInstance?.close(function () {
+  const onWebpackClose = () => {
     console.log('[webpack] Stopped.');
     devMonitor?.close().then(() => {
       console.log('[chokidar] Closed.');
       console.log('[develop] Exiting cleanly...');
       process.exit();
     });
-  });
+  };
+
+  if (devMiddlewareInstance) {
+    await sseHttpServer?.destroy();
+    await sseHttpsServer?.destroy();
+
+    devMiddlewareInstance.close(onWebpackClose);
+  } else if (webpackWatch) {
+    webpackWatch.close(onWebpackClose);
+  }
 });

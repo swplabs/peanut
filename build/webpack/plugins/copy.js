@@ -1,13 +1,20 @@
 const path = require('path');
 const fs = require('fs');
 const { srcDirectoryEntryMap } = require('../../../shared/src.directory.entry.map.js');
+const envVars = require('../../../shared/envvars.js');
 
 class CopyPlugin {
-  constructor({ directory, srcType, routes, filter = /\.(js|jsx|scss)$/ }) {
+  constructor({
+    directory,
+    srcType,
+    routes,
+    filter = /\.(js|jsx|scss)$/,
+    emptyDirectoryOnStart = true
+  }) {
     this.srcType = srcType;
     this.directory = directory;
     this.routes = routes;
-    this.elements = [];
+    this.elements = {};
     this.filter = filter;
     this.preCompiledFilter = Object.keys(srcDirectoryEntryMap).filter((key) => {
       const excludes = srcDirectoryEntryMap[key].excludeSrcTypes;
@@ -21,7 +28,11 @@ class CopyPlugin {
       const { path: routePath } = route;
 
       const destDir = `${this.directory}/${routePath}`;
-      if (fs.existsSync(destDir)) {
+      if (
+        emptyDirectoryOnStart &&
+        !destDir.endsWith(envVars.get('PFWP_THEME_PATH')) &&
+        fs.existsSync(destDir)
+      ) {
         fs.rmSync(destDir, { recursive: true });
       }
     });

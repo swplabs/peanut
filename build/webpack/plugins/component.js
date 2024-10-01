@@ -3,7 +3,7 @@ const fs = require('fs');
 const phpIndexKeyRegex = /^php_index_components_(?<srcElement>.+)$/i;
 
 class ComponentsPlugin {
-  constructor({ directory, routes, outputPath }) {
+  constructor({ directory, routes, outputPath, emptyDirectoryOnStart = false }) {
     this.routes = routes;
     this.directory = directory;
     this.outputPath = outputPath;
@@ -11,7 +11,7 @@ class ComponentsPlugin {
     this.filesToEmit = {};
 
     const destDir = `${this.directory}/components`;
-    if (fs.existsSync(destDir)) {
+    if (emptyDirectoryOnStart && fs.existsSync(destDir)) {
       fs.rmSync(destDir, { recursive: true });
     }
   }
@@ -32,7 +32,7 @@ class ComponentsPlugin {
         data
       };
     } catch (e) {
-      console.log('[build:webpack:plugins:componentsplugin] error', e?.message);
+      console.log('[build:webpack:plugins:components] error', e?.message);
     }
   }
 
@@ -57,7 +57,7 @@ class ComponentsPlugin {
               fs.mkdirSync(dir, { recursive: true });
             }
           } catch (e) {
-            console.log('[build:webpack:plugins:componentsplugin] error', e?.message);
+            console.log('[build:webpack:plugins:components] error', e?.message);
           }
 
           const { srcPath } = routes.find(({ path }) => path === srcElement);
@@ -119,10 +119,6 @@ class ComponentsPlugin {
 
       // TODO: commented this out so that it appears in stats everytime. Revisit
       // this.filesToEmit = {};
-    });
-
-    compiler.hooks.done.tap('ComponentsPlugin', (stats) => {
-      // console.log(stats.toJson().assets.filter(({name}) => name.includes('json')));
     });
   }
 }

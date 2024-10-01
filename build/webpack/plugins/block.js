@@ -3,7 +3,7 @@ const fs = require('fs');
 const editorKeyRegex = /^editor_blocks_(?<srcElement>.+)$/i;
 
 class BlocksPlugin {
-  constructor({ directory, routes, outputPath }) {
+  constructor({ directory, routes, outputPath, emptyDirectoryOnStart = false }) {
     this.routes = routes;
     this.directory = directory;
     this.outputPath = outputPath;
@@ -11,7 +11,7 @@ class BlocksPlugin {
     this.filesToEmit = {};
 
     const destDir = `${this.directory}/blocks`;
-    if (fs.existsSync(destDir)) {
+    if (emptyDirectoryOnStart && fs.existsSync(destDir)) {
       fs.rmSync(destDir, { recursive: true });
     }
   }
@@ -125,10 +125,6 @@ class BlocksPlugin {
 
       // TODO: commented this out so that it appears in stats everytime. Revisit
       // this.filesToEmit = {};
-    });
-
-    compiler.hooks.done.tap('BlocksPlugin', (stats) => {
-      // console.log(stats.toJson().assets.filter(({name}) => name.includes('json')));
     });
   }
 }
