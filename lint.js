@@ -10,7 +10,7 @@ const { ESLint } = require('eslint');
 const { generateConfig } = require('./build/lib/eslint.js');
 const { getConfigs } = require('./build/webpack/index.js');
 const { appSrcPath, rootDir, isCoreDev } = require('./shared/definitions.js');
-const requireConfigFile = require('./build/lib/require.config.js');
+const { requireConfigFile } = require('./build/lib/utils.js');
 
 let extendConfig;
 

@@ -72,4 +72,11 @@ program
     require('./format.js');
   });
 
+program
+  .command('setup')
+  .description('Create a project directory')
+  .action(() => {
+    require('./setup.js');
+  });
+
 program.parse(process.argv);
