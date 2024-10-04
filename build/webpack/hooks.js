@@ -4,7 +4,7 @@ const { createHash } = require('crypto');
 const envVars = require('../../shared/envvars.js');
 const { entryMapFlagKeys } = require('../../shared/src.directory.entry.map.js');
 const { appSrcPath, version } = require('../../shared/definitions.js');
-const requireConfigFile = require('../lib/require.config.js');
+const { requireConfigFile } = require('../lib/utils.js');
 const pfwpThemePath = envVars.get('PFWP_THEME_PATH');
 const pfwpWpRoot = envVars.get('PFWP_WP_ROOT');
 
@@ -153,7 +153,8 @@ module.exports = {
     try {
       fs.writeFileSync(
         `${pfwpWpRoot}${pfwpThemePath}/${configFilename}`,
-        JSON.stringify(pfwpConfig)
+        JSON.stringify(pfwpConfig),
+        'utf-8'
       );
     } catch (e) {
       console.log(e?.message);

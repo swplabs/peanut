@@ -1,4 +1,4 @@
-# Introducing "Peanut" for Wordpress
+# Introducing Peanut for Wordpress
 
 ![Get ready for takeoff!](https://swpimage-9d07.kxcdn.com/wp-efs/sassywackypeanut/uploads/2024/07/2-1120x630.jpg)
 
@@ -22,7 +22,7 @@ npm i @swplabs/peanutforwp --save-dev
 
 Alternatively, you can install globally using the following command:
 
-```
+```bash
 npm i @swplabs/peanutforwp -g
 ```
 
@@ -40,7 +40,7 @@ For more on setup and how to get started with using Peanut in your local Wordpes
 
 ## More Documentation
 
-Evolving documentation can be found at [Peanut for Wordpress on Gitbooks](https://docs.swplabs.com/peanut-for-wordpress/).
+Online documentation can be found at [Peanut for Wordpress on Gitbooks](https://docs.swplabs.com/peanut-for-wordpress/).
 
 ## Support Us
 
