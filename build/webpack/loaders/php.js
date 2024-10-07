@@ -1,6 +1,6 @@
 const { validate } = require('schema-utils');
 const crypto = require('crypto');
-const { appSrcPath, directoryEntrySrcPath } = require('../../../shared/definitions.js');
+const { appSrcPath, directoryEntrySrcPath, getEnv } = require('../../../shared/definitions.js');
 
 const schema = {
   type: 'object',
@@ -43,19 +43,18 @@ module.exports = function (content) {
 
   const { srcType, srcElement, srcFileName } = getSrcInfo(this.resourcePath);
 
-  const coreCheck = `
+  const coreCheck = (srcType === 'components' && getEnv() === 'prod') ? `
 <?php
 if ( !class_exists( 'PFWP_Core' ) ) {
-  echo 'Warning: PFWP Core configuration missing<br/>';
   return;
 }
-?>
-`;
+?>\n
+` : '';
 
   let contentHash = '';
 
   if (srcType && srcElement && srcFileName) {
-    const source = coreCheck + '\n' + content;
+    const source = coreCheck + content;
 
     this.emitFile(`${peanutThemePath}/${srcType}/${srcElement}/${srcFileName}.php`, source);
 

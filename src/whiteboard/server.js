@@ -51,8 +51,8 @@ const useMiddleware = (req, res) => {
   );
 };
 
-const serverStart = (config) => {
-  cntrls.utils.setConfig(config);
+const serverStart = (appConfig, config) => {
+  cntrls.utils.setConfigs(appConfig, config);
 
   routes.forEach((route) => router.get(route.url, routeController(route)));
 

@@ -36,7 +36,7 @@ You can download the full source from our public GitHub repo using this link or 
 git clone git@github.com:swplabs/peanut.git
 ```
 
-For more on setup and how to get started with using Peanut in your local Wordpess development process, visited our [Quickstart](https://docs.swplabs.com/peanut-for-wordpress/getting-started/quickstart) page on Gitbooks.
+For more on setup and how to get started with using Peanut in your local Wordpess development process, visited our [Quickstart](https://docs.swplabs.com/peanut-for-wordpress/getting-started/) page on Gitbooks.
 
 ## More Documentation
 

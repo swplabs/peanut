@@ -6,17 +6,18 @@ const Nav = ({
     wp_host,
     compilations: {
       components_elements: {
-        entry_map: entryMap
+        entry_map: entryMap,
         // TODO: use metadata for link params
-        // metadata
+        metadata
       }
     }
   },
-  setScreenUrl
+  setScreen
 }) => {
-  const updateScreen = (e, url) => {
+  const updateScreen = (e, key, url) => {
     e.preventDefault();
-    setScreenUrl(url);
+    console.log('nav clicked item', key, url, e);
+    setScreen({ key, url });
   };
 
   return (
@@ -29,9 +30,9 @@ const Nav = ({
               <li className={style.navItem} key={key}>
                 <a
                   href={`${wp_host}/_pfwp_wb/components/${key}/`}
-                  onClick={(e) => updateScreen(e, `${wp_host}/_pfwp_wb/components/${key}/`)}
+                  onClick={(e) => updateScreen(e, key, `${wp_host}/_pfwp_wb/components/${key}/`)}
                 >
-                  <i className={`${style.icon} ${icons['icon-puzzle']}`}></i>
+                  <i className={`${style.icon} bi-puzzle`}></i>
                   <span>{key}</span>
                 </a>
               </li>

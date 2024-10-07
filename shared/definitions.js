@@ -22,7 +22,9 @@ const enableHMR = () =>
   envVars.getBoolean('PFWP_ENABLE_HMR') === true && envVars.getBoolean('PFWP_SECONDARY') !== true;
 
 const hotRefreshEnabled = (srcType) =>
-  enableHMR() && nodeEnv === 'development' && ['blocks', 'plugins'].includes(srcType);
+  enableHMR() &&
+  nodeEnv === 'development' &&
+  ['blocks', 'plugins' /*, 'whiteboard'*/].includes(srcType);
 
 const isWebTarget = ({ buildType }) => !['server'].includes(buildType);
 
@@ -30,7 +32,7 @@ const isHotRefreshEntry = ({ srcType, entryKey }) =>
   enableHMR() &&
   nodeEnv === 'development' &&
   ['blocks', 'plugins'].includes(srcType) &&
-  ['editor'].includes(entryKey);
+  ['editor'].includes(entryKey); /* || (srcType === 'whiteboard' && entryKey === 'view')*/
 
 const getHotMiddlewareEntry = ({ srcType, buildType }) =>
   `webpack-hot-middleware/client?name=${srcType}_${buildType}&timeout=${serverSideEventTimeout}&path=${encodeURIComponent(
@@ -75,6 +77,8 @@ module.exports = {
     : parseFloat(nodeVersion.replace(/[\=\>\<]/g, '')),
   browsers: ['last 2 versions, not dead'],
   version,
+  reactVersion: dependencies['react'],
+  reactDOMVersion: dependencies['react-dom'],
   appSrcPath,
   directoryEntrySrcPath,
   rootDir,
