@@ -61,7 +61,7 @@ if ( file_exists( $pfwp_global_config_file ) ) {
 		$message = __( '<strong>Peanut For Wordpress</strong>: Configuration file (pfwp.json) not found. This most likely means you haven\'t compile anything with Peanut yet. Hurry up and build something awesome!', 'pfwp' );
 			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), $message );
 	});
-	
+		
 	return;
 }
 
@@ -79,10 +79,10 @@ $pfwp_ob_replace_vars = array(
 	'replace' => array()
 );
 
+// TODO: define rest route constants (namespace, version, etc)
+
 // Core
 require PFWP_PLUGIN_DIR . '/classes/class-pfwp-core.php';
-
-// TODO: define rest route constants (namespace, version, etc)
 
 // Assets Engine
 require PFWP_PLUGIN_DIR . '/classes/class-pfwp-assets.php';

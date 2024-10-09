@@ -6,13 +6,15 @@ const pfwpThemePath = envVars.get('PFWP_THEME_PATH');
 const pfwpWpRoot = envVars.get('PFWP_WP_ROOT');
 const serverPath = distPath + '/server';
 
-const config = require(`${pfwpWpRoot}${pfwpThemePath}/pfwp.json`);
+const pfwpConfig = require(`${pfwpWpRoot}${pfwpThemePath}/pfwp.json`);
 
 if (existsSync(serverPath + '/server.js')) {
+  const appConfig = require(`${serverPath}/server.json`);
+
   const { serverStart } = require(serverPath + '/server.js');
 
   (async () => {
-    await serverStart(config);
+    await serverStart(appConfig, pfwpConfig);
   })();
 } else {
   console.log('[whiteboard] server files not found');

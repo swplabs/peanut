@@ -1,5 +1,6 @@
 const { debug: log } = require('../../../../shared/utils.js');
 const envVars = require('../../../../shared/envvars.js');
+const { reactVersion, reactDOMVersion } = require('../../../../shared/definitions.js');
 const wbPublicPath = envVars.get('PFWP_WB_PUBLIC_PATH') || '/';
 const wordpressPublicPath = envVars.get('PFWP_WP_PUBLIC_PATH');
 
@@ -7,12 +8,19 @@ const serverImports = {};
 let buildAssets = {};
 
 let pfwpConfig;
+let appConfig;
 
-const setConfig = (config) => {
-  pfwpConfig = config;
+const setConfigs = (app, pfwp) => {
+  appConfig = app;
+  pfwpConfig = pfwp;
 };
 
-const getConfig = () => pfwpConfig;
+const getConfigs = () => {
+  return {
+    pfwpConfig,
+    appConfig
+  };
+};
 
 // TODO: Add max limit to "cached" files
 const getServerFile = async (key) => {
@@ -64,7 +72,10 @@ const buildClientAssets = ({ srcType, id }) => {
   const jsData = [];
   const cssData = [];
 
-  const compilation = pfwpConfig.compilations[assetIndex];
+  const compilation =
+    srcType === 'whiteboard'
+      ? appConfig.compilations[assetIndex]
+      : pfwpConfig.compilations[assetIndex];
   const clientAssets = compilation.chunk_groups[`view_${id}`];
 
   const eachAsset = ({ name, type }) =>
@@ -138,6 +149,11 @@ const htmlTemplate = ({ id, reactHtml, js, css, config }) => {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Whiteboard (Peanut For Wordpress)</title>
+        <script crossorigin src="https://unpkg.com/react@${reactVersion}/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@${reactDOMVersion}/umd/react-dom.development.js"></script>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         ${css
           .map((item) => {
             return `<link rel="stylesheet" href="${item.url}" />\n`;
@@ -164,8 +180,8 @@ const htmlTemplate = ({ id, reactHtml, js, css, config }) => {
 };
 
 module.exports = {
-  setConfig,
-  getConfig,
+  setConfigs,
+  getConfigs,
   buildClientAssets,
   resetAssets,
   getServerFile,

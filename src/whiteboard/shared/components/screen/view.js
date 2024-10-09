@@ -1,16 +1,11 @@
-import { useEffect, useState } from 'react';
 import style from './style.scss';
 
-const Screen = ({ screenUrl = 'about:blank' }) => {
-  const [url, setUrl] = useState(screenUrl);
-
-  useEffect(() => {
-    setUrl(screenUrl);
-  }, [screenUrl]);
+const Screen = ({ screen }) => {
+  const { url: screenUrl = 'about:blank' } = screen;
 
   return (
     <div className={style.container}>
-      <iframe src={url} className={style.screen}></iframe>
+      <iframe src={screenUrl} className={style.screen}></iframe>
     </div>
   );
 };

@@ -208,9 +208,9 @@ const getPlugins = ({ srcType, routes, exportType, enableCssInJs = false }) => {
   const outputPath = srcType === 'whiteboard' ? staticDir : wordpressRoot;
   const filePath = srcType === 'whiteboard' ? `assets/${srcType}` : `.assets/${srcType}`;
 
-  // TODO: add to definitions.js
-  if (!enableCssInJs && exportType !== 'web' && srcType !== 'whiteboard')
+  if (!enableCssInJs) {
     plugins.push(extractCssPlugin({ MiniCssExtractPlugin, exportType, filePath }));
+  }
 
   if (srcType === 'blocks') {
     plugins.push(
@@ -251,6 +251,21 @@ const getPlugins = ({ srcType, routes, exportType, enableCssInJs = false }) => {
   }
 
   return plugins;
+};
+
+const getExternals = ({ isWeb, srcType }) => {
+  let externals = [];
+
+  if (!isWeb) {
+    externals = [nodeExternals({})];
+  } else if (srcType === 'whiteboard') {
+    externals = {
+      react: 'React',
+      'react-dom': 'ReactDOM'
+    };
+  }
+
+  return externals;
 };
 
 const getBaseConfig = ({ isWeb, buildType, srcType, exportType, enableCssInJs }) => {
@@ -299,7 +314,7 @@ const getBaseConfig = ({ isWeb, buildType, srcType, exportType, enableCssInJs })
       minimize: isWeb && nodeEnv === 'production' ? true : false
     },
 
-    externals: !isWeb && !exportType ? [nodeExternals({})] : []
+    externals: getExternals({ isWeb, buildType, srcType })
   };
 };
 
@@ -375,7 +390,7 @@ const getConfigs = () => {
 
   // Validate at least one config exists
   if (config.filter(({ name }) => !name.startsWith('whiteboard')).length <= 0) {
-    throw new Error('No element source folders could be found.');
+    throw new Error('No element folders (plugins, themes, blocks, or components) could be found.');
   }
 
   // Allow modification of config

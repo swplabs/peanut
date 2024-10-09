@@ -4,14 +4,14 @@ const {
   getServerFile,
   resetAssets,
   htmlTemplate,
-  getConfig
+  getConfigs
 } = require('./lib/utils.js');
 const { renderToString } = require('react-dom/server');
 
 const cntrlResponses = {};
 
 const controller = ({ route }) => {
-  const config = getConfig();
+  const { pfwpConfig } = getConfigs();
 
   return async () => {
     const { id, srcType, buildType } = route;
@@ -29,10 +29,10 @@ const controller = ({ route }) => {
         typeof reactTemplate === 'function'
           ? htmlTemplate({
               id,
-              reactHtml: renderToString(reactTemplate({ config })),
+              reactHtml: renderToString(reactTemplate({ config: pfwpConfig })),
               js,
               css,
-              config
+              config: pfwpConfig
             })
           : '<html><head></head><body>No Template Found for Page</body></html>';
     } else {

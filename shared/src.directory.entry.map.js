@@ -36,7 +36,7 @@ const srcDirectories = {
     pattern: null,
     webpack: {
       configPresets: {
-        enableCssInJs: true
+        enableCssInJs: false
       },
       plugins: {}
     }
