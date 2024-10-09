@@ -79,10 +79,10 @@ $pfwp_ob_replace_vars = array(
 	'replace' => array()
 );
 
+// TODO: define rest route constants (namespace, version, etc)
+
 // Core
 require PFWP_PLUGIN_DIR . '/classes/class-pfwp-core.php';
-
-// TODO: define rest route constants (namespace, version, etc)
 
 // Assets Engine
 require PFWP_PLUGIN_DIR . '/classes/class-pfwp-assets.php';

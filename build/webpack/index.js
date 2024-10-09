@@ -390,7 +390,7 @@ const getConfigs = () => {
 
   // Validate at least one config exists
   if (config.filter(({ name }) => !name.startsWith('whiteboard')).length <= 0) {
-    throw new Error('No element source folders could be found.');
+    throw new Error('No element folders (plugins, themes, blocks, or components) could be found.');
   }
 
   // Allow modification of config

@@ -1,6 +1,8 @@
+@import "../app/scss/vars.scss";
+
 .container {
   background-color: #333;
-  height: calc(100vh - 80px);
+  height: calc(100vh - $schema-btm-min-height);
   margin-left: 280px;
 }
 

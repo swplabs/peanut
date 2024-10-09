@@ -43,13 +43,14 @@ module.exports = function (content) {
 
   const { srcType, srcElement, srcFileName } = getSrcInfo(this.resourcePath);
 
-  const coreCheck = (srcType === 'components' && getEnv() === 'prod') ? `
-<?php
-if ( !class_exists( 'PFWP_Core' ) ) {
-  return;
-}
-?>\n
-` : '';
+  const coreCheck =
+    srcType === 'components' && getEnv() === 'prod'
+      ? `<?php\n
+      if ( !class_exists( 'PFWP_Core' ) ) {
+        return;
+      }
+      ?>\n`
+      : '';
 
   let contentHash = '';
 

@@ -1,4 +1,3 @@
-import icons from '../app/scss/icons.scss';
 import style from './style.scss';
 
 const Nav = ({
@@ -6,9 +5,9 @@ const Nav = ({
     wp_host,
     compilations: {
       components_elements: {
-        entry_map: entryMap,
+        entry_map: entryMap
         // TODO: use metadata for link params
-        metadata
+        // metadata
       }
     }
   },
@@ -16,7 +15,7 @@ const Nav = ({
 }) => {
   const updateScreen = (e, key, url) => {
     e.preventDefault();
-    console.log('nav clicked item', key, url, e);
+    console.log('nav clicked item', key, url);
     setScreen({ key, url });
   };
 

@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
+import Form from '@rjsf/fluent-ui';
+import validator from '@rjsf/validator-ajv8';
+
 import style from './style.scss';
 
-const Schema = ({ pfwpConfig: { wp_host }, screen, setScreen }) => {
+const Schema = ({ pfwpConfig: { wp_host }, screen }) => {
   const { key: screenKey } = screen;
 
   const [loading, setLoading] = useState(false);
@@ -27,12 +30,24 @@ const Schema = ({ pfwpConfig: { wp_host }, screen, setScreen }) => {
     };
 
     fetchData();
-  }, [screenKey]);
+  }, [screenKey, wp_host]);
 
   return loading ? (
     <div className={style.container}>Loading...</div>
   ) : (
-    <div className={style.container}>{screenKey || 'Choose a component'}</div>
+    <div className={style.container}>
+      <div className={style.header}>
+        <div>{screenKey || 'Choose a component'}</div>
+        <div className={style.schemaControls}>
+          <i className={`${style.icon} bi-layout-sidebar-reverse`}></i>
+        </div>
+      </div>
+      <div className={style.jsonSchemaContainer}>
+        {metadata?.data_schema ? (
+          <Form schema={metadata.data_schema} validator={validator} />
+        ) : null}
+      </div>
+    </div>
   );
 };
 

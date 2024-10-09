@@ -11,7 +11,7 @@ const { renderToString } = require('react-dom/server');
 const cntrlResponses = {};
 
 const controller = ({ route }) => {
-  const { appConfig, pfwpConfig } = getConfigs();
+  const { pfwpConfig } = getConfigs();
 
   return async () => {
     const { id, srcType, buildType } = route;

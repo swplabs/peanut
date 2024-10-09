@@ -14,13 +14,12 @@ program
   .version(version);
 
 program
-  .option('-s, --source <path>', 'path to application source folder')
-  .option('--disable-hmr', 'disable Hot Module Reloading');
+  .option('-s, --source <path>', 'path to project  source folder')
+  .option('--disable-hmr', 'disable Hot Module Reloading')
+  .option('-w, --enable-whiteboard', 'enable Whiteboard server/appication');
 
 if (published !== true) {
-  program
-    .option('-w, --enable-whiteboard', 'enable Whiteboard server/appication')
-    .option('-d, --enable-core-dev', 'enable core development');
+  program.option('-d, --enable-core-dev', 'enable core development');
 }
 
 program.on('option:enable-core-dev', () => {
