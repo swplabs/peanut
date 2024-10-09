@@ -15,11 +15,12 @@ program
 
 program
   .option('-s, --source <path>', 'path to project  source folder')
-  .option('--disable-hmr', 'disable Hot Module Reloading')
-  .option('-w, --enable-whiteboard', 'enable Whiteboard server/appication');
+  .option('--disable-hmr', 'disable Hot Module Reloading');
 
 if (published !== true) {
-  program.option('-d, --enable-core-dev', 'enable core development');
+  program
+    .option('-d, --enable-core-dev', 'enable core development')
+    .option('-w, --enable-whiteboard', 'enable Whiteboard server/appication');
 }
 
 program.on('option:enable-core-dev', () => {
