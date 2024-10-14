@@ -2,11 +2,12 @@
 
 process.env.PFWP_IS_CLI = 'true';
 
+const { program } = require('commander');
+
 const {
   version,
   config: { published = false }
 } = require('./package.json');
-const { program } = require('commander');
 
 program
   .name('peanut')
@@ -15,12 +16,11 @@ program
 
 program
   .option('-s, --source <path>', 'path to project  source folder')
-  .option('--disable-hmr', 'disable Hot Module Reloading');
+  .option('--disable-hmr', 'disable Hot Module Reloading')
+  .option('-w, --enable-whiteboard', 'enable Whiteboard server/appication');
 
 if (published !== true) {
-  program
-    .option('-d, --enable-core-dev', 'enable core development')
-    .option('-w, --enable-whiteboard', 'enable Whiteboard server/appication');
+  program.option('-d, --enable-core-dev', 'enable core development');
 }
 
 program.on('option:enable-core-dev', () => {

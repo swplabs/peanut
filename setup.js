@@ -1,11 +1,76 @@
 process.env.PFWP_CMD = 'setup';
 
-const { existsSync, writeFileSync, mkdirSync } = require('fs');
+const {
+  existsSync,
+  writeFileSync,
+  mkdirSync,
+  createWriteStream,
+  unlinkSync,
+  rmSync,
+  renameSync
+} = require('fs');
+const { Readable } = require('stream');
+const { finished } = require('stream/promises');
 const { input, confirm, checkbox } = require('@inquirer/prompts');
+
+const {
+  config: { pluginGitUrl }
+} = require('./package.json');
 
 const { getAppSrcPath } = require('./build/lib/utils.js');
 
 const appSrcPath = getAppSrcPath();
+
+const downloadFile = async (url, fileName) => {
+  try {
+    const response = await fetch(url);
+    const fileStream = createWriteStream(fileName, { flags: 'wx' });
+    await finished(Readable.fromWeb(response.body).pipe(fileStream));
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const extractPlugin = async (wpPluginsFolder) => {
+  let success = false;
+
+  try {
+    const tempDir = `${appSrcPath}/tmp`;
+    const destination = `${appSrcPath}/tmp/peanut-plugin.zip`;
+
+    mkdirSync(`${appSrcPath}/tmp`, { recursive: true });
+
+    if (existsSync(destination)) {
+      unlinkSync(destination);
+    }
+
+    await downloadFile(pluginGitUrl, destination);
+
+    if (existsSync(destination)) {
+      new require('adm-zip')(destination).extractAllTo(`${appSrcPath}/tmp`);
+
+      const pluginFolder = `${appSrcPath}/tmp/peanut-plugin-main`;
+
+      if (existsSync(pluginFolder) && existsSync(wpPluginsFolder)) {
+        const peanutPluginDir = `${wpPluginsFolder}/peanut`;
+
+        if (existsSync(peanutPluginDir)) {
+          rmSync(peanutPluginDir, { recursive: true });
+        }
+
+        renameSync(pluginFolder, peanutPluginDir);
+
+        success = true;
+      }
+    }
+
+    rmSync(tempDir, { recursive: true });
+  } catch (error) {
+    console.error(error);
+  }
+
+  return success;
+};
 
 const setup = async () => {
   let create = true;
@@ -78,6 +143,26 @@ const setup = async () => {
         elements.forEach((element) => {
           mkdirSync(`${appSrcPath}/${element}`, { recursive: true });
         });
+
+        const wpPluginsFolder = `${PFWP_WP_ROOT}/wp-content/plugins`;
+
+        const setupPlugin = await confirm({
+          message: `The "Peanut for WP" Wordpress plugin is required for development? We can download this plugin to your plugins directory at:\n${wpPluginsFolder}\nDownload?`
+        });
+
+        if (setupPlugin) {
+          console.log(`\nDownloading plugin from:\n${pluginGitUrl} ...\n`);
+
+          if (await extractPlugin(wpPluginsFolder)) {
+            console.log(
+              `Plugin has downloaded and is ready for you to activate via your Wordpress Admin area.`
+            );
+          } else {
+            console.log('Could not complete plugin download.');
+          }
+        }
+
+        console.log('\nSetup process is complete!');
       } else {
         console.log('No project source files or directory generated.');
       }

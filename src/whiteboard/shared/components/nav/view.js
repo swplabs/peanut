@@ -21,7 +21,7 @@ const Nav = ({
 
   return (
     <div className={style.container}>
-      <div className={style.logo}>Whiteboard</div>
+      <div className={style.logo}>peanut (wb)</div>
       <div className={style.menu}>
         <ul>
           {Object.keys(entryMap).map((key) => {

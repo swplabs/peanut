@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import Form from '@rjsf/fluent-ui';
-import validator from '@rjsf/validator-ajv8';
 
+import JsonForm from '../json-form/view.js';
 import style from './style.scss';
 
 const Schema = ({ pfwpConfig: { wp_host }, screen }) => {
@@ -21,7 +20,7 @@ const Schema = ({ pfwpConfig: { wp_host }, screen }) => {
         const data = await response.json();
 
         console.log('fetchData', screenKey, data);
-        setMetadata(data);
+        setMetadata(data?.data_schema || {});
       } catch (error) {
         console.error(error);
       }
@@ -43,9 +42,7 @@ const Schema = ({ pfwpConfig: { wp_host }, screen }) => {
         </div>
       </div>
       <div className={style.jsonSchemaContainer}>
-        {metadata?.data_schema ? (
-          <Form schema={metadata.data_schema} validator={validator} />
-        ) : null}
+        <JsonForm schema={metadata} />
       </div>
     </div>
   );

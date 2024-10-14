@@ -9,7 +9,7 @@
 }
 
 .logo {
-  font-size: 22px;
+  font-size: 18px;
   color: #fff;
   margin: 30px;
   border-bottom: 1px solid #3c3a56;
@@ -22,14 +22,14 @@
 }
 
 .navItem {
-  font-size: 16px;
+  font-size: 14px;
   position: relative;
-  margin-bottom: 22px;
+  margin-bottom: 15px;
   
   a {
     color: #bcbbc7;
     display: block;
-    padding: 0 25px 0 30px;
+    padding: 0 20px 0 25px;
     
     &:hover {
       color: #bcbbc7;
@@ -39,6 +39,6 @@
 
 .icon {
   position: absolute;
-  top: 6px;
+  top: 4px;
   left: 0;
 }
