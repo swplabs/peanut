@@ -50,7 +50,7 @@ const validateEnvVarConfig = (envVars) => {
       `The Wordpress theme path (PFWP_THEME_PATH) value in your peanut.config.json was not defined.`
     );
   } else if (!fs.existsSync(`${config.PFWP_WP_ROOT}${config.PFWP_THEME_PATH}`)) {
-    throw new Error(
+    console.warn(
       `The Wordpress theme directory (PFWP_THEME_PATH) defined in your peanut.config.json does not exist.`
     );
   }

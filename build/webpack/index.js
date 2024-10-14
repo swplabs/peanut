@@ -257,7 +257,11 @@ const getExternals = ({ isWeb, srcType }) => {
   let externals = [];
 
   if (!isWeb) {
-    externals = [nodeExternals({})];
+    externals = [
+      nodeExternals({
+        modulesDir: `${rootDir}/node_modules`
+      })
+    ];
   } else if (srcType === 'whiteboard') {
     externals = {
       react: 'React',
@@ -313,6 +317,8 @@ const getBaseConfig = ({ isWeb, buildType, srcType, exportType, enableCssInJs })
       },
       minimize: isWeb && nodeEnv === 'production' ? true : false
     },
+
+    externalsPresets: isWeb ? {} : { node: true },
 
     externals: getExternals({ isWeb, buildType, srcType })
   };
