@@ -23,21 +23,6 @@ const {
   serveStatic
 } = require('../../shared/server/middleware/index.js');
 
-const staticFiles = serveStatic(`./dist/${envVars.get('PFWP_DIST')}/static`, {
-  minorSeconds,
-  majorSeconds
-});
-
-const exportFiles = isLocal
-  ? serveStatic(`./dist/export`, {
-      minorSeconds,
-      majorSeconds,
-      basePath: '/exports'
-    })
-  : async (_req, _res, next) => {
-      await next();
-    };
-
 // Set up route controllers
 const routeController = (route) => {
   const { controller: routeCntrl = 'base' } = route;
@@ -45,14 +30,23 @@ const routeController = (route) => {
   return cntrls[routeCntrl].controller({ route, routes });
 };
 
-const useMiddleware = (req, res) => {
-  staticFiles(req, res, () =>
-    exportFiles(req, res, () => healthCheck(req, res, () => defaultRequests(req, res)))
-  );
-};
+const serverStart = ({ appConfig, pfwpConfig, rootDir }) => {
+  const staticFiles = serveStatic(`${rootDir}/dist/${envVars.get('PFWP_DIST')}/static`, {
+    minorSeconds,
+    majorSeconds
+  });
 
-const serverStart = (appConfig, config) => {
-  cntrls.utils.setConfigs(appConfig, config);
+  const exportFiles = isLocal
+    ? serveStatic(`${rootDir}/dist/export`, {
+        minorSeconds,
+        majorSeconds,
+        basePath: '/exports'
+      })
+    : async (_req, _res, next) => {
+        await next();
+      };
+
+  cntrls.utils.setConfigs(appConfig, pfwpConfig);
 
   routes.forEach((route) => router.get(route.url, routeController(route)));
 
@@ -68,7 +62,10 @@ const serverStart = (appConfig, config) => {
         minorSeconds,
         majorSeconds
       };
-      useMiddleware(req, res); // eslint-disable-line react-hooks/rules-of-hooks
+
+      staticFiles(req, res, () =>
+        exportFiles(req, res, () => healthCheck(req, res, () => defaultRequests(req, res)))
+      );
     }
   });
 };

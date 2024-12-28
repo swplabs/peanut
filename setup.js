@@ -101,7 +101,7 @@ const setup = async () => {
       });
 
       let PFWP_WP_ROOT = await input({
-        message: 'Enter the absolute path to your Wordpress root directory',
+        message: 'Enter the absolute path to your WordPress root directory',
         default: '/var/www/html',
         required: true,
         validate: (answer) => {
@@ -123,7 +123,7 @@ const setup = async () => {
           default: '/wp-content/themes/example-theme'
         }),
         PFWP_WP_HOST: await input({
-          message: 'Enter the url of your Wordpress site',
+          message: 'Enter the url of your WordPress site',
           required: true,
           default: 'http://localhost.yourdomain.com'
         })
@@ -147,7 +147,7 @@ const setup = async () => {
         const wpPluginsFolder = `${PFWP_WP_ROOT}/wp-content/plugins`;
 
         const setupPlugin = await confirm({
-          message: `The "Peanut for WP" Wordpress plugin is required for development? We can download this plugin to your plugins directory at:\n${wpPluginsFolder}\nDownload?`
+          message: `The "Peanut for WP" WordPress plugin is required for development? We can download this plugin to your plugins directory at:\n${wpPluginsFolder}\nDownload?`
         });
 
         if (setupPlugin) {
@@ -155,7 +155,7 @@ const setup = async () => {
 
           if (await extractPlugin(wpPluginsFolder)) {
             console.log(
-              `Plugin has downloaded and is ready for you to activate via your Wordpress Admin area.`
+              `Plugin has downloaded and is ready for you to activate via your WordPress Admin area.`
             );
           } else {
             console.log('Could not complete plugin download.');

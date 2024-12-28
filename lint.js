@@ -21,6 +21,8 @@ if (envVars.get('PFWP_CONFIG_ESLINT')) {
 const lint = async ({ files = [], buildType = '', srcType = '', ignorePatterns = null }) => {
   const eslintConfig = {
     useEslintrc: false,
+    // TODO: for eslint 9: overrideConfigFile: true,
+    // TODO: migrate to eslint 9 and import plugins
     resolvePluginsRelativeTo: rootDir,
     errorOnUnmatchedPattern: false,
     overrideConfig: generateConfig({ buildType, srcType })

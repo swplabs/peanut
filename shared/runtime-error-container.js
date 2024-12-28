@@ -13,7 +13,7 @@ const extendRuntimeError = (currentError) => {
       errorStacks[0].fileName.includes('_webpack_runtime')
     ) {
       currentError.message =
-        'Failed to fetch. (The webpack configuration and runtime for Peanut for Wordpress has been updated. Please reload this page to continue to use Hot Module Replacment.)';
+        'Failed to fetch. (The webpack configuration and runtime for Peanut for WordPress has been updated. Please reload this page to continue to use Hot Module Replacment.)';
       currentError.name = 'TypeError (Page Reload Required)';
     }
   } catch (e) {}

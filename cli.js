@@ -11,7 +11,7 @@ const {
 
 program
   .name('peanut')
-  .description('Peanut for Wordpress. Build your themes and blocks with components.')
+  .description('Peanut for WordPress. Build your themes and blocks with components.')
   .version(version);
 
 program

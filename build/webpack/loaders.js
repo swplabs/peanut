@@ -40,7 +40,10 @@ const style = ({ MiniCssExtractPlugin, srcType, enableCssInJs = false, environme
       {
         loader: require.resolve('sass-loader'),
         options: {
-          sourceMap: true
+          sourceMap: true,
+          sassOptions: {
+            silenceDeprecations: ['import']
+          }
         }
       }
     ]

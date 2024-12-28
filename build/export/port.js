@@ -1,10 +1,10 @@
 const fs = require('fs');
 const { srcDirectoryEntryMap } = require('../../shared/src.dir.map.js');
 
-// TODO: Pull in Wordpress path
+// TODO: Pull in WordPress path
 module.exports = ({ exportType, components, srcPath, wpPath }) => {
   if (!wpPath) {
-    console.log(`[build:export:port] No Wordpress export path defined.`);
+    console.log(`[build:export:port] No WordPress export path defined.`);
     return;
   }
 
@@ -44,6 +44,6 @@ module.exports = ({ exportType, components, srcPath, wpPath }) => {
       }
     });
 
-    console.log(`[build:export:port] Wordpress files ported to: ${portPath}`);
+    console.log(`[build:export:port] WordPress files ported to: ${portPath}`);
   });
 };

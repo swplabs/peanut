@@ -27,19 +27,16 @@ const normalizeAsset = (asset) => {
 let apiPath = '/wp-json/pfwp/v1/components/';
 let globalConfig = {};
 
+const eventState = {};
+
 window.pfwp = {
-  state: {},
-
-  eventStates: {},
-
   loadedAssets: {},
 
   // TODO: allow either single or queue (ie. multiple stored waiting for subscribe) state for data passed via additional param
   dispatch: (propertyName, data, element) => {
     const eventName = `${ns}${propertyName}${getElementId(element)}`;
 
-    pfwp.eventStates[eventName] = true;
-    pfwp.state[eventName] = data;
+    eventState[eventName] = data;
 
     const event = new CustomEvent(eventName, {
       detail: data
@@ -52,12 +49,11 @@ window.pfwp = {
     }
   },
 
-  // TODO: add flag to not get initial state passed to listener (ie. only receive events triggered after adding)
-  subscribe: (propertyName, callback, element) => {
+  subscribe: (propertyName, callback, element, useInitialState = true) => {
     const eventName = `${ns}${propertyName}${getElementId(element)}`;
 
-    if (pfwp.eventStates[eventName]) {
-      callback(pfwp.state[eventName]);
+    if (useInitialState && Object.hasOwn(eventState, eventName)) {
+      callback(eventState[eventName]);
     }
 
     const listener = (e) => {
@@ -310,6 +306,8 @@ window.pfwp = {
     await Promise.all(waitList);
 
     component.classList.remove('lazy-load-loading');
+
+    return component;
   }
 };
 

@@ -52,13 +52,13 @@ $pfwp_global_config_file = PFWP_TEMPLATE_DIR . '/pfwp.json';
 if ( file_exists( $pfwp_global_config_file ) ) {
 	$pfwp_global_config = json_decode( @file_get_contents( $pfwp_global_config_file ), false );
 } else {
-	error_log('Error: Peanut for Wordpress configuration file missing');
+	error_log('Error: Peanut for WordPress configuration file missing');
 	
 	$pfwp_global_config = (object) array();
 	
 	add_action( 'admin_notices', function () {
 		$class = 'notice notice-warning';
-		$message = __( '<strong>Peanut For Wordpress</strong>: Configuration file (pfwp.json) not found. This most likely means you haven\'t compile anything with Peanut yet. Hurry up and build something awesome!', 'pfwp' );
+		$message = __( '<strong>Peanut For WordPress</strong>: Configuration file (pfwp.json) not found. This most likely means you haven\'t compile anything with Peanut yet. Hurry up and build something awesome!', 'pfwp' );
 			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), $message );
 	});
 		
