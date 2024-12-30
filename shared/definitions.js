@@ -20,6 +20,8 @@ const enableWhiteboard = () => envVars.getBoolean('PFWP_ENABLE_WB') === true;
 const enableHMR = () =>
   envVars.getBoolean('PFWP_ENABLE_HMR') === true && envVars.getBoolean('PFWP_SECONDARY') !== true;
 
+const enableTS = () => envVars.getBoolean('PFWP_ENABLE_TS') === true;
+
 const hotRefreshEnabled = (srcType) =>
   enableHMR() &&
   nodeEnv === 'development' &&
@@ -67,6 +69,7 @@ module.exports = {
   isDebugMode,
   enableWhiteboard,
   enableHMR,
+  enableTS,
   getCLICommand,
   getEnv,
   getNodeEnv,

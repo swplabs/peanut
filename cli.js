@@ -17,7 +17,8 @@ program
 program
   .option('-s, --source <path>', 'path to project  source folder')
   .option('--disable-hmr', 'disable Hot Module Reloading')
-  .option('-w, --enable-whiteboard', 'enable Whiteboard server/appication');
+  .option('-w, --enable-whiteboard', 'enable Whiteboard server/appication')
+  .option('-t, --enable-typescript', 'enable Typescript');
 
 if (published !== true) {
   program.option('-d, --enable-core-dev', 'enable core development');
@@ -29,6 +30,10 @@ program.on('option:enable-core-dev', () => {
 
 program.on('option:enable-whiteboard', () => {
   process.env.PFWP_ENABLE_WB = 'true';
+});
+
+program.on('option:enable-typescript', () => {
+  process.env.PFWP_ENABLE_TS = 'true';
 });
 
 program.on('option:disable-hmr', () => {

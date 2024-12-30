@@ -52,7 +52,7 @@ const style = ({ MiniCssExtractPlugin, srcType, enableCssInJs = false, environme
 
 const js = ({ buildType, srcType, exportType }) => {
   return {
-    test: /\.m?js$/,
+    test: /\.m?[jt]s$/,
     exclude: /node_modules|\.min\.js/,
     use: (resourceInfo) => [
       {
@@ -82,6 +82,6 @@ module.exports = {
   js,
   style,
   php,
-  // TODO: add loader modules
+  // TODO: make loader modules available for custom webpack configuratoin
   loaders: {}
 };
