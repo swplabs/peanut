@@ -7,7 +7,8 @@ const {
   createWriteStream,
   unlinkSync,
   rmSync,
-  renameSync
+  renameSync,
+  readFileSync
 } = require('fs');
 const { Readable } = require('stream');
 const { finished } = require('stream/promises');
@@ -60,6 +61,8 @@ const extractPlugin = async (wpPluginsFolder) => {
 
         renameSync(pluginFolder, peanutPluginDir);
 
+        console.log(`Peanut plugin updated at ${peanutPluginDir}`);
+
         success = true;
       }
     }
@@ -70,6 +73,18 @@ const extractPlugin = async (wpPluginsFolder) => {
   }
 
   return success;
+};
+
+const downloadPlugin = async (wpPluginsFolder) => {
+  console.log(`\nDownloading plugin from:\n${pluginGitUrl} ...\n`);
+
+  if (await extractPlugin(wpPluginsFolder)) {
+    console.log(
+      `\nPlugin has downloaded and is ready for you to activate via your WordPress Admin area.`
+    );
+  } else {
+    console.log('Could not complete plugin download.');
+  }
 };
 
 const setup = async () => {
@@ -101,7 +116,7 @@ const setup = async () => {
       });
 
       let PFWP_WP_ROOT = await input({
-        message: 'Enter the absolute path to your Wordpress root directory',
+        message: 'Enter the absolute path to your WordPress root directory',
         default: '/var/www/html',
         required: true,
         validate: (answer) => {
@@ -123,7 +138,7 @@ const setup = async () => {
           default: '/wp-content/themes/example-theme'
         }),
         PFWP_WP_HOST: await input({
-          message: 'Enter the url of your Wordpress site',
+          message: 'Enter the url of your WordPress site',
           required: true,
           default: 'http://localhost.yourdomain.com'
         })
@@ -147,19 +162,11 @@ const setup = async () => {
         const wpPluginsFolder = `${PFWP_WP_ROOT}/wp-content/plugins`;
 
         const setupPlugin = await confirm({
-          message: `The "Peanut for WP" Wordpress plugin is required for development? We can download this plugin to your plugins directory at:\n${wpPluginsFolder}\nDownload?`
+          message: `The "Peanut for WP" WordPress plugin is required for development? We can download this plugin to your plugins directory at:\n${wpPluginsFolder}\nDownload?`
         });
 
         if (setupPlugin) {
-          console.log(`\nDownloading plugin from:\n${pluginGitUrl} ...\n`);
-
-          if (await extractPlugin(wpPluginsFolder)) {
-            console.log(
-              `Plugin has downloaded and is ready for you to activate via your Wordpress Admin area.`
-            );
-          } else {
-            console.log('Could not complete plugin download.');
-          }
+          await downloadPlugin(wpPluginsFolder);
         }
 
         console.log('\nSetup process is complete!');
@@ -174,6 +181,22 @@ const setup = async () => {
   }
 };
 
-(async () => {
-  await setup();
-})();
+module.exports = async ({ subcommand }) => {
+  switch (subcommand) {
+    case 'plugin': {
+      try {
+        const configFile = readFileSync(`${appSrcPath}/peanut.config.json`, 'utf-8');
+
+        const { PFWP_WP_ROOT } = JSON.parse(configFile);
+
+        await downloadPlugin(`${PFWP_WP_ROOT}/wp-content/plugins`);
+      } catch (error) {
+        console.error(error);
+      }
+
+      break;
+    }
+    default:
+      await setup();
+  }
+};

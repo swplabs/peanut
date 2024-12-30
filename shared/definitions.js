@@ -10,7 +10,7 @@ const nodeEnv = envVars.get('NODE_ENV') || 'production';
 const rootDir = nodePath.resolve(__dirname, '../');
 const serverSideEventHost = `${envVars.get('PFWP_SSE_HOST')}:${envVars.get('PFWP_SSE_PORT')}`;
 const serverSideEventTimeout = 10000;
-const debugModeInterval = 2000;
+const debugModeInterval = 5000;
 const appSrcPath = envVars.get('PFWP_APP_SRC_PATH');
 const directoryEntrySrcPath = envVars.get('PFWP_DIR_ENT_SRC_PATH');
 
@@ -19,6 +19,8 @@ const isDebugMode = () => envVars.getBoolean('PFWP_DEBUG') === true;
 const enableWhiteboard = () => envVars.getBoolean('PFWP_ENABLE_WB') === true;
 const enableHMR = () =>
   envVars.getBoolean('PFWP_ENABLE_HMR') === true && envVars.getBoolean('PFWP_SECONDARY') !== true;
+
+const enableTS = () => envVars.getBoolean('PFWP_ENABLE_TS') === true;
 
 const hotRefreshEnabled = (srcType) =>
   enableHMR() &&
@@ -67,6 +69,7 @@ module.exports = {
   isDebugMode,
   enableWhiteboard,
   enableHMR,
+  enableTS,
   getCLICommand,
   getEnv,
   getNodeEnv,

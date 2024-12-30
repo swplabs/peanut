@@ -1,4 +1,10 @@
-const { node, corejs, browsers, hotRefreshEnabled } = require('../../shared/definitions.js');
+const {
+  node,
+  corejs,
+  browsers,
+  hotRefreshEnabled,
+  enableTS
+} = require('../../shared/definitions.js');
 
 module.exports = ({
   buildType,
@@ -7,6 +13,10 @@ module.exports = ({
   resourceInfo = {},
   enableReactPreset = false
 }) => {
+  const tsPresetConfig = {
+    allExtensions: true
+  };
+
   const resource = resourceInfo.realResource || '';
   const presets = [
     [
@@ -33,7 +43,12 @@ module.exports = ({
     (srcType === 'whiteboard' &&
       resource.match(/peanut\/src\/whiteboard\/shared\/(routes|components)/))
   ) {
+    tsPresetConfig.isTSX = true;
     presets.push(require.resolve('@wordpress/babel-preset-default'));
+  }
+
+  if (enableTS()) {
+    presets.push([require.resolve('@babel/preset-typescript'), tsPresetConfig]);
   }
 
   const plugins = [];

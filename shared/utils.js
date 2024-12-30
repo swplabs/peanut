@@ -37,21 +37,21 @@ const validateEnvVarConfig = (envVars) => {
   // Check existence of wordpress root and theme paths
   if (!config.PFWP_WP_ROOT) {
     throw new Error(
-      `The Wordpress root  (PFWP_WP_ROOT) value in your peanut.config.json was not defined.`
+      `The WordPress root  (PFWP_WP_ROOT) value in your peanut.config.json was not defined.`
     );
   } else if (!fs.existsSync(config.PFWP_WP_ROOT)) {
     throw new Error(
-      `The Wordpress root directory (PFWP_WP_ROOT) defined in your peanut.config.json does not exist.`
+      `The WordPress root directory (PFWP_WP_ROOT) defined in your peanut.config.json does not exist.`
     );
   }
 
   if (!config.PFWP_THEME_PATH) {
     throw new Error(
-      `The Wordpress theme path (PFWP_THEME_PATH) value in your peanut.config.json was not defined.`
+      `The WordPress theme path (PFWP_THEME_PATH) value in your peanut.config.json was not defined.`
     );
   } else if (!fs.existsSync(`${config.PFWP_WP_ROOT}${config.PFWP_THEME_PATH}`)) {
     console.warn(
-      `The Wordpress theme directory (PFWP_THEME_PATH) defined in your peanut.config.json does not exist.`
+      `The WordPress theme directory (PFWP_THEME_PATH) defined in your peanut.config.json does not exist.`
     );
   }
 };

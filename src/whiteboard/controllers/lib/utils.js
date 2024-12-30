@@ -148,7 +148,7 @@ const htmlTemplate = ({ id, reactHtml, js, css, config }) => {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Whiteboard (Peanut For Wordpress)</title>
+        <title>Whiteboard (Peanut For WordPress)</title>
         <script crossorigin src="https://unpkg.com/react@${reactVersion}/umd/react.development.js"></script>
         <script crossorigin src="https://unpkg.com/react-dom@${reactDOMVersion}/umd/react-dom.development.js"></script>
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
