@@ -77,11 +77,18 @@ program
     require('./format.js');
   });
 
-program
+const setupCommand = program
   .command('setup')
-  .description('Create a project directory')
+  .description('Setup a project')
   .action(() => {
-    require('./setup.js');
+    require('./setup.js')({});
+  });
+
+setupCommand
+  .command('plugin')
+  .description('Install and update the Peanut For Wordpress plugin')
+  .action(() => {
+    require('./setup.js')({ subcommand: 'plugin' });
   });
 
 program.parse(process.argv);
