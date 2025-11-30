@@ -1,4 +1,5 @@
 const path = require('path');
+const { globSync } = require('glob');
 const fs = require('fs');
 const { srcDirectoryEntryMap } = require('../../../shared/src.directory.entry.map.js');
 const envVars = require('../../../shared/envvars.js');
@@ -8,7 +9,7 @@ class CopyPlugin {
     directory,
     srcType,
     routes,
-    filter = /\.(js|jsx|scss)$/,
+    filter = ['**/.git/**', '**/**.{js,jsx,scss}'],
     emptyDirectoryOnStart = true
   }) {
     this.srcType = srcType;
@@ -38,32 +39,23 @@ class CopyPlugin {
     });
   }
 
-  // TODO: can we use glob npm package here
-  srcFiles(srcPath, filter, callback) {
-    if (!fs.existsSync(srcPath)) return;
-
-    const files = fs.readdirSync(srcPath);
-    for (let i = 0; i < files.length; i++) {
-      const filename = path.join(srcPath, files[i]);
-      const stat = fs.lstatSync(filename);
-
-      if (stat.isDirectory()) {
-        this.srcFiles(filename, filter, callback);
-      } else if (!filter?.test(filename)) {
-        callback(filename);
-      }
-    }
-  }
-
   copyElement(srcDir, destDir) {
     const files = [];
 
     try {
+      if (!fs.existsSync(srcDir)) return;
+
       if (!fs.existsSync(destDir)) {
         fs.mkdirSync(destDir, { recursive: true });
       }
 
-      this.srcFiles(srcDir, this.filter, (filename) => {
+      const globFiles = globSync(`${srcDir}/**`, {
+        ignore: this.filter,
+        nodir: true,
+        dot: true
+      });
+
+      globFiles.map((filename) => {
         const relative = filename.replace(srcDir, '');
 
         if (!this.preCompiledFilter.includes(relative)) {
@@ -76,7 +68,7 @@ class CopyPlugin {
             fs.mkdirSync(relativeDir, { recursive: true });
           }
 
-          // TODO: Implement support for webpack define plugin for .php files
+          // TODO: Implement support for webpack define plugin for .php files to search/replace values
           fs.copyFileSync(filename, relativeFile);
         }
       });

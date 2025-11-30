@@ -12,7 +12,7 @@
 </IfModule>
 
 # CSS and PNG
-<FilesMatch "\.(js|css)$">
+<FilesMatch "\.(js|jpg|gif|png|css)$">
 	<IfModule !mod_authz_core.c>
 		Allow from all
 	</IfModule>
