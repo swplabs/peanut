@@ -90,9 +90,6 @@ require PFWP_PLUGIN_DIR . '/classes/class-pfwp-assets.php';
 // Component Engine
 require PFWP_PLUGIN_DIR . '/classes/class-pfwp-components.php';
 
-// Plugin Engine
-require PFWP_PLUGIN_DIR . '/classes/class-pfwp-plugins.php';
-
 // Block Engine
 require PFWP_PLUGIN_DIR . '/classes/class-pfwp-blocks.php';
 

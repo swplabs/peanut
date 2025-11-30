@@ -1,6 +1,6 @@
 # Introducing Peanut for WordPress
 
-![Get ready for takeoff!](https://swpimage-9d07.kxcdn.com/wp-efs/sassywackypeanut/uploads/2024/07/2-1120x630.jpg)
+![Get ready for takeoff!](https://s4meimages-9d07.kxcdn.com/wp-efs/swp4.me/uploads/sites/6/2024/07/2-1120x630.jpg)
 
 Build your themes and blocks with component-like elements!
 

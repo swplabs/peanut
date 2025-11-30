@@ -1,5 +1,7 @@
 /* global pfwp */
 
+const LazyLoad = require('./js/lazy-load.js');
+
 const ns = 'pfwp_';
 
 const head = document.getElementsByTagName('head')[0];
@@ -69,6 +71,7 @@ window.pfwp = {
 
   assetStates: {},
 
+  // TODO: move to lazy-load.js
   addAsset: ({ asset, component, index = 0 }) => {
     return new Promise((resolve, reject) => {
       try {
@@ -121,6 +124,7 @@ window.pfwp = {
     });
   },
 
+  // TODO: move to lazy-load.js
   getComponentAssets: async (component, assets = [], callback, execAsset = false) => {
     const hasCb = typeof callback === 'function';
     const state = pfwp.assetStates[component];
@@ -193,14 +197,27 @@ window.pfwp = {
 
   runComponentJs: (component, instances = {}) => {
     const componentJs = pfwp.getComponentJs(component);
+    const components = [];
 
     if (componentJs) {
       Object.keys(instances).forEach((instance) => {
-        componentJs(document.getElementById(instance), instances[instance]);
+        const component = document.getElementById(instance);
+        componentJs(component, instances[instance]);
+        components.push(component);
       });
     }
+
+    return components;
   },
 
+  // TODO: move to lazy-load.js
+  runLazyLoadJs: (instances = {}) => {
+    Object.keys(instances).forEach((instance) => {
+      LazyLoad.load(document.getElementById(instance), instances[instance]);
+    });
+  },
+
+  // TODO: move to lazy-load.js
   lazyLoadObserver: new IntersectionObserver((entries, observer) => {
     entries.forEach((entry) => {
       const { target, isIntersecting } = entry;
@@ -212,20 +229,21 @@ window.pfwp = {
     });
   }),
 
+  // TODO: move to lazy-load.js
   asyncComponentLoad: async ({
     instance,
     fetch_priority: priority = 'low',
     componentName,
-    component_data
+    componentData
   }) => {
     const { data_mode = 'path' } = globalConfig;
 
     let dataString = '';
 
-    if (component_data && typeof component_data === 'object' && !Array.isArray(component_data)) {
+    if (componentData && typeof componentData === 'object' && !Array.isArray(componentData)) {
       const base64Data = window.btoa(
         JSON.stringify({
-          attributes: component_data
+          attributes: componentData
         })
       );
 
@@ -252,7 +270,9 @@ window.pfwp = {
     let container = document.createElement('div');
     container.innerHTML = html;
     const component = container.removeChild(container.firstChild);
-    component.classList.add('lazy-load-loading');
+
+    component.setAttribute('data-pfwp-lazy-loader-status', 'loading');
+
     container = null;
 
     instance.replaceWith(component);
@@ -293,7 +313,7 @@ window.pfwp = {
                   */
                 } else {
                   elements.forEach((element) =>
-                    componentJs(element, jsonData?.[jsonAssetKey]?.[element.id])
+                    componentJs(element, jsonData?.[jsonAssetKey]?.[element.id] || {})
                   );
                 }
               }
@@ -305,7 +325,7 @@ window.pfwp = {
 
     await Promise.all(waitList);
 
-    component.classList.remove('lazy-load-loading');
+    component.setAttribute('data-pfwp-lazy-loader-status', 'loaded');
 
     return component;
   }
@@ -318,7 +338,8 @@ document.addEventListener('DOMContentLoaded', () => {
 module.exports = (instance, data) => {
   const {
     components: { js: componentJs, css: componentCss },
-    metadata: { js: metadataJs = {} }
+    metadata: { js: metadataJs = {} },
+    lazy_load: lazyLoadData
   } = data;
 
   globalConfig = window.pfwp_global_config;
@@ -356,5 +377,11 @@ module.exports = (instance, data) => {
           pfwp.runComponentJs(key, window.pfwp_comp_instances[key]);
         });
       });
+
+    // Trigger full resource (html, js, and css) pfwp-lazy-loader sdk logic
+    pfwp.runLazyLoadJs(window.pfwp_comp_instances['pfwp-lazy-loader']);
+
+    // Trigger js resource lazy load sdk logic
+    LazyLoad.data(lazyLoadData);
   });
 };

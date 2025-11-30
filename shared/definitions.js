@@ -25,14 +25,14 @@ const enableTS = () => envVars.getBoolean('PFWP_ENABLE_TS') === true;
 const hotRefreshEnabled = (srcType) =>
   enableHMR() &&
   nodeEnv === 'development' &&
-  ['blocks', 'plugins' /* , 'whiteboard'*/].includes(srcType);
+  ['blocks', 'plugins', 'themes' /* , 'whiteboard'*/].includes(srcType);
 
 const isWebTarget = ({ buildType }) => !['server'].includes(buildType);
 
 const isHotRefreshEntry = ({ srcType, entryKey }) =>
   enableHMR() &&
   nodeEnv === 'development' &&
-  ['blocks', 'plugins'].includes(srcType) &&
+  ['blocks', 'plugins', 'themes'].includes(srcType) &&
   ['editor'].includes(entryKey); /* || (srcType === 'whiteboard' && entryKey === 'view')*/
 
 const getHotMiddlewareEntry = ({ srcType, buildType }) =>
